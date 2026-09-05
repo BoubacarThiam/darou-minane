@@ -16,7 +16,7 @@ statique, API PHP dans `/api`, MySQL/MariaDB).
 |-------|---------|--------|
 | 1 | `db/schema.sql` + `db/seed.sql` | ✅ fait |
 | 2 | API PHP : routeur, PDO, auth, catalogue, stock, comptes | ✅ fait |
-| 3 | Back-office React : login, produits, stock, vente rapide | à faire |
+| 3 | Back-office React : login, produits, stock, vente rapide | ✅ fait |
 | 4 | Back-office : commandes + notifications | à faire |
 | 5 | Boutique publique + panier + tunnel de commande | à faire |
 | 6 | PWA, optimisations, déploiement cPanel | à faire |
@@ -24,7 +24,7 @@ statique, API PHP dans `/api`, MySQL/MariaDB).
 ## Structure
 
 ```
-client/          React (Vite) — boutique publique + back-office
+client/          React (Vite) — back-office aujourd'hui, boutique publique à l'étape 5
 api/             PHP 8 — index.php (routeur), controllers/, models/, lib/
 api/uploads/     images produits (demo/ = visuels de démonstration)
 db/schema.sql    schéma complet
@@ -94,14 +94,24 @@ annulée avec restitution du stock, une livrée, une vente comptoir de la veille
 
 ## Lancer en développement
 
+Deux serveurs, deux terminaux.
+
 ```bash
+# 1. API PHP
 cp api/config.example.php api/config.php     # puis renseigner la base de données
 php -S 127.0.0.1:8000 -t api api/index.php   # API sur http://127.0.0.1:8000
-curl http://127.0.0.1:8000/boutique
+
+# 2. Front React
+cd client && npm install && npm run dev      # http://127.0.0.1:5173
 ```
 
-Le serveur intégré de PHP sert les images de `api/uploads/` directement ; en
-production c'est `api/.htaccess` qui route tout le reste vers `index.php`.
+Le front appelle toujours `/api/…` : en développement le proxy de Vite renvoie
+vers le serveur PHP (voir `client/vite.config.js`), en production l'API vit
+réellement dans `/api`. Le serveur intégré de PHP sert les images de
+`api/uploads/` directement ; en production c'est `api/.htaccess` qui route
+tout le reste vers `index.php`.
+
+Build de production : `cd client && npm run build` → `client/dist/`.
 
 ## API
 
@@ -180,6 +190,20 @@ l'hébergeur n'a pas WebP). Le type réel du fichier est vérifié : un script
 renommé en `.jpg` est rejeté, et `api/uploads/.htaccess` neutralise toute
 exécution dans le dossier.
 
+### Back-office — vente au comptoir
+
+| Méthode | Route | Rôle | Description |
+|---|---|---|---|
+| `GET` | `/admin/variantes` | tous | recherche d'articles pour la vente rapide (`q`, `disponible`, `limite`) — renvoie des **variantes**, avec leur stock et leur photo |
+| `POST` | `/admin/commandes` | tous | vente comptoir : `{lignes: [{variante_id, quantite}], client_nom?}` |
+| `GET` | `/admin/commandes/{id}` | tous | détail d'une commande |
+
+Le canal `comptoir` est imposé par le serveur ; la commande naît au statut
+`payee`, les lignes figent libellé et prix, et chaque ligne sort du stock par un
+mouvement `vente` rattaché à la commande. Deux fois le même article dans le
+panier donnent une seule ligne cumulée. Si un seul article manque, **rien**
+n'est écrit : ni commande, ni numéro consommé.
+
 ### Back-office — stock
 
 | Méthode | Route | Rôle | Description |
@@ -214,6 +238,42 @@ retirer le dernier propriétaire actif (`409`).
 | `POST` | `/admin/utilisateurs` |
 | `PUT` | `/admin/utilisateurs/{id}` |
 | `DELETE` | `/admin/utilisateurs/{id}` (désactivation) |
+
+## Back-office React
+
+`client/` contient l'application React (Vite). Aujourd'hui elle sert le
+back-office ; la boutique publique s'ajoutera à l'étape 5 — d'ici là, `/`
+redirige vers `/admin`.
+
+| Écran | Route | Contenu |
+|---|---|---|
+| Connexion | `/admin/connexion` | téléphone + mot de passe, formats locaux acceptés (`77 338 55 35`) |
+| Vente rapide | `/admin` | recherche d'articles, panier, encaissement — écran d'accueil |
+| Produits | `/admin/produits` | liste filtrable (recherche, catégorie, état, stock en alerte) |
+| Fiche produit | `/admin/produits/:id` | informations, variantes, photos ; `/admin/produits/nouveau` pour créer |
+| Stock | `/admin/stock` | alertes, historique des mouvements, saisie d'entrée / perte / inventaire |
+| Mon compte | `/admin/compte` | identité, changement de mot de passe, déconnexion |
+
+Ce que l'employé ne voit pas : les prix d'achat et les marges (filtrés par
+l'API, pas seulement masqués), le bouton « Nouveau produit », les boutons de
+modification du catalogue, et les mouvements de perte et d'inventaire. La fiche
+produit lui affiche un bandeau « consultation seule ».
+
+Navigation : barre d'onglets en bas sur téléphone (cibles de 60 px, utilisables
+au doigt), colonne latérale à partir de 900 px. Une seule famille typographique
+(celle du système, aucun téléchargement de police), deux graisses. Les erreurs
+du serveur s'affichent champ par champ.
+
+### Organisation du code du front
+
+```
+client/src/api.js          client HTTP (jeton CSRF, erreurs typées)
+client/src/auth.jsx        session React (utilisateur courant, rôle)
+client/src/format.js       FCFA, dates, libellés de mouvements
+client/src/styles.css      feuille de style unique (jetons de couleur)
+client/src/composants/     Champ, Modale, Toasts, Garde, Etats, Icones
+client/src/admin/          un fichier par écran
+```
 
 ### Organisation du code de l'API
 

@@ -5,6 +5,28 @@ final class VarianteController
 {
     private const PRIX_MAX = 99_999_999;
 
+    /**
+     * GET /admin/variantes — recherche d'articles pour la vente rapide.
+     * Renvoie des VARIANTES (pas des produits) : c'est l'article que l'on
+     * vend et que l'on décrémente. Recherche sur le nom du produit ou le SKU.
+     */
+    public static function index(Request $requete): void
+    {
+        Auth::exigerAuth($requete);
+
+        $v = new Validator([
+            'q'          => $requete->query('q'),
+            'limite'     => $requete->query('limite'),
+            'disponible' => $requete->query('disponible'),
+        ]);
+        $q          = $v->chaine('q', false, 0, 80);
+        $limite     = (int) $v->entier('limite', false, 1, 50, 20);
+        $disponible = $v->booleen('disponible', false);
+        $v->valider();
+
+        Response::json(Variante::rechercher($q, $limite, (bool) $disponible));
+    }
+
     /** PUT /admin/variantes/{id} — la quantité n'est pas modifiable ici (module Stock). */
     public static function update(Request $requete, array $parametres): void
     {

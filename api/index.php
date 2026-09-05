@@ -84,6 +84,7 @@ try {
     $routeur->post('/admin/produits/{id}/variantes',   [ProduitController::class, 'ajouterVariante']);
     $routeur->post('/admin/produits/{id}/images',      [ImageController::class, 'store']);
 
+    $routeur->get('/admin/variantes',         [VarianteController::class, 'index']);
     $routeur->put('/admin/variantes/{id}',    [VarianteController::class, 'update']);
     $routeur->delete('/admin/variantes/{id}', [VarianteController::class, 'destroy']);
 
@@ -93,6 +94,10 @@ try {
     $routeur->post('/admin/categories',        [CategorieController::class, 'store']);
     $routeur->put('/admin/categories/{id}',    [CategorieController::class, 'update']);
     $routeur->delete('/admin/categories/{id}', [CategorieController::class, 'destroy']);
+
+    // ---- Ventes au comptoir -----------------------------------------------
+    $routeur->post('/admin/commandes',      [CommandeController::class, 'venteComptoir']);
+    $routeur->get('/admin/commandes/{id}',  [CommandeController::class, 'show']);
 
     // ---- Stock ------------------------------------------------------------
     $routeur->get('/admin/stock/mouvements',  [StockController::class, 'mouvements']);

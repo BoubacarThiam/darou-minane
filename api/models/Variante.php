@@ -23,6 +23,47 @@ final class Variante
     }
 
     /**
+     * Recherche à la volée pour l'écran de vente rapide : on cherche des
+     * VARIANTES (l'article réellement vendu et décrémenté), par nom de
+     * produit, par SKU ou par libellé de déclinaison.
+     */
+    public static function rechercher(?string $recherche, int $limite, bool $disponibleSeulement): array
+    {
+        $conditions = ['v.actif = 1', 'p.actif = 1'];
+        $params     = [];
+
+        if ($recherche !== null && $recherche !== '') {
+            $motif        = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $recherche) . '%';
+            $conditions[] = '(p.nom LIKE ? OR v.sku LIKE ? OR v.libelle LIKE ?)';
+            $params[]     = $motif;
+            $params[]     = $motif;
+            $params[]     = $motif;
+        }
+        if ($disponibleSeulement) {
+            $conditions[] = 'v.quantite > 0';
+        }
+
+        $lignes = Database::toutes(
+            'SELECT v.*, p.nom AS produit_nom, p.slug AS produit_slug,
+                    (SELECT i.chemin FROM images_produit i
+                      WHERE i.produit_id = p.id AND (i.variante_id = v.id OR i.variante_id IS NULL)
+                   ORDER BY (i.variante_id = v.id) DESC, i.position LIMIT 1) AS image
+               FROM variantes v
+               JOIN produits p ON p.id = v.produit_id
+              WHERE ' . implode(' AND ', $conditions) . '
+           ORDER BY p.nom, v.position
+              LIMIT ' . (int) $limite,
+            $params
+        );
+
+        return array_map(static fn(array $l): array => self::presenter($l, true) + [
+            'produit_nom'  => $l['produit_nom'],
+            'produit_slug' => $l['produit_slug'],
+            'image'        => $l['image'] !== null ? ImageService::urlPublique($l['image']) : null,
+        ], $lignes);
+    }
+
+    /**
      * Crée une variante. Si une quantité initiale est fournie, elle entre en
      * stock par un mouvement « entree » : jamais de stock sorti de nulle part.
      */
