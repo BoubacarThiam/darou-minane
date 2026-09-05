@@ -3,11 +3,30 @@ declare(strict_types=1);
 
 final class Response
 {
+    private static bool $cachePublic = false;
+
+    /**
+     * Autorise la mise en cache d'une réponse publique (catalogue).
+     * Sur une connexion 3G, une minute de cache évite un aller-retour
+     * complet quand le client revient sur une page déjà vue.
+     */
+    public static function cachePublic(int $secondes = 60): void
+    {
+        self::$cachePublic = true;
+        if (!headers_sent()) {
+            header("Cache-Control: public, max-age=$secondes, stale-while-revalidate=300");
+        }
+    }
+
     public static function json(mixed $donnees, int $statut = 200): void
     {
         http_response_code($statut);
         header('Content-Type: application/json; charset=utf-8');
         header('X-Content-Type-Options: nosniff');
+        if (!headers_sent() && !self::$cachePublic) {
+            // Données de gestion et réponses authentifiées : jamais en cache.
+            header('Cache-Control: no-store');
+        }
         echo json_encode($donnees, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 

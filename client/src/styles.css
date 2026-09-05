@@ -769,3 +769,16 @@ a.etiquette:hover { filter: brightness(0.96); }
   font-weight: 600;
 }
 .confirmation .rangee .bouton { flex: 1 1 220px; }
+
+/* Bandeau hors ligne (PWA) */
+.hors-ligne {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--encre);
+  color: var(--blanc);
+  font-size: 0.875rem;
+  text-align: center;
+}

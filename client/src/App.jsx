@@ -4,6 +4,7 @@ import { FournisseurBoutique } from './boutique.jsx'
 import { FournisseurPanier } from './panier.jsx'
 import { FournisseurToasts } from './composants/Toasts.jsx'
 import { Chargement, EtatVide } from './composants/Etats.jsx'
+import { HorsLigne } from './composants/HorsLigne.jsx'
 import MiseEnPageBoutique from './boutique/MiseEnPageBoutique.jsx'
 import Accueil from './boutique/Accueil.jsx'
 import Categorie from './boutique/Categorie.jsx'
@@ -29,6 +30,7 @@ export default function App() {
       <FournisseurBoutique>
         <FournisseurPanier>
           <RemonterEnHaut />
+          <HorsLigne />
           <Routes>
             <Route element={<MiseEnPageBoutique />}>
               <Route index element={<Accueil />} />

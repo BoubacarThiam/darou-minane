@@ -11,6 +11,7 @@ final class CatalogueController
     /** GET /boutique — informations d'enseigne consommées par le front. */
     public static function boutique(Request $requete): void
     {
+        Response::cachePublic(300);
         Response::json([
             'nom'            => Config::get('boutique.nom'),
             'slogan'         => Config::get('boutique.slogan'),
@@ -24,6 +25,7 @@ final class CatalogueController
     /** GET /categories */
     public static function categories(Request $requete): void
     {
+        Response::cachePublic(120);
         Response::json(Categorie::toutes(true));
     }
 
@@ -53,6 +55,7 @@ final class CatalogueController
         ];
         $v->valider();
 
+        Response::cachePublic(60);
         $resultat = Produit::listePublique($filtres);
         Response::liste($resultat['donnees'], $resultat['page'], $resultat['par_page'], $resultat['total']);
     }
@@ -60,6 +63,7 @@ final class CatalogueController
     /** GET /produits/{slug} */
     public static function produit(Request $requete, array $parametres): void
     {
+        Response::cachePublic(60);
         Response::json(Produit::fichePublique($parametres['slug']));
     }
 }

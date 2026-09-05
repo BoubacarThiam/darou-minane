@@ -1,0 +1,24 @@
+{
+  "name": "Darou Minane — Groupe Business Communication 626",
+  "short_name": "Darou Minane",
+  "description": "Parfums, diffuseurs, montres et lunettes à Tambacounda. Commande en ligne, paiement à la livraison.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#c86b8c",
+  "categories": ["shopping"],
+  "icons": [
+    { "src": "/icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icones/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Vente rapide", "short_name": "Vente", "url": "/admin/vente" },
+    { "name": "Commandes", "short_name": "Commandes", "url": "/admin/commandes" },
+    { "name": "Stock", "short_name": "Stock", "url": "/admin/stock" }
+  ]
+}

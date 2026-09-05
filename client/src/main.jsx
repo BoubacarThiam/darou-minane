@@ -4,6 +4,17 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import './styles.css'
 
+// Le service worker n'est utile qu'en production : en développement il
+// masquerait les modifications derrière son cache.
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Pas de service worker (navigateur ancien, site non sécurisé) :
+      // l'application fonctionne, sans le mode hors ligne.
+    })
+  })
+}
+
 createRoot(document.getElementById('racine')).render(
   <React.StrictMode>
     <BrowserRouter>

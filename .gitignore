@@ -9,3 +9,4 @@ api/uploads/*
 .DS_Store
 *.log
 api/storage/
+mise-en-ligne/

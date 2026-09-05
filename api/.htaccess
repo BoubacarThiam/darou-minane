@@ -21,4 +21,8 @@
     </IfModule>
 </FilesMatch>
 
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE application/json text/html text/plain
+</IfModule>
+
 Options -Indexes

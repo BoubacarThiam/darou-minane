@@ -1,0 +1,60 @@
+# =====================================================================
+#  Darou Minane — racine du site (public_html sur cPanel).
+#  Ce fichier est copié tel quel dans dist/ par la compilation ; il doit
+#  se retrouver à la racine, à côté de index.html et du dossier api/.
+# =====================================================================
+
+Options -Indexes
+DirectoryIndex index.html
+
+# --- Application monopage ---------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # L'API a son propre .htaccess : on ne la réécrit jamais.
+    RewriteRule ^api/ - [L]
+
+    # Un fichier ou un dossier réel est servi tel quel.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Tout le reste est une route React (/panier, /p/mon-produit, /admin/...).
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# --- Compression : décisif sur une connexion lente ---------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE application/manifest+json image/svg+xml
+</IfModule>
+
+# --- Cache -------------------------------------------------------------
+<IfModule mod_headers.c>
+    # Les fichiers de assets/ portent une empreinte dans leur nom : ils ne
+    # changent jamais sans changer de nom.
+    <FilesMatch "\.(js|css|woff2?)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # La coquille et le service worker doivent être revérifiés à chaque fois,
+    # sinon une mise en ligne met des jours à atteindre les téléphones.
+    <FilesMatch "^(index\.html|sw\.js|manifest\.webmanifest)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png  "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+AddType application/manifest+json .webmanifest

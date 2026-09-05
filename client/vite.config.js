@@ -18,5 +18,14 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        // React change bien plus rarement que le code du projet : en le
+        // isolant, une mise en ligne ne réinvalide pas 140 Ko chez le client.
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
   },
 })

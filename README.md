@@ -19,7 +19,7 @@ statique, API PHP dans `/api`, MySQL/MariaDB).
 | 3 | Back-office React : login, produits, stock, vente rapide | ✅ fait |
 | 4 | Back-office : commandes + notifications | ✅ fait |
 | 5 | Boutique publique + panier + tunnel de commande | ✅ fait |
-| 6 | PWA, optimisations, déploiement cPanel | à faire |
+| 6 | PWA, optimisations, déploiement cPanel | ✅ fait |
 
 ## Structure
 
@@ -29,6 +29,7 @@ api/             PHP 8 — index.php (routeur), controllers/, models/, lib/
 api/uploads/     images produits (demo/ = visuels de démonstration)
 db/schema.sql    schéma complet
 db/seed.sql      jeu de données de démonstration
+outils/          script de préparation de la mise en ligne
 ```
 
 ## Base de données
@@ -63,10 +64,8 @@ mysql -u root -p darou_minane < db/seed.sql   # optionnel : données de démonst
 
 ### Installation sur cPanel
 
-1. *MySQL® Databases* → créer la base et un utilisateur, lui donner tous les droits.
-2. *phpMyAdmin* → onglet **Importer** → `db/schema.sql`, puis `db/seed.sql` si l'on veut
-   les données de démonstration.
-3. Renseigner les identifiants dans `api/config.php` (étape 2).
+Voir **[Mise en ligne](#mise-en-ligne-cpanel)** plus bas : un script prépare le dossier
+complet à téléverser.
 
 `db/schema.sql` **supprime puis recrée** les tables : ne l'importer que sur une base neuve.
 
@@ -294,6 +293,92 @@ retirer le dernier propriétaire actif (`409`).
 | `POST` | `/admin/utilisateurs` |
 | `PUT` | `/admin/utilisateurs/{id}` |
 | `DELETE` | `/admin/utilisateurs/{id}` (désactivation) |
+
+## Application installable (PWA)
+
+La boutique et le back-office s'installent sur l'écran d'accueil d'un téléphone
+Android et fonctionnent en plein écran, sans barre d'adresse.
+
+- `client/public/manifest.webmanifest` — nom, couleurs, icônes 192/512 et une
+  icône *maskable*, plus trois raccourcis pour le commerçant (Vente rapide,
+  Commandes, Stock) accessibles par appui long sur l'icône.
+- `client/public/sw.js` — service worker écrit à la main (aucune dépendance de
+  compilation) avec quatre caches versionnés :
+
+| Ressource | Stratégie | Pourquoi |
+|---|---|---|
+| Page d'entrée | réseau d'abord, cache en secours | démarre même sans réseau |
+| `assets/*.js`, `*.css` | cache d'abord | le nom porte une empreinte, le contenu ne change jamais |
+| Photos produits | cache d'abord, 60 au plus | le plus lourd, et immuable |
+| `GET /api/…` publics | réseau d'abord, cache en secours | catalogue consultable hors ligne |
+
+**Jamais mis en cache** : `/api/admin/…`, `/api/auth/…` et toute requête qui
+n'est pas un `GET`. Une donnée de gestion périmée serait pire que pas de donnée.
+
+Un bandeau prévient quand le réseau tombe : le catalogue déjà chargé reste
+consultable, l'envoi d'une commande attend le retour du réseau.
+
+Les icônes actuelles sont un monogramme provisoire : à remplacer par le vrai
+logo de l'enseigne (`client/public/icones/`, 192 px et 512 px, plus une version
+*maskable* dont le motif tient dans les 80 % centraux).
+
+## Poids et vitesse
+
+Contrainte de départ : la boutique doit rester utilisable en 3G.
+
+| Ce que télécharge un client à sa première visite | Compressé |
+|---|---|
+| React (paquet séparé, réutilisé d'une mise à jour à l'autre) | 53,6 Ko |
+| Code de la boutique | 9,4 Ko |
+| Feuille de style | 4,5 Ko |
+| **Total** | **≈ 68 Ko** |
+
+Le back-office (14,3 Ko) est un paquet à part, chargé seulement quand quelqu'un
+ouvre `/admin`. Les visites suivantes ne retéléchargent rien tant que le code ne
+change pas.
+
+Côté serveur : photos converties en WebP à 1200 px, chargement différé,
+compression `mod_deflate` et cache d'un an sur les fichiers versionnés. Les
+réponses publiques de l'API sont mises en cache une minute (`stale-while-revalidate`
+de cinq minutes) ; les réponses de gestion sont en `no-store`.
+
+## Mise en ligne (cPanel)
+
+```bash
+./outils/preparer-mise-en-ligne.sh
+```
+
+Le script compile la boutique et assemble `mise-en-ligne/` : la boutique
+compilée, l'API, les fichiers SQL et un `LISEZ-MOI.txt`. Il retire la
+configuration locale (`api/config.php`), les fichiers de travail et les images
+téléversées en développement. Rien à installer sur le serveur : ni Node, ni
+Composer, ni Docker.
+
+Ensuite, dans cPanel :
+
+1. **Base** — *MySQL® Databases* : créer la base et un utilisateur avec tous les
+   droits. *phpMyAdmin* → **Importer** → `db/schema.sql`, puis `db/seed.sql` pour
+   les données de démonstration.
+2. **Fichiers** — téléverser tout le contenu de `mise-en-ligne/` dans
+   `public_html/`. Le `.htaccess` est un fichier caché : activer l'affichage des
+   fichiers cachés dans le gestionnaire de fichiers.
+3. **Configuration** — renommer `api/config.example.php` en `api/config.php` et y
+   renseigner la base, `app.env => 'production'`, `origines_autorisees => []` et le
+   numéro WhatsApp.
+4. **Droits** — `api/uploads` doit être inscriptible (755).
+5. **Avant d'ouvrir** — activer le certificat SSL et forcer HTTPS, **changer les
+   mots de passe de démonstration** depuis le back-office, puis supprimer `db/`
+   du serveur.
+
+Le `.htaccess` de la racine (livré depuis `client/public/.htaccess`) envoie
+toutes les routes React vers `index.html`, laisse `/api/` à l'API, active la
+compression, met les fichiers versionnés en cache un an et laisse `index.html`,
+`sw.js` et le manifeste en revalidation permanente — sans quoi une mise à jour
+mettrait des jours à atteindre les téléphones.
+
+**Mise à jour** : relancer le script et retéléverser `index.html`, `assets/` et
+`api/`. Ne jamais réimporter `db/schema.sql` sur une base en service : il efface
+les tables.
 
 ## Boutique publique
 
