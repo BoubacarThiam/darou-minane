@@ -1,0 +1,24 @@
+# API Darou Minane — toutes les requêtes passent par index.php.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Les fichiers réellement présents (images de uploads/) sont servis tels quels.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# La configuration ne doit jamais être servie directement.
+<FilesMatch "^config(\.example)?\.php$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+Options -Indexes

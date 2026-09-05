@@ -15,7 +15,7 @@ statique, API PHP dans `/api`, MySQL/MariaDB).
 | Étape | Contenu | Statut |
 |-------|---------|--------|
 | 1 | `db/schema.sql` + `db/seed.sql` | ✅ fait |
-| 2 | Squelette API PHP (routeur, PDO, auth, produits/variantes) | à faire |
+| 2 | API PHP : routeur, PDO, auth, catalogue, stock, comptes | ✅ fait |
 | 3 | Back-office React : login, produits, stock, vente rapide | à faire |
 | 4 | Back-office : commandes + notifications | à faire |
 | 5 | Boutique publique + panier + tunnel de commande | à faire |
@@ -92,6 +92,140 @@ annulée avec restitution du stock, une livrée, une vente comptoir de la veille
 > Les produits, prix et quantités sont **plausibles mais fictifs** : à remplacer par le
 > catalogue réel du commerçant.
 
-## Routes de l'API
+## Lancer en développement
 
-À documenter à l'étape 2.
+```bash
+cp api/config.example.php api/config.php     # puis renseigner la base de données
+php -S 127.0.0.1:8000 -t api api/index.php   # API sur http://127.0.0.1:8000
+curl http://127.0.0.1:8000/boutique
+```
+
+Le serveur intégré de PHP sert les images de `api/uploads/` directement ; en
+production c'est `api/.htaccess` qui route tout le reste vers `index.php`.
+
+## API
+
+Conventions :
+
+- JSON en entrée (`Content-Type: application/json`) et en sortie, UTF-8.
+- Montants : entiers en FCFA. Dates : `AAAA-MM-JJ HH:MM:SS` (UTC).
+- Listes paginées : `{ "donnees": [...], "pagination": { page, par_page, total, pages } }`.
+- Erreurs : `{ "erreur": "message lisible", "champs": { "prix": "Minimum : 0." } }`
+  avec `400` (requête malformée), `401` (non connecté), `403` (rôle ou CSRF),
+  `404`, `405`, `409` (conflit métier : stock insuffisant, catégorie non vide),
+  `422` (validation), `429` (trop de tentatives de connexion), `500`.
+- Base d'URL : `/api` sur un hébergement cPanel classique.
+
+### Authentification
+
+Session PHP + cookie `httpOnly` `SameSite=Lax`. `POST /auth/connexion` renvoie un
+**jeton CSRF** : le back-office doit le renvoyer dans l'en-tête `X-CSRF-Token`
+sur **toute écriture authentifiée** (POST/PUT/DELETE), sinon `403`. Les routes
+publiques n'en ont pas besoin. Le rôle est relu en base à chaque requête :
+désactiver un employé le déconnecte immédiatement. Huit échecs de connexion
+bloquent le couple numéro + IP pendant 15 minutes.
+
+| Méthode | Route | Accès | Rôle |
+|---|---|---|---|
+| `POST` | `/auth/connexion` | public | `{telephone, mot_de_passe}` → utilisateur + `csrf_token` |
+| `POST` | `/auth/deconnexion` | connecté | détruit la session |
+| `GET` | `/auth/moi` | public | utilisateur courant (ou `null`) + jeton CSRF |
+| `PUT` | `/auth/mot-de-passe` | connecté | `{mot_de_passe_actuel, nouveau_mot_de_passe}` |
+
+### Boutique publique (sans compte)
+
+Ces réponses ne contiennent **jamais** de prix d'achat, de marge, de SKU ni de
+quantité chiffrée — seulement `en_stock: true|false`.
+
+| Méthode | Route | Description |
+|---|---|---|
+| `GET` | `/boutique` | nom, slogan, numéro WhatsApp, zone de livraison, devise |
+| `GET` | `/categories` | catégories triées, avec le nombre de produits actifs |
+| `GET` | `/produits` | catalogue paginé |
+| `GET` | `/produits/{slug}` | fiche produit : variantes actives + galerie |
+
+Paramètres de `/produits` : `q`, `categorie` (slug), `prix_min`, `prix_max`,
+`mis_en_avant`, `tri` (`recent` par défaut, `nom`, `prix_asc`, `prix_desc`),
+`page`, `par_page` (12 par défaut, 60 max). Le filtre prix garde les produits
+ayant au moins une variante dans la fourchette.
+
+### Back-office — catalogue
+
+Lecture : propriétaire **et** employé. Écriture : **propriétaire seulement**.
+L'employé reçoit les mêmes fiches sans `prix_achat` ni `marge`.
+
+| Méthode | Route | Rôle | Description |
+|---|---|---|---|
+| `GET` | `/admin/produits` | tous | filtres `q`, `categorie_id`, `actif`, `sous_seuil`, pagination |
+| `POST` | `/admin/produits` | propriétaire | produit + ses variantes ; chaque `quantite` initiale crée un mouvement `entree` |
+| `GET` | `/admin/produits/{id}` | tous | fiche complète (variantes actives et inactives, images) |
+| `PUT` | `/admin/produits/{id}` | propriétaire | champs partiels ; le slug reste stable sauf s'il est envoyé |
+| `DELETE` | `/admin/produits/{id}` | propriétaire | supprime si aucun historique, désactive sinon |
+| `POST` | `/admin/produits/{id}/variantes` | propriétaire | ajoute une variante |
+| `PUT` | `/admin/variantes/{id}` | propriétaire | libellé, prix, prix d'achat, seuil, position, SKU, actif |
+| `DELETE` | `/admin/variantes/{id}` | propriétaire | supprime si aucun historique, désactive sinon |
+| `POST` | `/admin/produits/{id}/images` | propriétaire | `multipart/form-data`, champ `images[]` (6 max), `variante_id` optionnel |
+| `PUT` | `/admin/images/{id}` | propriétaire | `position`, `variante_id` (`null` = image générale) |
+| `DELETE` | `/admin/images/{id}` | propriétaire | supprime la ligne et le fichier s'il n'est plus référencé |
+| `POST` | `/admin/categories` | propriétaire | |
+| `PUT` | `/admin/categories/{id}` | propriétaire | |
+| `DELETE` | `/admin/categories/{id}` | propriétaire | refusée (`409`) si la catégorie contient des produits |
+
+**`PUT /admin/variantes/{id}` refuse le champ `quantite`** : le stock ne se
+modifie que par un mouvement.
+
+Les images envoyées sont redressées (orientation EXIF des photos de téléphone),
+redimensionnées à 1200 px de large maximum et réencodées en WebP (JPEG si
+l'hébergeur n'a pas WebP). Le type réel du fichier est vérifié : un script
+renommé en `.jpg` est rejeté, et `api/uploads/.htaccess` neutralise toute
+exécution dans le dossier.
+
+### Back-office — stock
+
+| Méthode | Route | Rôle | Description |
+|---|---|---|---|
+| `GET` | `/admin/stock/mouvements` | tous | historique, filtres `variante_id`, `type`, pagination |
+| `POST` | `/admin/stock/mouvements` | voir ci-dessous | enregistre un mouvement |
+| `GET` | `/admin/stock/alertes` | tous | variantes actives dont `quantite <= seuil_alerte` |
+
+```jsonc
+// arrivage — autorisé aux employés
+{ "variante_id": 7, "type": "entree", "quantite": 12, "motif": "Arrivage Dakar" }
+// casse ou perte — propriétaire
+{ "variante_id": 7, "type": "perte", "quantite": 2, "motif": "Casse au transport" }
+// inventaire — propriétaire : on saisit le stock RÉELLEMENT compté
+{ "variante_id": 7, "type": "ajustement", "quantite_reelle": 11, "motif": "Inventaire du soir" }
+```
+
+La variante est verrouillée le temps du calcul (`SELECT ... FOR UPDATE`) : deux
+ventes simultanées ne peuvent pas vendre le même dernier article. Un mouvement
+qui ferait passer le stock sous zéro est refusé en `409`, et un inventaire
+conforme ne crée aucun mouvement (`modifie: false`).
+
+### Back-office — comptes
+
+Réservé au propriétaire. On ne supprime jamais un compte : on le désactive, pour
+que l'historique reste attribué. Impossible de se désactiver soi-même ou de
+retirer le dernier propriétaire actif (`409`).
+
+| Méthode | Route |
+|---|---|
+| `GET` | `/admin/utilisateurs` |
+| `POST` | `/admin/utilisateurs` |
+| `PUT` | `/admin/utilisateurs/{id}` |
+| `DELETE` | `/admin/utilisateurs/{id}` (désactivation) |
+
+### Organisation du code de l'API
+
+```
+api/index.php          routeur + gestion centralisée des erreurs
+api/config.php         configuration locale (jamais versionnée)
+api/lib/               infrastructure : Router, Request, Response, Database,
+                       Auth, Validator, Throttle, ImageService, Slug, Config
+api/models/            domaine : Produit, Variante, ImageProduit, Categorie,
+                       Utilisateur, Stock
+api/controllers/       une classe par module, méthodes statiques
+```
+
+Convention : classes d'infrastructure en anglais, classes de domaine en français.
+`models/Stock.php` est le **seul point d'écriture** de `variantes.quantite`.

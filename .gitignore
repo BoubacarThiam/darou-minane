@@ -8,3 +8,4 @@ api/uploads/*
 !api/uploads/.gitkeep
 .DS_Store
 *.log
+api/storage/
