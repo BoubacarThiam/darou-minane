@@ -18,7 +18,7 @@ statique, API PHP dans `/api`, MySQL/MariaDB).
 | 2 | API PHP : routeur, PDO, auth, catalogue, stock, comptes | ✅ fait |
 | 3 | Back-office React : login, produits, stock, vente rapide | ✅ fait |
 | 4 | Back-office : commandes + notifications | ✅ fait |
-| 5 | Boutique publique + panier + tunnel de commande | à faire |
+| 5 | Boutique publique + panier + tunnel de commande | ✅ fait |
 | 6 | PWA, optimisations, déploiement cPanel | à faire |
 
 ## Structure
@@ -153,6 +153,22 @@ quantité chiffrée — seulement `en_stock: true|false`.
 | `GET` | `/categories` | catégories triées, avec le nombre de produits actifs |
 | `GET` | `/produits` | catalogue paginé |
 | `GET` | `/produits/{slug}` | fiche produit : variantes actives + galerie |
+| `POST` | `/commandes` | commande passée depuis la boutique, **sans compte ni session** |
+
+```jsonc
+// POST /commandes
+{ "client_nom": "Aminata Ndour", "client_telephone": "77 654 32 10",
+  "client_quartier": "Quartier Liberté, en face de la boulangerie",
+  "client_note": "Livrer après 18h",
+  "lignes": [{ "variante_id": 5, "quantite": 2 }] }
+```
+
+La réponse ne contient que ce qui regarde le client : référence, lignes au prix
+figé, total, « livraison : à convenir » et le lien WhatsApp de suivi. Le canal
+`en_ligne` et le statut `nouvelle` sont imposés par le serveur, le stock sort
+dans la même transaction, et la commande arrive non lue dans le back-office
+(badge + son). Dix commandes par heure et par appareil au maximum (`429`
+au-delà) : la boutique est ouverte à tous, pas aux robots.
 
 Paramètres de `/produits` : `q`, `categorie` (slug), `prix_min`, `prix_max`,
 `mis_en_avant`, `tri` (`recent` par défaut, `nom`, `prix_asc`, `prix_desc`),
@@ -279,11 +295,41 @@ retirer le dernier propriétaire actif (`409`).
 | `PUT` | `/admin/utilisateurs/{id}` |
 | `DELETE` | `/admin/utilisateurs/{id}` (désactivation) |
 
+## Boutique publique
+
+| Écran | Route | Contenu |
+|---|---|---|
+| Accueil | `/` | rayons, sélection de la boutique, derniers arrivages |
+| Catalogue | `/catalogue` | tous les articles, mêmes filtres qu'une catégorie |
+| Catégorie | `/c/:slug` | filtre de prix et tri, filtres conservés dans l'URL |
+| Fiche produit | `/p/:slug` | galerie, choix de la variante, ajout au panier |
+| Panier | `/panier` | quantités, retrait d'article, total |
+| Commande | `/commande` | nom, téléphone, quartier/repère, note — **un seul écran** |
+| Confirmation | `/commande/confirmation` | référence et bouton « Suivre ma commande sur WhatsApp » |
+
+Aucun compte, aucun mot de passe : le client laisse son nom, son numéro et un
+repère. Le **panier est conservé dans le navigateur** (`localStorage`) : fermer
+l'onglet et revenir plus tard ne le vide pas.
+
+Choisir une déclinaison met à jour le prix, la disponibilité et la photo. Une
+variante épuisée reste **visible mais non commandable** : à la place du bouton
+d'achat, un lien WhatsApp pré-rempli pour demander son retour.
+
+Le prix affiché ne fait pas foi : le serveur refige le prix de chaque ligne au
+moment de la commande, et refuse la commande entière si un article manque.
+
+Partout : « Livraison : à convenir », jamais « gratuite », et « paiement à la
+livraison ».
+
+**Poids de la page.** Le back-office est chargé à la demande : un client qui
+vient acheter un diffuseur télécharge 62 Ko compressés (application + boutique)
+et jamais les 14 Ko des écrans de gestion. Les photos sont servies en WebP
+1200 px, en chargement différé, avec un cache d'un an.
+
 ## Back-office React
 
-`client/` contient l'application React (Vite). Aujourd'hui elle sert le
-back-office ; la boutique publique s'ajoutera à l'étape 5 — d'ici là, `/`
-redirige vers `/admin`.
+`client/` contient l'application React (Vite) : la boutique publique sur `/`
+et le back-office sur `/admin`, dans le même build mais deux paquets séparés.
 
 | Écran | Route | Contenu |
 |---|---|---|
@@ -324,10 +370,16 @@ du serveur s'affichent champ par champ.
 ```
 client/src/api.js          client HTTP (jeton CSRF, erreurs typées)
 client/src/auth.jsx        session React (utilisateur courant, rôle)
+client/src/panier.jsx      panier du client, conservé en localStorage
+client/src/boutique.jsx    identité de l'enseigne, servie par /boutique
+client/src/notifications.jsx  badge et signal sonore des nouvelles commandes
+client/src/statuts.js      libellés, couleurs et actions des statuts
 client/src/format.js       FCFA, dates, libellés de mouvements
 client/src/styles.css      feuille de style unique (jetons de couleur)
 client/src/composants/     Champ, Modale, Toasts, Garde, Etats, Icones
-client/src/admin/          un fichier par écran
+client/src/boutique/       écrans publics (accueil, catégorie, fiche, panier…)
+client/src/admin/          écrans du back-office ; Admin.jsx est le paquet
+                           chargé à la demande
 ```
 
 ### Organisation du code de l'API
@@ -336,9 +388,10 @@ client/src/admin/          un fichier par écran
 api/index.php          routeur + gestion centralisée des erreurs
 api/config.php         configuration locale (jamais versionnée)
 api/lib/               infrastructure : Router, Request, Response, Database,
-                       Auth, Validator, Throttle, ImageService, Slug, Config
+                       Auth, Validator, Throttle, ImageService, Slug, Config,
+                       Notifier
 api/models/            domaine : Produit, Variante, ImageProduit, Categorie,
-                       Utilisateur, Stock
+                       Utilisateur, Stock, Commande, TableauDeBord
 api/controllers/       une classe par module, méthodes statiques
 ```
 

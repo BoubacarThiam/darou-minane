@@ -44,6 +44,31 @@ final class Throttle
         }
     }
 
+    /**
+     * Limite de débit sur une action réussie (création de commande publique) :
+     * au plus $max actions par fenêtre de $duree secondes pour une même clé.
+     */
+    public static function limiter(string $cle, int $max, int $duree): void
+    {
+        $fichier = self::fichier($cle);
+        $etat    = self::lire($cle);
+        $maintenant = time();
+
+        if (($etat['jusqua'] ?? 0) <= $maintenant) {
+            $etat = ['echecs' => 0, 'compte' => 0, 'jusqua' => $maintenant + $duree];
+        }
+
+        $etat['compte'] = ($etat['compte'] ?? 0) + 1;
+        file_put_contents($fichier, json_encode($etat), LOCK_EX);
+
+        if ($etat['compte'] > $max) {
+            throw new HttpException(
+                'Trop de commandes envoyées depuis cet appareil. Contactez-nous directement sur WhatsApp.',
+                429
+            );
+        }
+    }
+
     public static function echec(string $cle): void
     {
         $etat   = self::lire($cle);

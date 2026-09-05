@@ -26,6 +26,48 @@ final class CommandeController
         Response::json(Commande::creer($donnees, $utilisateur['id']), 201);
     }
 
+    /**
+     * POST /commandes — commande passée depuis la boutique publique.
+     *
+     * Aucun compte, aucune session : le client laisse son nom, son téléphone
+     * et un repère de livraison. Le canal est imposé côté serveur, la
+     * commande naît « nouvelle » et non lue (badge du back-office).
+     */
+    public static function commandePublique(Request $requete): void
+    {
+        // Garde-fou anti-abus : dix commandes par heure et par appareil.
+        Throttle::limiter('commande:' . sha1($requete->ip()), 10, 3600);
+
+        $v      = new Validator($requete->corps());
+        $lignes = $v->tableau('lignes', true, 1, 50);
+        $donnees = [
+            'canal'            => 'en_ligne',
+            'client_nom'       => $v->chaine('client_nom', true, 2, 120),
+            'client_telephone' => $v->telephone('client_telephone', true),
+            'client_quartier'  => $v->chaine('client_quartier', true, 3, 150),
+            'client_note'      => $v->texte('client_note', false, 1000),
+            'lignes'           => self::validerLignes($v, $lignes ?? []),
+        ];
+        $v->valider();
+
+        $commande = Commande::creer($donnees, null);
+
+        // Réponse volontairement réduite : le client n'a pas à connaître
+        // les identifiants internes ni l'état de gestion de la boutique.
+        Response::json([
+            'reference' => $commande['reference'],
+            'total'     => $commande['total'],
+            'lignes'    => array_map(static fn(array $l): array => [
+                'libelle'       => $l['libelle'],
+                'prix_unitaire' => $l['prix_unitaire'],
+                'quantite'      => $l['quantite'],
+                'total_ligne'   => $l['total_ligne'],
+            ], $commande['lignes']),
+            'livraison' => 'à convenir',
+            'whatsapp'  => $commande['whatsapp']['boutique'],
+        ], 201);
+    }
+
     /** GET /admin/commandes — liste filtrable. */
     public static function index(Request $requete): void
     {

@@ -68,6 +68,7 @@ try {
     $routeur->get('/categories',        [CatalogueController::class, 'categories']);
     $routeur->get('/produits',          [CatalogueController::class, 'produits']);
     $routeur->get('/produits/{slug}',   [CatalogueController::class, 'produit']);
+    $routeur->post('/commandes',        [CommandeController::class, 'commandePublique']);
 
     // ---- Authentification ------------------------------------------------
     $routeur->post('/auth/connexion',    [AuthController::class, 'connexion']);
