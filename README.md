@@ -17,7 +17,7 @@ statique, API PHP dans `/api`, MySQL/MariaDB).
 | 1 | `db/schema.sql` + `db/seed.sql` | ✅ fait |
 | 2 | API PHP : routeur, PDO, auth, catalogue, stock, comptes | ✅ fait |
 | 3 | Back-office React : login, produits, stock, vente rapide | ✅ fait |
-| 4 | Back-office : commandes + notifications | API faite, écrans React en cours |
+| 4 | Back-office : commandes + notifications | ✅ fait |
 | 5 | Boutique publique + panier + tunnel de commande | à faire |
 | 6 | PWA, optimisations, déploiement cPanel | à faire |
 
@@ -288,19 +288,34 @@ redirige vers `/admin`.
 | Écran | Route | Contenu |
 |---|---|---|
 | Connexion | `/admin/connexion` | téléphone + mot de passe, formats locaux acceptés (`77 338 55 35`) |
-| Vente rapide | `/admin` | recherche d'articles, panier, encaissement — écran d'accueil |
+| Tableau de bord | `/admin` | ventes du jour, commandes à traiter, stock en alerte, dernières commandes |
+| Vente rapide | `/admin/vente` | recherche d'articles, panier, encaissement |
+| Commandes | `/admin/commandes` | liste filtrable (statut, canal, recherche, non ouvertes) |
+| Détail commande | `/admin/commandes/:id` | client, articles, suivi de statut, annulation, lien WhatsApp |
 | Produits | `/admin/produits` | liste filtrable (recherche, catégorie, état, stock en alerte) |
 | Fiche produit | `/admin/produits/:id` | informations, variantes, photos ; `/admin/produits/nouveau` pour créer |
 | Stock | `/admin/stock` | alertes, historique des mouvements, saisie d'entrée / perte / inventaire |
+| Équipe | `/admin/equipe` | comptes employés — **propriétaire uniquement** |
 | Mon compte | `/admin/compte` | identité, changement de mot de passe, déconnexion |
 
 Ce que l'employé ne voit pas : les prix d'achat et les marges (filtrés par
-l'API, pas seulement masqués), le bouton « Nouveau produit », les boutons de
-modification du catalogue, et les mouvements de perte et d'inventaire. La fiche
-produit lui affiche un bandeau « consultation seule ».
+l'API, pas seulement masqués), le chiffre d'affaires du jour, le panier moyen et
+la valeur du stock, le bouton « Nouveau produit », les boutons de modification du
+catalogue, les mouvements de perte et d'inventaire, et l'écran Équipe. La fiche
+produit lui affiche un bandeau « consultation seule », et le bouton d'annulation
+d'une commande déjà payée lui est désactivé, avec l'explication.
+
+**Nouvelles commandes.** Le back-office interroge `/admin/notifications` toutes
+les 30 secondes (et au retour sur l'onglet). Une commande en ligne jamais
+ouverte pose une pastille dans la liste et un compteur sur l'onglet Commandes ;
+son arrivée déclenche un message et **deux notes de synthèse** (Web Audio, aucun
+fichier son à télécharger). Le signal ne se déclenche jamais au premier
+chargement, seulement sur une vraie nouveauté, et l'ouverture de la commande
+éteint le compteur.
 
 Navigation : barre d'onglets en bas sur téléphone (cibles de 60 px, utilisables
-au doigt), colonne latérale à partir de 900 px. Une seule famille typographique
+au doigt) — Bord, Vente, Commandes, Produits, Stock ; colonne latérale à partir
+de 900 px, qui ajoute Équipe. « Mon compte » est dans l'en-tête. Une seule famille typographique
 (celle du système, aucun téléchargement de police), deux graisses. Les erreurs
 du serveur s'affichent champ par champ.
 

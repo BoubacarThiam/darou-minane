@@ -44,3 +44,24 @@ export const IconeRecherche = (props) => (
     <path d="m16 16 4.5 4.5" />
   </svg>
 )
+
+export const IconeCommandes = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M7 4h10l2 4v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19V8z" />
+    <path d="M5 8h14M9.5 12h5M9.5 15.5h5" />
+  </svg>
+)
+
+export const IconeBord = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M4 19V5M4 19h16" />
+    <path d="M8 19v-6M12.5 19V8M17 19v-9" />
+  </svg>
+)
+
+export const IconeWhatsApp = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M20 11.5a8 8 0 0 1-11.9 7L4 20l1.6-3.9A8 8 0 1 1 20 11.5z" />
+    <path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 1c-1-.5-1.8-1.3-2.3-2.3l1-1-1-2z" />
+  </svg>
+)

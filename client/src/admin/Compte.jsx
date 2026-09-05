@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api, ErreurApi } from '../api.js'
 import { useAuth } from '../auth.jsx'
 import { useToasts } from '../composants/Toasts.jsx'
@@ -6,7 +7,7 @@ import { Champ } from '../composants/Champ.jsx'
 import { Message } from '../composants/Etats.jsx'
 
 export default function Compte() {
-  const { utilisateur, deconnexion } = useAuth()
+  const { utilisateur, deconnexion, estProprietaire } = useAuth()
   const toasts = useToasts()
 
   const [actuel, setActuel] = useState('')
@@ -78,6 +79,18 @@ export default function Compte() {
           {envoi ? 'Enregistrement…' : 'Enregistrer'}
         </button>
       </form>
+
+      {estProprietaire && (
+        <div className="carte" style={{ maxWidth: 420 }}>
+          <h2 className="carte__titre">Équipe</h2>
+          <p className="texte-gris texte-petit" style={{ marginBottom: 12 }}>
+            Créer un compte employé, changer un rôle ou retirer un accès.
+          </p>
+          <Link className="bouton bouton--discret" to="/admin/equipe">
+            Gérer les comptes
+          </Link>
+        </div>
+      )}
 
       <button type="button" className="bouton bouton--discret" onClick={deconnexion}>
         Se déconnecter

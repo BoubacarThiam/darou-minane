@@ -327,7 +327,7 @@ input::placeholder { color: #9c8a90; }
 }
 .quantite span { min-width: 28px; text-align: center; font-weight: 600; }
 .panier__total { display: flex; align-items: baseline; gap: 10px; margin: 10px 0; }
-.panier__total strong { font-size: 1.375rem; margin-left: auto; }
+.panier__total strong { font-size: 1.375rem; margin-left: auto; white-space: nowrap; }
 
 /* --- Tableaux et cartes --------------------------------------------- */
 .carte {
@@ -446,4 +446,78 @@ input::placeholder { color: #9c8a90; }
 .sr-seulement {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* --- Écrans commandes / tableau de bord (étape 4) -------------------- */
+
+/* Pastille « commande jamais ouverte » */
+.pastille {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--rose-fonce);
+  vertical-align: middle;
+}
+
+/* Compteur posé sur l'icône de l'onglet Commandes */
+.onglet__icone { position: relative; display: inline-flex; }
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--rose-fonce);
+  color: var(--blanc);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+.etiquette--info { background: #e8eefb; color: #2c4a86; }
+
+/* Cartes de chiffres du tableau de bord */
+.carte--chiffre { display: flex; flex-direction: column; gap: 6px; margin-bottom: 0; }
+.carte__etiquette { font-size: 0.9375rem; color: var(--gris); font-weight: 600; margin: 0; }
+.chiffre { font-size: 1.75rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
+.grille-cartes { margin-bottom: 16px; }
+a.etiquette { text-decoration: none; }
+a.etiquette:hover { filter: brightness(0.96); }
+
+.liste-simple { list-style: none; margin: 6px 0 0; padding: 0; font-size: 0.9375rem; }
+.liste-simple li { padding: 4px 0; border-bottom: 1px solid var(--bordure); }
+.liste-simple li:last-child { border-bottom: 0; }
+
+/* Fiche client d'une commande */
+.fiche-donnees { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin: 0; }
+.fiche-donnees dt { color: var(--gris); font-size: 0.875rem; }
+.fiche-donnees dd { margin: 2px 0 0; font-weight: 600; }
+
+@media (max-width: 699px) {
+  .masque-mobile { display: none; }
+}
+
+/* Articles d'une commande : une liste, jamais un tableau qui déborde. */
+.lignes-commande { list-style: none; margin: 0; padding: 0; }
+.lignes-commande li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bordure);
+}
+.lignes-commande li:last-child { border-bottom: 0; }
+.lignes-commande__nom { flex: 1; min-width: 0; font-weight: 600; }
+.lignes-commande__nom span { display: block; font-weight: 400; }
+
+@media (max-width: 699px) {
+  /* Sur téléphone, une action principale se prend au pouce : pleine largeur. */
+  .entete-page__actions { margin-left: 0; width: 100%; }
+  .entete-page__actions .bouton { flex: 1; }
+  .pousse-droite { margin-left: 0; width: 100%; }
 }
