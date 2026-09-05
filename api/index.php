@@ -95,9 +95,13 @@ try {
     $routeur->put('/admin/categories/{id}',    [CategorieController::class, 'update']);
     $routeur->delete('/admin/categories/{id}', [CategorieController::class, 'destroy']);
 
-    // ---- Ventes au comptoir -----------------------------------------------
-    $routeur->post('/admin/commandes',      [CommandeController::class, 'venteComptoir']);
-    $routeur->get('/admin/commandes/{id}',  [CommandeController::class, 'show']);
+    // ---- Commandes, notifications et tableau de bord -----------------------------------------------
+    $routeur->post('/admin/commandes',             [CommandeController::class, 'venteComptoir']);
+    $routeur->get('/admin/commandes',              [CommandeController::class, 'index']);
+    $routeur->get('/admin/commandes/{id}',         [CommandeController::class, 'show']);
+    $routeur->put('/admin/commandes/{id}/statut',  [CommandeController::class, 'changerStatut']);
+    $routeur->get('/admin/notifications',          [CommandeController::class, 'notifications']);
+    $routeur->get('/admin/tableau-de-bord',        [TableauDeBordController::class, 'index']);
 
     // ---- Stock ------------------------------------------------------------
     $routeur->get('/admin/stock/mouvements',  [StockController::class, 'mouvements']);

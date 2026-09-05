@@ -26,13 +26,79 @@ final class CommandeController
         Response::json(Commande::creer($donnees, $utilisateur['id']), 201);
     }
 
-    /** GET /admin/commandes/{id} */
+    /** GET /admin/commandes — liste filtrable. */
+    public static function index(Request $requete): void
+    {
+        Auth::exigerAuth($requete);
+
+        $v = new Validator([
+            'statut'   => $requete->query('statut'),
+            'canal'    => $requete->query('canal'),
+            'q'        => $requete->query('q'),
+            'non_vues' => $requete->query('non_vues'),
+            'page'     => $requete->query('page'),
+            'par_page' => $requete->query('par_page'),
+        ]);
+        $filtres = [
+            'statut'   => $v->parmi('statut', Commande::STATUTS, false),
+            'canal'    => $v->parmi('canal', ['en_ligne', 'comptoir'], false),
+            'q'        => $v->chaine('q', false, 0, 80),
+            'non_vues' => $v->booleen('non_vues'),
+            'page'     => $v->entier('page', false, 1, 10_000, 1),
+            'par_page' => $v->entier('par_page', false, 1, 100, 20),
+        ];
+        $v->valider();
+
+        $resultat = Commande::liste($filtres);
+        Response::liste($resultat['donnees'], $resultat['page'], $resultat['par_page'], $resultat['total']);
+    }
+
+    /**
+     * GET /admin/commandes/{id}
+     * Ouvrir une commande en ligne éteint son badge : « non vue » veut dire
+     * « personne ne l'a encore regardée ».
+     */
     public static function show(Request $requete, array $parametres): void
     {
         Auth::exigerAuth($requete);
 
-        $id = (int) ($parametres['id'] ?? 0);
-        Response::json(Commande::parId($id) ?? throw HttpException::introuvable('Commande introuvable.'));
+        $id       = (int) ($parametres['id'] ?? 0);
+        $commande = Commande::parId($id) ?? throw HttpException::introuvable('Commande introuvable.');
+
+        if ($commande['canal'] === 'en_ligne' && !$commande['vue']) {
+            Commande::marquerVue($id);
+            $commande['vue'] = true;
+        }
+
+        Response::json($commande);
+    }
+
+    /** PUT /admin/commandes/{id}/statut */
+    public static function changerStatut(Request $requete, array $parametres): void
+    {
+        $utilisateur = Auth::exigerAuth($requete);
+
+        $v      = new Validator($requete->corps());
+        $statut = $v->parmi('statut', Commande::STATUTS, true);
+        $v->valider();
+
+        Response::json(Commande::changerStatut((int) ($parametres['id'] ?? 0), (string) $statut, $utilisateur));
+    }
+
+    /**
+     * GET /admin/notifications — sondé par le back-office pour le badge et
+     * le signal sonore des nouvelles commandes en ligne.
+     */
+    public static function notifications(Request $requete): void
+    {
+        Auth::exigerAuth($requete);
+
+        $nonVues = Commande::liste(['non_vues' => true, 'par_page' => 5]);
+
+        Response::json([
+            'non_vues'  => $nonVues['total'],
+            'commandes' => $nonVues['donnees'],
+        ]);
     }
 
     private static function validerLignes(Validator $v, array $lignes): array

@@ -78,7 +78,15 @@ final class Commande
             return $commandeId;
         });
 
-        return self::parId($id) ?? throw new RuntimeException('Commande non créée.');
+        $creee = self::parId($id) ?? throw new RuntimeException('Commande non créée.');
+
+        // Une commande en ligne doit se signaler : badge du back-office
+        // (vue = 0) et point d'extension unique pour un envoi WhatsApp/SMS.
+        if ($canal === 'en_ligne') {
+            Notifier::nouvelleCommande($creee);
+        }
+
+        return $creee;
     }
 
     /**
@@ -150,6 +158,165 @@ final class Commande
         return $fusionnees;
     }
 
+    /**
+     * Enchaînement autorisé des statuts. Une commande annulée est terminale :
+     * on ne « désannule » pas, on refait une commande.
+     */
+    public const TRANSITIONS = [
+        'nouvelle'     => ['confirmee', 'en_livraison', 'annulee'],
+        'confirmee'    => ['en_livraison', 'livree', 'annulee'],
+        'en_livraison' => ['livree', 'annulee'],
+        'livree'       => ['payee', 'annulee'],
+        'payee'        => ['annulee'],
+        'annulee'      => [],
+    ];
+
+    /**
+     * Change le statut. Le passage à « annulee » restitue le stock par des
+     * mouvements « retour », dans la même transaction que le changement.
+     *
+     * @param array{id: int, role: string} $utilisateur
+     */
+    public static function changerStatut(int $id, string $statut, array $utilisateur): array
+    {
+        Database::transaction(static function (PDO $pdo) use ($id, $statut, $utilisateur): void {
+            $stmt = $pdo->prepare('SELECT id, reference, statut FROM commandes WHERE id = ? FOR UPDATE');
+            $stmt->execute([$id]);
+            $commande = $stmt->fetch();
+            if ($commande === false) {
+                throw HttpException::introuvable('Commande introuvable.');
+            }
+
+            $actuel = $commande['statut'];
+            if ($actuel === $statut) {
+                return;
+            }
+            if (!in_array($statut, self::TRANSITIONS[$actuel] ?? [], true)) {
+                throw HttpException::conflit(sprintf(
+                    'Une commande « %s » ne peut pas passer à « %s ».',
+                    self::libelleStatut($actuel),
+                    self::libelleStatut($statut)
+                ));
+            }
+
+            // Annuler une vente déjà encaissée, c'est rendre de l'argent.
+            if ($statut === 'annulee' && $actuel === 'payee' && $utilisateur['role'] !== 'proprietaire') {
+                throw HttpException::interdit('Seul le propriétaire annule une commande déjà payée.');
+            }
+
+            if ($statut === 'annulee') {
+                self::restituerStock($pdo, (int) $commande['id'], $commande['reference'], $utilisateur['id']);
+            }
+
+            $pdo->prepare('UPDATE commandes SET statut = ? WHERE id = ?')->execute([$statut, $id]);
+        });
+
+        return self::parId($id) ?? throw new RuntimeException('Commande introuvable.');
+    }
+
+    /** Remet en stock chaque ligne d'une commande annulée. */
+    private static function restituerStock(PDO $pdo, int $commandeId, string $reference, ?int $utilisateurId): void
+    {
+        $stmt = $pdo->prepare('SELECT variante_id, quantite FROM lignes_commande WHERE commande_id = ?');
+        $stmt->execute([$commandeId]);
+
+        foreach ($stmt->fetchAll() as $ligne) {
+            if ($ligne['variante_id'] === null) {
+                continue; // variante supprimée depuis : rien à restituer
+            }
+            Stock::appliquer(
+                $pdo,
+                (int) $ligne['variante_id'],
+                'retour',
+                (int) $ligne['quantite'],
+                'Annulation de la commande ' . $reference,
+                $commandeId,
+                $utilisateurId
+            );
+        }
+    }
+
+    /** Le badge du back-office compte les commandes en ligne jamais ouvertes. */
+    public static function marquerVue(int $id): void
+    {
+        Database::requete('UPDATE commandes SET vue = 1 WHERE id = ? AND vue = 0', [$id]);
+    }
+
+    public static function nombreNonVues(): int
+    {
+        return (int) Database::valeur(
+            "SELECT COUNT(*) FROM commandes WHERE vue = 0 AND canal = 'en_ligne'"
+        );
+    }
+
+    /**
+     * @param array{statut?: ?string, canal?: ?string, q?: ?string,
+     *              non_vues?: ?bool, page?: int, par_page?: int} $filtres
+     */
+    public static function liste(array $filtres): array
+    {
+        $conditions = ['1 = 1'];
+        $params     = [];
+
+        if (!empty($filtres['statut'])) {
+            $conditions[] = 'c.statut = ?';
+            $params[]     = $filtres['statut'];
+        }
+        if (!empty($filtres['canal'])) {
+            $conditions[] = 'c.canal = ?';
+            $params[]     = $filtres['canal'];
+        }
+        if (!empty($filtres['non_vues'])) {
+            $conditions[] = "c.vue = 0 AND c.canal = 'en_ligne'";
+        }
+        if (!empty($filtres['q'])) {
+            $motif        = '%' . str_replace(['%', '_'], ['\\%', '\\_'], (string) $filtres['q']) . '%';
+            $conditions[] = '(c.reference LIKE ? OR c.client_nom LIKE ? OR c.client_telephone LIKE ?)';
+            $params[]     = $motif;
+            $params[]     = $motif;
+            $params[]     = $motif;
+        }
+
+        $where   = 'WHERE ' . implode(' AND ', $conditions);
+        $page    = max(1, (int) ($filtres['page'] ?? 1));
+        $parPage = min(100, max(1, (int) ($filtres['par_page'] ?? 20)));
+
+        $total = (int) Database::valeur("SELECT COUNT(*) FROM commandes c $where", $params);
+
+        $lignes = Database::toutes(
+            "SELECT c.*, u.nom AS vendeur_nom,
+                    (SELECT COALESCE(SUM(l.quantite), 0) FROM lignes_commande l WHERE l.commande_id = c.id) AS nb_articles
+               FROM commandes c
+          LEFT JOIN utilisateurs u ON u.id = c.utilisateur_id
+              $where
+           ORDER BY c.created_at DESC, c.id DESC
+              LIMIT " . (int) $parPage . ' OFFSET ' . (int) (($page - 1) * $parPage),
+            $params
+        );
+
+        return [
+            'donnees'  => array_map(
+                static fn(array $l): array => self::presenter($l, false) + ['nb_articles' => (int) $l['nb_articles']],
+                $lignes
+            ),
+            'page'     => $page,
+            'par_page' => $parPage,
+            'total'    => $total,
+        ];
+    }
+
+    public static function libelleStatut(string $statut): string
+    {
+        return [
+            'nouvelle'     => 'nouvelle',
+            'confirmee'    => 'confirmée',
+            'en_livraison' => 'en livraison',
+            'livree'       => 'livrée',
+            'payee'        => 'payée',
+            'annulee'      => 'annulée',
+        ][$statut] ?? $statut;
+    }
+
     public static function parId(int $id): ?array
     {
         $ligne = Database::unique(
@@ -179,6 +346,7 @@ final class Commande
         ];
 
         if ($avecLignes) {
+            $commande['transitions'] = self::TRANSITIONS[$ligne['statut']] ?? [];
             $commande['lignes'] = array_map(static fn(array $l): array => [
                 'id'            => (int) $l['id'],
                 'variante_id'   => $l['variante_id'] !== null ? (int) $l['variante_id'] : null,
@@ -190,6 +358,10 @@ final class Commande
                 'SELECT * FROM lignes_commande WHERE commande_id = ? ORDER BY id',
                 [(int) $ligne['id']]
             ));
+        }
+
+        if ($avecLignes) {
+            $commande['whatsapp'] = Notifier::liensCommande($commande);
         }
 
         return $commande;

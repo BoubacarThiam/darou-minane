@@ -17,7 +17,7 @@ statique, API PHP dans `/api`, MySQL/MariaDB).
 | 1 | `db/schema.sql` + `db/seed.sql` | ✅ fait |
 | 2 | API PHP : routeur, PDO, auth, catalogue, stock, comptes | ✅ fait |
 | 3 | Back-office React : login, produits, stock, vente rapide | ✅ fait |
-| 4 | Back-office : commandes + notifications | à faire |
+| 4 | Back-office : commandes + notifications | API faite, écrans React en cours |
 | 5 | Boutique publique + panier + tunnel de commande | à faire |
 | 6 | PWA, optimisations, déploiement cPanel | à faire |
 
@@ -203,6 +203,46 @@ Le canal `comptoir` est imposé par le serveur ; la commande naît au statut
 mouvement `vente` rattaché à la commande. Deux fois le même article dans le
 panier donnent une seule ligne cumulée. Si un seul article manque, **rien**
 n'est écrit : ni commande, ni numéro consommé.
+
+### Back-office — commandes, notifications et tableau de bord
+
+| Méthode | Route | Rôle | Description |
+|---|---|---|---|
+| `GET` | `/admin/commandes` | tous | liste filtrable : `statut`, `canal`, `q` (référence, nom, téléphone), `non_vues`, pagination |
+| `GET` | `/admin/commandes/{id}` | tous | détail, liens WhatsApp et suites de statut possibles |
+| `PUT` | `/admin/commandes/{id}/statut` | tous¹ | `{statut}` — change le statut |
+| `GET` | `/admin/notifications` | tous | `{non_vues, commandes}` — badge et son du back-office |
+| `GET` | `/admin/tableau-de-bord` | tous² | ventes du jour, commandes en attente, alertes de stock |
+
+¹ annuler une commande déjà `payee` est réservé au propriétaire (c'est un
+remboursement). ² l'employé reçoit les compteurs mais **aucun montant** :
+chiffre d'affaires, panier moyen et valeur du stock sont calculés uniquement
+pour le propriétaire.
+
+Enchaînement des statuts (toute autre transition est refusée en `409`) :
+
+```
+nouvelle ──▶ confirmee ──▶ en_livraison ──▶ livree ──▶ payee
+    └────────────┴───────────────┴────────────┴──────────┴──▶ annulee
+```
+
+Le passage à `annulee` **restitue le stock** : chaque ligne repasse en stock par
+un mouvement `retour` rattaché à la commande, dans la même transaction que le
+changement de statut. Une commande annulée est terminale.
+
+Ouvrir une commande en ligne éteint son badge (`vue = 1`) : « non vue » veut dire
+« personne ne l'a encore regardée ».
+
+Chaque détail de commande porte deux liens `wa.me` prêts à l'emploi, construits
+par `api/lib/Notifier.php` :
+
+- `whatsapp.client` — le commerçant écrit au client (récapitulatif + livraison
+  à convenir), `null` si la commande n'a pas de numéro ;
+- `whatsapp.boutique` — le client écrit à la boutique (bouton « Suivre ma
+  commande » de la boutique publique).
+
+`Notifier` est le **seul** point de sortie vers l'extérieur : y brancher l'API
+WhatsApp Business ou un SMS ne demande de toucher à aucun autre fichier.
 
 ### Back-office — stock
 
