@@ -24,12 +24,12 @@ statique, API PHP dans `/api`, MySQL/MariaDB).
 ## Structure
 
 ```
-client/          React (Vite) — back-office aujourd'hui, boutique publique à l'étape 5
+client/          React (Vite) — boutique publique et back-office
 api/             PHP 8 — index.php (routeur), controllers/, models/, lib/
 api/uploads/     images produits (demo/ = visuels de démonstration)
 db/schema.sql    schéma complet
 db/seed.sql      jeu de données de démonstration
-outils/          script de préparation de la mise en ligne
+outils/          préparation de la mise en ligne, import du catalogue réel
 ```
 
 ## Base de données
@@ -90,6 +90,31 @@ annulée avec restitution du stock, une livrée, une vente comptoir de la veille
 
 > Les produits, prix et quantités sont **plausibles mais fictifs** : à remplacer par le
 > catalogue réel du commerçant.
+
+### Importer le catalogue réel
+
+Les photos du commerçant se chargent en lot, sans ressaisir 55 fiches à la main :
+
+```bash
+php outils/importer-catalogue.php            # lit outils/catalogue-photos.json
+php outils/importer-catalogue.php autre.json # ou un autre manifeste
+```
+
+`outils/catalogue-photos.json` fait le lien entre un nom de produit et ses fichiers :
+`dossier_photos` donne le dossier des images, puis chaque produit porte sa catégorie, ses
+variantes et ses photos (au niveau du produit, ou d'une variante précise).
+
+Les produits arrivent **en brouillon** (`actif = 0`) **au prix 0, quantité 0** : rien
+n'apparaît dans la boutique tant que le propriétaire n'a pas saisi ses prix et ses
+quantités dans le back-office, puis coché « Visible dans la boutique ». Les catégories
+absentes sont créées au passage.
+
+Les photos passent par `ImageService` — le même traitement que celles téléversées depuis le
+back-office (redressement EXIF, 1200 px de large, WebP) : une photo importée et une photo
+envoyée à la main donnent exactement le même fichier.
+
+Le script est **rejouable** : un produit dont le slug existe déjà est ignoré, donc un lot
+interrompu se relance sans créer de doublons.
 
 ## Lancer en développement
 

@@ -1,0 +1,795 @@
+{
+  "_lisez_moi": [
+    "Catalogue réel de la boutique, monté à partir des photos du commerçant.",
+    "Les produits sont importés en BROUILLON (actif = 0) et au prix 0 :",
+    "le propriétaire fixe les prix et les quantités dans le back-office,",
+    "puis coche « Visible dans la boutique » pour les publier."
+  ],
+  "dossier_photos": "/home/boubacar/Images",
+  "produits": [
+    {
+      "categorie": "Parfums",
+      "nom": "Afnan 9 PM",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.11.37 (1).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Eclaire",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.11.37.jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Paris Corner Khair Fusion",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.14 (1).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Rayhaan",
+      "variantes": [
+        {
+          "libelle": "Flacon",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.14 (2).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Afnan Supremacy Collector's Edition",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.14.jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Khadlaj Oud Noir",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.15 (1).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Sultan",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.15.jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Fakhar Rose",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.16 (1).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "French Avenue Royal Blend",
+      "variantes": [
+        {
+          "libelle": "Extrait de parfum",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.16 (2).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Mousuf, flacon bleu",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.16 (3).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Rose Noir",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.16 (4).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Paris Corner Khair Felicity",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.16 (5).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Jean Miss Dakkar Noir",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.16 (6).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Qissa Delicious",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.16.jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "French Avenue Vulcan Sable",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.17 (1).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Asad Bourbon",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.17 (2).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Mousuf, flacon ambré",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.17 (3).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa His Confession",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.17 (4).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Asdaaf Ameerat Al Arab",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.17 (5).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Musamam, coffret marron",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.17 (6).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Mood Amor",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.17.jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "French Avenue Royal Blend Sequoia",
+      "variantes": [
+        {
+          "libelle": "Extrait de parfum",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.18 (1).jpeg",
+        "WhatsApp Image 2026-09-06 at 20.13.18 (6).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Ameer Al Oudh Intense Oud",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.18 (2).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Jean Miss Cube de Nuit",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.18 (3).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Musamam, coffret blanc",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.18 (4).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "French Avenue Liquid Brun",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.18 (5).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Atheeri",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.18 (7).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Paris Corner Taskeen Marina",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.18.jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Her Confession",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.19 (1).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Armaf Club de Nuit Milestone",
+      "variantes": [
+        {
+          "libelle": "Flacon",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.19 (2).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Jean Miss Dakkar Intense",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.19 (3).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Qaed Al Fursan",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.19 (4).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Asad Zanjabeel",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.19 (5).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Eternal Oud",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.19 (6).jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Al Nashama",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.19.jpeg"
+      ]
+    },
+    {
+      "categorie": "Parfums",
+      "nom": "Lattafa Teriaq Intense",
+      "variantes": [
+        {
+          "libelle": "100 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "WhatsApp Image 2026-09-06 at 20.13.20.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre SALCIR chronographe, cadran bleu",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m2.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre SALCIR, cadran vert",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m3.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre SALCIR, cadran blanc et or",
+      "variantes": [
+        {
+          "libelle": "Bracelet cuir",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m4.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre SALCIR, cadran bleu",
+      "variantes": [
+        {
+          "libelle": "Bracelet cuir",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m5.jpeg",
+        "m1.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre acier dorée, cadran doré",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m6.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre acier argentée, cadran argent",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m7.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre acier bicolore, cadran noir",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m8.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre POEDAGAR, cadran vert",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m10.jpeg",
+        "m9.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre automatique squelette dorée",
+      "variantes": [
+        {
+          "libelle": "Bracelet cuir",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m11.jpeg",
+        "m14.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre automatique squelette bicolore",
+      "variantes": [
+        {
+          "libelle": "Bracelet cuir",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m13.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre automatique squelette, cadran vert",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m15.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre automatique squelette, cadran blanc",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m16.jpeg",
+        "m18.jpeg"
+      ]
+    },
+    {
+      "categorie": "Montres",
+      "nom": "Montre automatique squelette, cadran bleu",
+      "variantes": [
+        {
+          "libelle": "Bracelet acier",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "m17.jpeg"
+      ]
+    },
+    {
+      "categorie": "Lunettes",
+      "nom": "Lunettes de soleil sans monture",
+      "photos": [
+        "lu1.jpeg"
+      ],
+      "variantes": [
+        {
+          "libelle": "Verres hexagonaux",
+          "photos": [
+            "lu1.jpeg"
+          ]
+        },
+        {
+          "libelle": "Verres rectangulaires",
+          "photos": [
+            "lu4.jpeg"
+          ]
+        },
+        {
+          "libelle": "Verres octogonaux",
+          "photos": [
+            "lu7.jpeg"
+          ]
+        },
+        {
+          "libelle": "Branches bois",
+          "photos": [
+            "lu2.jpeg"
+          ]
+        },
+        {
+          "libelle": "Verres dégradés",
+          "photos": [
+            "lu3.jpeg"
+          ]
+        },
+        {
+          "libelle": "Branches noires",
+          "photos": [
+            "lu5.jpeg"
+          ]
+        },
+        {
+          "libelle": "Verres fins",
+          "photos": [
+            "lu6.jpeg"
+          ]
+        },
+        {
+          "libelle": "Verres fumés",
+          "photos": [
+            "l8.jpeg"
+          ]
+        }
+      ]
+    },
+    {
+      "categorie": "Lunettes",
+      "nom": "Lunettes de soleil monture métal",
+      "photos": [
+        "l1.jpeg"
+      ],
+      "variantes": [
+        {
+          "libelle": "Rondes noires",
+          "photos": [
+            "l1.jpeg"
+          ]
+        },
+        {
+          "libelle": "Rondes fumées",
+          "photos": [
+            "l3.jpeg"
+          ]
+        },
+        {
+          "libelle": "Rondes fines",
+          "photos": [
+            "l4.jpeg"
+          ]
+        },
+        {
+          "libelle": "Verres bleutés",
+          "photos": [
+            "l7.jpeg"
+          ]
+        }
+      ]
+    },
+    {
+      "categorie": "Lunettes",
+      "nom": "Lunettes de soleil monture écaille",
+      "photos": [
+        "l2.jpeg"
+      ],
+      "variantes": [
+        {
+          "libelle": "Standard",
+          "photos": []
+        }
+      ]
+    },
+    {
+      "categorie": "Lunettes",
+      "nom": "Lunettes de soleil œil-de-chat",
+      "photos": [
+        "l5.jpeg"
+      ],
+      "variantes": [
+        {
+          "libelle": "Standard",
+          "photos": []
+        }
+      ]
+    },
+    {
+      "categorie": "Lunettes",
+      "nom": "Lunettes de soleil carrées noires",
+      "photos": [
+        "l6.jpeg"
+      ],
+      "variantes": [
+        {
+          "libelle": "Standard",
+          "photos": []
+        }
+      ]
+    },
+    {
+      "categorie": "Lunettes",
+      "nom": "Monture de vue transparente",
+      "photos": [
+        "l9.jpeg"
+      ],
+      "variantes": [
+        {
+          "libelle": "Standard",
+          "photos": []
+        }
+      ]
+    }
+  ]
+}

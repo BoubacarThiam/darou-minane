@@ -21,8 +21,27 @@ final class ImageService
     public static function enregistrer(array $fichier): string
     {
         self::verifierEnvoi($fichier);
+        return self::traiter($fichier['tmp_name']);
+    }
 
-        $infos = @getimagesize($fichier['tmp_name']);
+    /**
+     * Import d'un fichier déjà présent sur le serveur (outil en ligne de
+     * commande, reprise d'un lot de photos). Même traitement que l'envoi
+     * depuis le back-office : une photo importée et une photo téléversée
+     * donnent exactement le même fichier.
+     */
+    public static function importer(string $chemin): string
+    {
+        if (!is_file($chemin) || !is_readable($chemin)) {
+            throw HttpException::validation(['images' => "Fichier introuvable : $chemin"]);
+        }
+        return self::traiter($chemin);
+    }
+
+    /** Redressement EXIF, redimensionnement à la largeur maximale, écriture WebP. */
+    private static function traiter(string $chemin): string
+    {
+        $infos = @getimagesize($chemin);
         if ($infos === false || !isset(self::TYPES_ACCEPTES[$infos[2]])) {
             throw HttpException::validation(
                 ['images' => 'Format non pris en charge. Formats acceptés : JPEG, PNG, WebP, GIF.']
@@ -31,10 +50,10 @@ final class ImageService
 
         [$largeur, $hauteur, $type] = $infos;
         $source = match ($type) {
-            IMAGETYPE_JPEG => imagecreatefromjpeg($fichier['tmp_name']),
-            IMAGETYPE_PNG  => imagecreatefrompng($fichier['tmp_name']),
-            IMAGETYPE_WEBP => imagecreatefromwebp($fichier['tmp_name']),
-            IMAGETYPE_GIF  => imagecreatefromgif($fichier['tmp_name']),
+            IMAGETYPE_JPEG => imagecreatefromjpeg($chemin),
+            IMAGETYPE_PNG  => imagecreatefrompng($chemin),
+            IMAGETYPE_WEBP => imagecreatefromwebp($chemin),
+            IMAGETYPE_GIF  => imagecreatefromgif($chemin),
         };
         if ($source === false) {
             throw HttpException::validation(['images' => 'Image illisible ou corrompue.']);
@@ -42,7 +61,7 @@ final class ImageService
 
         try {
             if ($type === IMAGETYPE_JPEG) {
-                $source = self::redresser($source, $fichier['tmp_name']);
+                $source = self::redresser($source, $chemin);
                 $largeur  = imagesx($source);
                 $hauteur  = imagesy($source);
             }
