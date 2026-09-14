@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api, ErreurApi } from '../api.js'
-import { fcfa } from '../format.js'
+import { fcfa, pluriel } from '../format.js'
 import { useAuth } from '../auth.jsx'
 import { useToasts } from '../composants/Toasts.jsx'
 import { Champ } from '../composants/Champ.jsx'
@@ -122,7 +122,7 @@ export default function FicheProduit() {
           <h1>{creation ? 'Nouveau produit' : produit.nom}</h1>
           <p>
             <Link to="/admin/produits">Retour aux produits</Link>
-            {!creation && ` · ${produit.variantes.length} variante(s)`}
+            {!creation && ` · ${pluriel(produit.variantes.length, 'variante')}`}
           </p>
         </div>
         {!creation && estProprietaire && (
@@ -631,7 +631,7 @@ function Photos({ produit, lectureSeule, onRafraichir }) {
     setEnvoi(true)
     try {
       await api.televerser(`/admin/produits/${produit.id}/images`, formData)
-      toasts.succes(`${fichiers.length} photo(s) ajoutée(s).`)
+      toasts.succes(`${pluriel(fichiers.length, 'photo ajoutée', 'photos ajoutées')}.`)
       onRafraichir()
     } catch (probleme) {
       toasts.erreur(

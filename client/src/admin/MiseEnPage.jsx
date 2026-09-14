@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth.jsx'
+import { pluriel } from '../format.js'
 import { useNotifications } from '../notifications.jsx'
 import {
   IconeBord,
@@ -35,7 +36,10 @@ export default function MiseEnPage() {
       <span className="onglet__icone">
         <Icone />
         {badge && nonVues > 0 && (
-          <span className="badge" aria-label={`${nonVues} commande(s) non ouverte(s)`}>
+          <span
+            className="badge"
+            aria-label={pluriel(nonVues, 'commande non ouverte', 'commandes non ouvertes')}
+          >
             {nonVues > 9 ? '9+' : nonVues}
           </span>
         )}

@@ -172,6 +172,31 @@ export default function Produit() {
           </p>
 
           {produit.description && <p className="fiche__description">{produit.description}</p>}
+
+          {/* Beaucoup d'articles du catalogue n'ont pas de description : sans ces
+              quelques lignes, la colonne se réduit à un prix et un bouton. La
+              contenance d'un flacon n'apparaissait nulle part quand le produit
+              n'avait qu'une seule déclinaison. */}
+          {variante && (
+            <dl className="fiche__specs">
+              {!plusieursVariantes && (
+                <div>
+                  <dt>{produit.categorie.slug === 'parfums' ? 'Contenance' : 'Modèle'}</dt>
+                  <dd>{variante.libelle}</dd>
+                </div>
+              )}
+              <div>
+                <dt>Rayon</dt>
+                <dd>
+                  <Link to={`/c/${produit.categorie.slug}`}>{produit.categorie.nom}</Link>
+                </dd>
+              </div>
+              <div>
+                <dt>Disponibilité</dt>
+                <dd>{variante.en_stock ? 'En stock à Tambacounda' : 'Épuisé'}</dd>
+              </div>
+            </dl>
+          )}
         </div>
       </div>
     </div>

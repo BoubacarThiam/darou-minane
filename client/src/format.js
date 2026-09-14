@@ -4,8 +4,25 @@ export function fcfa(montant) {
   return `${nombre.toLocaleString('fr-FR').replace(/ | /g, ' ')} FCFA`
 }
 
+/**
+ * Fourchette de prix d'un produit à plusieurs variantes.
+ * La devise n'est écrite qu'une fois : « 25 000 – 27 000 FCFA » tient sur
+ * une ligne là où « 25 000 FCFA – 27 000 FCFA » se coupe en deux.
+ */
 export function fourchettePrix(min, max) {
-  return min === max ? fcfa(min) : `${fcfa(min)} – ${fcfa(max)}`
+  if (min === max) return fcfa(min)
+  const bas = Number(min).toLocaleString('fr-FR').replace(/ | /g, ' ')
+  return `${bas} – ${fcfa(max)}`
+}
+
+/**
+ * Accord en nombre : « 1 article », « 3 articles ».
+ * En français, zéro reste au singulier (« 0 article »).
+ * Le « (s) » entre parenthèses est de la langue de formulaire, pas de la
+ * langue d'une boutique.
+ */
+export function pluriel(nombre, singulier, plurielMot = `${singulier}s`) {
+  return `${nombre} ${Math.abs(nombre) > 1 ? plurielMot : singulier}`
 }
 
 /** « 2026-09-05 14:32:10 » (UTC, comme la base) -> « 5 sept. à 14:32 ». */

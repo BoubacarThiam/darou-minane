@@ -5,24 +5,80 @@
    ===================================================================== */
 
 :root {
+  /* --- Couleurs ------------------------------------------------------
+     Contrastes mesurés sur blanc : gris 6,4:1 · rose foncé 5,2:1 ·
+     blanc sur rose foncé 5,2:1. Le rose clair ne porte jamais de texte. */
   --blanc: #ffffff;
-  --rose: #c86b8c;          /* accent décoratif : traits, halos, logo   */
-  --rose-fonce: #a84f70;    /* accent lisible : texte, boutons pleins   */
+  --rose: #c86b8c;          /* accent décoratif : traits, halos, logo    */
+  --rose-fonce: #a84f70;    /* accent lisible : texte, boutons pleins    */
+  --rose-sombre: #8f4160;   /* survol et aplats profonds                 */
   --rose-pale: #fbf1f4;     /* fonds de section                          */
   --rose-clair: #f2d7e0;    /* bordures teintées                         */
   --encre: #1e181b;
-  --gris: #6b5a61;
+  --gris: #6b5a61;          /* texte secondaire                          */
+  --gris-doux: #8a757c;     /* indications de saisie (4,6:1 sur blanc)   */
   --gris-clair: #f6f3f4;
   --bordure: #e7dade;
+  --bordure-forte: #d6c3ca;
+
+  /* --- Surface des photographies -------------------------------------
+     Le catalogue réel est fait de flacons noir et or, de cadrans acier et
+     de verres fumés, photographiés tantôt sur fond studio blanc, tantôt
+     sur marbre. Un fond rosé derrière ces images les teinte et trahit la
+     découpe des photos à fond blanc. Les photos reposent donc sur un
+     neutre franc (chroma nulle) bordé d'un filet : le rose reste sur les
+     actions et les accents, jamais derrière une photographie. */
+  --photo-fond: #f1efef;
+  --photo-bordure: #e3dfe0;
   --alerte: #a4231c;
   --alerte-pale: #fdeceb;
   --succes: #12674a;
   --succes-pale: #e6f3ee;
+  --info: #2c4a86;
+  --info-pale: #e8eefb;
+
+  /* --- Échelle typographique ----------------------------------------
+     Pas fixe côté outil (ratio ~1,15), respiration plus large côté
+     boutique où les titres portent la page. */
+  --t-xs: 0.8125rem;
+  --t-s: 0.875rem;
+  --t-base: 1rem;
+  --t-md: 1.125rem;
+  --t-lg: 1.3125rem;
+  --t-xl: 1.625rem;
+  --t-2xl: 2rem;
+  --t-titre-boutique: clamp(1.75rem, 1.15rem + 2.6vw, 2.75rem);
+
+  /* --- Espacements ---------------------------------------------------- */
+  --e-1: 4px;
+  --e-2: 8px;
+  --e-3: 12px;
+  --e-4: 16px;
+  --e-5: 24px;
+  --e-6: 32px;
+  --e-7: 48px;
+  --e-8: 64px;
+
   --rayon: 14px;
   --rayon-petit: 10px;
+  --rayon-large: 20px;
   --ombre: 0 1px 2px rgba(30, 24, 27, 0.06);
+  --ombre-relief: 0 6px 20px rgba(30, 24, 27, 0.10);
   --ombre-flottante: 0 -6px 24px rgba(30, 24, 27, 0.12);
   --hauteur-tactile: 48px;
+
+  /* --- Plans d'empilement (jamais de valeur au hasard) ---------------- */
+  --z-collant: 20;
+  --z-panier: 25;
+  --z-onglets: 30;
+  --z-bandeau: 40;
+  --z-modale-fond: 50;
+  --z-toast: 60;
+
+  /* --- Mouvement ------------------------------------------------------ */
+  --duree-courte: 140ms;
+  --duree: 200ms;
+  --sortie: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * { box-sizing: border-box; }
@@ -33,19 +89,34 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--encre);
   background: var(--blanc);
+  accent-color: var(--rose-fonce);
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
 }
 
-h1, h2, h3 { font-weight: 600; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
-h1 { font-size: 1.5rem; }
-h2 { font-size: 1.175rem; }
-h3 { font-size: 1rem; }
-p  { margin: 0; }
+h1, h2, h3 {
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+h1 { font-size: var(--t-xl); }
+h2 { font-size: var(--t-md); }
+h3 { font-size: var(--t-base); }
+p  { margin: 0; text-wrap: pretty; }
 a  { color: var(--rose-fonce); }
+
+/* Les montants et les quantités s'alignent en colonne. */
+.article__prix, .chiffre, .panier__total strong, .recapitulatif__ligne strong,
+.tableau td, .fiche__prix, .vignette__prix {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection { background: var(--rose-clair); color: var(--encre); }
 
 :focus-visible {
   outline: 2px solid var(--rose-fonce);
@@ -71,20 +142,24 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background var(--duree-courte) var(--sortie),
+              border-color var(--duree-courte) var(--sortie),
+              transform var(--duree-courte) var(--sortie);
 }
-.bouton:hover:not(:disabled) { background: #8f4160; }
-.bouton:disabled { opacity: 0.5; cursor: not-allowed; }
+.bouton:hover:not(:disabled) { background: var(--rose-sombre); }
+/* Retour au doigt : le bouton s'enfonce légèrement. */
+.bouton:active:not(:disabled) { transform: translateY(1px); }
+.bouton:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .bouton--discret {
   background: var(--blanc);
   color: var(--encre);
-  border-color: var(--bordure);
+  border-color: var(--bordure-forte);
 }
-.bouton--discret:hover:not(:disabled) { background: var(--gris-clair); }
+.bouton--discret:hover:not(:disabled) { background: var(--gris-clair); border-color: var(--rose); }
 
 .bouton--danger { background: var(--blanc); color: var(--alerte); border-color: #eccbc9; }
-.bouton--danger:hover:not(:disabled) { background: var(--alerte-pale); }
+.bouton--danger:hover:not(:disabled) { background: var(--alerte-pale); border-color: var(--alerte); }
 
 .bouton--plein { width: 100%; }
 .bouton--grand { min-height: 56px; font-size: 1.0625rem; }
@@ -118,9 +193,26 @@ select, textarea {
   font: inherit;
 }
 textarea { min-height: 96px; resize: vertical; }
-input:focus, select:focus, textarea:focus { border-color: var(--rose); }
-input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--alerte); }
-input::placeholder { color: #9c8a90; }
+input:hover:not(:disabled), select:hover:not(:disabled), textarea:hover:not(:disabled) {
+  border-color: var(--bordure-forte);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--rose-fonce);
+  box-shadow: 0 0 0 3px var(--rose-clair);
+  outline: none;
+}
+input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] {
+  border-color: var(--alerte);
+}
+input[aria-invalid="true"]:focus, textarea[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px #f7d7d5;
+}
+input:disabled, select:disabled, textarea:disabled {
+  background: var(--gris-clair);
+  color: var(--gris);
+  cursor: not-allowed;
+}
+input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 
 .ligne-champs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -166,7 +258,7 @@ input::placeholder { color: #9c8a90; }
 .admin__entete {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--z-collant);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -196,7 +288,7 @@ input::placeholder { color: #9c8a90; }
 .barre-onglets {
   position: fixed;
   left: 0; right: 0; bottom: 0;
-  z-index: 30;
+  z-index: var(--z-onglets);
   display: flex;
   background: var(--blanc);
   border-top: 1px solid var(--bordure);
@@ -276,11 +368,15 @@ input::placeholder { color: #9c8a90; }
   text-decoration: none;
 }
 .article:hover { background: var(--rose-pale); }
+/* 72 px et non 56 : sur un catalogue de coffrets noirs, la vignette est le
+   premier moyen de reconnaître un produit. En dessous, un Afnan et un Jean
+   Miss sont deux rectangles sombres identiques. */
 .article__visuel {
-  width: 56px; height: 56px;
-  flex: 0 0 56px;
+  width: 72px; height: 72px;
+  flex: 0 0 72px;
   border-radius: var(--rayon-petit);
-  background: var(--rose-pale);
+  background: var(--photo-fond);
+  box-shadow: inset 0 0 0 1px var(--photo-bordure);
   object-fit: cover;
 }
 .article__corps { flex: 1; min-width: 0; }
@@ -292,14 +388,14 @@ input::placeholder { color: #9c8a90; }
 
 /* --- Panier de la vente rapide -------------------------------------- */
 .vente { display: flex; flex-direction: column; gap: 12px; }
-.vente__recherche { position: sticky; top: 56px; z-index: 10; background: var(--blanc); padding-bottom: 8px; }
+.vente__recherche { position: sticky; top: 56px; z-index: calc(var(--z-collant) - 1); background: var(--blanc); padding-bottom: 8px; }
 .vente__resultats { min-height: 120px; }
 
 .panier {
   position: fixed;
   left: 0; right: 0;
   bottom: calc(60px + env(safe-area-inset-bottom));
-  z-index: 25;
+  z-index: var(--z-panier);
   background: var(--blanc);
   border-top: 1px solid var(--rose-clair);
   box-shadow: var(--ombre-flottante);
@@ -339,8 +435,6 @@ input::placeholder { color: #9c8a90; }
 }
 .carte__titre { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .carte__titre .bouton { margin-left: auto; }
-
-.grille-cartes { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 
 .tableau { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
 .tableau th {
@@ -385,7 +479,7 @@ input::placeholder { color: #9c8a90; }
 /* --- Galerie d'images ----------------------------------------------- */
 .galerie { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
 .galerie__vignette { position: relative; border-radius: var(--rayon-petit); overflow: hidden; border: 1px solid var(--bordure); }
-.galerie__vignette img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--rose-pale); }
+.galerie__vignette img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--photo-fond); }
 .galerie__actions { display: flex; gap: 6px; padding: 6px; }
 .galerie__actions select { min-height: 34px; font-size: 0.8125rem; padding: 4px 6px; }
 
@@ -395,7 +489,7 @@ input::placeholder { color: #9c8a90; }
   left: 50%;
   transform: translateX(-50%);
   bottom: calc(76px + env(safe-area-inset-bottom));
-  z-index: 60;
+  z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -416,7 +510,7 @@ input::placeholder { color: #9c8a90; }
 .modale-fond {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: var(--z-modale-fond);
   background: rgba(30, 24, 27, 0.45);
   display: flex;
   align-items: flex-end;
@@ -481,16 +575,22 @@ input::placeholder { color: #9c8a90; }
 
 .etiquette--info { background: #e8eefb; color: #2c4a86; }
 
-/* Cartes de chiffres du tableau de bord */
-.carte--chiffre { display: flex; flex-direction: column; gap: 6px; margin-bottom: 0; }
-.carte__etiquette { font-size: 0.9375rem; color: var(--gris); font-weight: 600; margin: 0; }
+/* Le chiffre du jour au tableau de bord (mise en page : « .bord » plus bas). */
 .chiffre { font-size: 1.75rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
-.grille-cartes { margin-bottom: 16px; }
 a.etiquette { text-decoration: none; }
 a.etiquette:hover { filter: brightness(0.96); }
 
-.liste-simple { list-style: none; margin: 6px 0 0; padding: 0; font-size: 0.9375rem; }
-.liste-simple li { padding: 4px 0; border-bottom: 1px solid var(--bordure); }
+.liste-simple { list-style: none; margin: 6px 0 0; padding: 0; font-size: var(--t-s); }
+.liste-simple li {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--bordure);
+}
+.liste-simple__intitule { min-width: 0; }
+.liste-simple__intitule a { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.liste-simple li .etiquette { margin-left: auto; }
 .liste-simple li:last-child { border-bottom: 0; }
 
 /* Fiche client d'une commande */
@@ -532,7 +632,7 @@ a.etiquette:hover { filter: brightness(0.96); }
 .boutique__entete {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--z-collant);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -582,10 +682,6 @@ a.etiquette:hover { filter: brightness(0.96); }
 .boutique__pied-marque { font-weight: 600; }
 
 .pile-large { display: flex; flex-direction: column; gap: 32px; }
-
-.accroche { background: var(--rose-pale); border-radius: 20px; padding: 28px 24px; }
-.accroche h1 { font-size: 1.625rem; max-width: 22ch; }
-.accroche p { margin-top: 10px; color: var(--gris); max-width: 52ch; }
 
 .section__titre { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
 .section__titre h1 { font-size: 1.5rem; }
@@ -639,7 +735,8 @@ a.etiquette:hover { filter: brightness(0.96); }
   aspect-ratio: 1;
   border-radius: 16px;
   overflow: hidden;
-  background: var(--rose-pale);
+  background: var(--photo-fond);
+  box-shadow: inset 0 0 0 1px var(--photo-bordure);
   margin-bottom: 10px;
 }
 .vignette__photo img {
@@ -652,7 +749,7 @@ a.etiquette:hover { filter: brightness(0.96); }
 @media (prefers-reduced-motion: reduce) {
   .vignette__photo img, .vignette:hover .vignette__photo img { transition: none; transform: none; }
 }
-.vignette__absente { display: block; width: 100%; height: 100%; background: var(--rose-pale); }
+.vignette__absente { display: block; width: 100%; height: 100%; background: var(--photo-fond); }
 .vignette__rupture {
   position: absolute;
   left: 10px;
@@ -666,14 +763,6 @@ a.etiquette:hover { filter: brightness(0.96); }
 .vignette__nom { line-height: 1.35; }
 .vignette__prix { font-weight: 600; margin-top: 2px; }
 
-.rassurance {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  border-top: 1px solid var(--bordure);
-  padding-top: 24px;
-}
-
 .fil-ariane { display: flex; gap: 8px; align-items: center; color: var(--gris); font-size: 0.875rem; }
 .fil-ariane a { color: var(--gris); }
 
@@ -685,7 +774,8 @@ a.etiquette:hover { filter: brightness(0.96); }
   aspect-ratio: 1;
   border-radius: 20px;
   overflow: hidden;
-  background: var(--rose-pale);
+  background: var(--photo-fond);
+  box-shadow: inset 0 0 0 1px var(--photo-bordure);
 }
 .fiche__photo img { width: 100%; height: 100%; object-fit: cover; }
 .fiche__vignettes { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
@@ -696,7 +786,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   border: 1px solid var(--bordure);
   border-radius: 12px;
   overflow: hidden;
-  background: var(--rose-pale);
+  background: var(--photo-fond);
   cursor: pointer;
 }
 .fiche__vignette img { width: 100%; height: 100%; object-fit: cover; }
@@ -706,7 +796,22 @@ a.etiquette:hover { filter: brightness(0.96); }
 .fiche__infos h1 { font-size: 1.625rem; }
 .fiche__prix { font-size: 1.5rem; font-weight: 600; }
 .fiche__variantes { display: flex; flex-direction: column; gap: 8px; }
-.fiche__description { color: var(--gris); line-height: 1.6; }
+.fiche__description { color: var(--gris); line-height: 1.6; max-width: 65ch; }
+
+/* Fiche technique : des lignes intitulé / valeur, pas des cartes. */
+.fiche__specs {
+  margin: 0;
+  border-top: 1px solid var(--bordure);
+  font-size: var(--t-s);
+}
+.fiche__specs > div {
+  display: flex;
+  gap: var(--e-4);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bordure);
+}
+.fiche__specs dt { color: var(--gris); flex: 0 0 9rem; }
+.fiche__specs dd { margin: 0; font-weight: 600; }
 
 .choix {
   min-height: 44px;
@@ -774,7 +879,7 @@ a.etiquette:hover { filter: brightness(0.96); }
 .hors-ligne {
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: var(--z-bandeau);
   margin: 0;
   padding: 10px 16px;
   background: var(--encre);
@@ -782,3 +887,191 @@ a.etiquette:hover { filter: brightness(0.96); }
   font-size: 0.875rem;
   text-align: center;
 }
+
+/* =====================================================================
+   Passe de finition : états, mouvement, squelettes de chargement.
+   Le mouvement sert l'état (retour d'action, arrivée d'un élément) et
+   jamais la décoration. Tout est neutralisé si l'utilisateur a demandé
+   moins d'animations.
+   ===================================================================== */
+
+@keyframes apparition {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes glissement-bas {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fondu {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulsation-douce {
+  50% { opacity: 0.55; }
+}
+@keyframes rebond-compteur {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+
+/* --- Squelettes : on montre la forme de ce qui arrive, pas un sablier -- */
+.squelette {
+  background: var(--gris-clair);
+  border-radius: var(--rayon-petit);
+  animation: pulsation-douce 1.4s ease-in-out infinite;
+}
+.squelette--photo { aspect-ratio: 1; border-radius: 16px; background: var(--rose-pale); }
+.squelette--texte { height: 0.9em; margin-top: 8px; }
+.squelette--court { width: 45%; }
+.squelette--ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--bordure);
+}
+.squelette--vignette-carree { width: 72px; height: 72px; flex: 0 0 72px; border-radius: var(--rayon-petit); }
+.squelette--bloc { height: 120px; }
+
+/* --- Arrivée des contenus --------------------------------------------
+   La grille apparaît par vagues courtes ; le contenu est visible par
+   défaut, l'animation ne conditionne jamais son affichage.             */
+.grille-produits > * { animation: apparition var(--duree) var(--sortie) backwards; }
+.grille-produits > :nth-child(2) { animation-delay: 40ms; }
+.grille-produits > :nth-child(3) { animation-delay: 80ms; }
+.grille-produits > :nth-child(4) { animation-delay: 120ms; }
+.grille-produits > :nth-child(n + 5) { animation-delay: 160ms; }
+
+.toast { animation: glissement-bas var(--duree) var(--sortie) backwards; }
+.modale-fond { animation: fondu var(--duree-courte) ease-out backwards; }
+.modale { animation: glissement-bas var(--duree) var(--sortie) backwards; }
+.badge { animation: rebond-compteur 320ms var(--sortie); }
+
+@media (prefers-reduced-motion: reduce) {
+  .grille-produits > *, .toast, .modale, .modale-fond, .badge { animation: none; }
+  .squelette { animation: none; }
+  .bouton:active:not(:disabled) { transform: none; }
+  * { scroll-behavior: auto !important; }
+}
+
+/* --- Lignes de liste : la surface entière réagit ---------------------- */
+.article {
+  border-radius: var(--rayon-petit);
+  transition: background var(--duree-courte) var(--sortie);
+}
+.article:active { background: var(--rose-clair); }
+
+/* --- Tableaux : en-tête qui tient au défilement, ligne survolée ------- */
+.tableau thead th {
+  position: sticky;
+  top: 0;
+  background: var(--blanc);
+  z-index: 1;
+}
+.tableau tbody tr { transition: background var(--duree-courte) var(--sortie); }
+.tableau tbody tr:hover { background: var(--rose-pale); }
+.tableau--defilant { max-height: 70vh; }
+
+/* --- Cartes : plus de relief au survol quand elles sont cliquables ---- */
+.carte { transition: border-color var(--duree-courte) var(--sortie); }
+
+/* --- Vignette produit : élévation discrète ---------------------------- */
+.vignette__photo { transition: box-shadow var(--duree) var(--sortie); }
+.vignette:hover .vignette__photo { box-shadow: var(--ombre-relief); }
+.vignette:focus-visible { outline-offset: 4px; }
+
+/* --- Bandeau d'accueil de la boutique ---------------------------------
+   L'identité de l'enseigne est un magenta rosé : sur la page d'accueil,
+   il porte la surface au lieu de se réduire à un liseré.               */
+.accroche {
+  background: var(--rose-fonce);
+  color: var(--blanc);
+  border-radius: var(--rayon-large);
+  padding: clamp(24px, 4vw, 44px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-4);
+}
+.accroche h1 {
+  font-size: var(--t-titre-boutique);
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+}
+/* 0,92 d'opacité : 4,7:1 sur le rose foncé, au-dessus du seuil de lisibilité. */
+.accroche p { color: rgba(255, 255, 255, 0.92); max-width: 46ch; margin: 0; }
+.accroche__faits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2) var(--e-5);
+  margin-top: var(--e-2);
+  padding-top: var(--e-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+.accroche__fait { display: flex; flex-direction: column; gap: 2px; min-width: 150px; }
+.accroche__fait strong { font-size: var(--t-s); }
+.accroche__fait span { color: rgba(255, 255, 255, 0.92); font-size: var(--t-s); }
+
+/* --- Barre d'achat collante (fiche produit sur téléphone) -------------
+   Dès que le bouton d'origine sort de l'écran, l'achat reste à portée
+   de pouce sans réduire la place laissée à la photo.                   */
+.barre-achat {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-panier);
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: var(--blanc);
+  border-top: 1px solid var(--bordure);
+  box-shadow: var(--ombre-flottante);
+  animation: glissement-bas var(--duree) var(--sortie) backwards;
+}
+.barre-achat__prix { font-weight: 600; font-size: var(--t-md); white-space: nowrap; }
+.barre-achat__prix span { display: block; font-weight: 400; font-size: var(--t-xs); color: var(--gris); }
+.barre-achat .bouton { flex: 1; }
+@media (min-width: 900px) { .barre-achat { display: none; } }
+@media (prefers-reduced-motion: reduce) { .barre-achat { animation: none; } }
+
+/* --- Tableau de bord : une mesure principale, deux panneaux de suivi -- */
+.bord { display: grid; gap: var(--e-4); }
+@media (min-width: 900px) { .bord { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
+
+.bord__principal {
+  grid-column: 1 / -1;
+  background: var(--rose-pale);
+  border-radius: var(--rayon);
+  padding: var(--e-5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-5);
+  align-items: flex-end;
+}
+@media (min-width: 900px) { .bord__principal { grid-column: 1 / -1; } }
+.bord__mesure { display: flex; flex-direction: column; gap: 2px; }
+.bord__mesure .chiffre {
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 2.75rem);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.bord__mesure-titre { color: var(--gris); font-size: var(--t-s); font-weight: 600; }
+.bord__secondaires { display: flex; gap: var(--e-5); flex-wrap: wrap; margin-left: auto; }
+.bord__secondaire { display: flex; flex-direction: column; gap: 2px; }
+.bord__secondaire strong { font-size: var(--t-lg); font-variant-numeric: tabular-nums; }
+.bord__secondaire span { color: var(--gris); font-size: var(--t-s); }
+
+.bord__panneau {
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  padding: var(--e-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-3);
+}
+.bord__panneau h2 { font-size: var(--t-base); }
+.bord__panneau-entete { display: flex; align-items: center; gap: var(--e-2); }
+.bord__panneau-entete .etiquette { margin-left: auto; }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { api, ErreurApi } from '../api.js'
-import { fcfa } from '../format.js'
+import { fcfa, pluriel } from '../format.js'
 import { usePanier } from '../panier.jsx'
 import { useBoutique } from '../boutique.jsx'
 import { Champ } from '../composants/Champ.jsx'
@@ -136,7 +136,7 @@ export default function Commande() {
             ))}
           </ul>
           <div className="recapitulatif__ligne">
-            <span>{articles} article(s)</span>
+            <span>{pluriel(articles, 'article')}</span>
             <strong>{fcfa(total)}</strong>
           </div>
           <div className="recapitulatif__ligne texte-gris">

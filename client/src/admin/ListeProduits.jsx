@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, ErreurApi } from '../api.js'
-import { fourchettePrix } from '../format.js'
+import { fourchettePrix, pluriel } from '../format.js'
 import { useAuth } from '../auth.jsx'
 import { useToasts } from '../composants/Toasts.jsx'
-import { Chargement, EtatVide, Pagination } from '../composants/Etats.jsx'
+import { AnnonceChargement, EtatVide, Pagination, SqueletteListe } from '../composants/Etats.jsx'
 
 export default function ListeProduits() {
   const { estProprietaire } = useAuth()
@@ -58,7 +58,7 @@ export default function ListeProduits() {
       <div className="entete-page">
         <div>
           <h1>Produits</h1>
-          <p>{pagination ? `${pagination.total} produit(s)` : ' '}</p>
+          <p>{pagination ? pluriel(pagination.total, 'produit') : ' '}</p>
         </div>
         {estProprietaire && (
           <div className="entete-page__actions">
@@ -106,7 +106,10 @@ export default function ListeProduits() {
       </div>
 
       {chargement ? (
-        <Chargement />
+        <>
+          <AnnonceChargement texte="Chargement des produits…" />
+          <SqueletteListe nombre={6} />
+        </>
       ) : produits.length === 0 ? (
         <EtatVide titre="Aucun produit ne correspond">
           <p className="texte-petit">Modifiez les filtres ou ajoutez un produit.</p>

@@ -61,6 +61,7 @@ export default function CommandeDetail() {
   const suites = (commande.transitions ?? []).filter((statut) => statut !== 'annulee')
   const annulable = (commande.transitions ?? []).includes('annulee')
   const paiementDejaEncaisse = commande.statut === 'payee'
+  const articlesRendus = commande.lignes.reduce((somme, ligne) => somme + ligne.quantite, 0)
 
   return (
     <div>
@@ -208,8 +209,10 @@ export default function CommandeDetail() {
           }
         >
           <p>
-            Les {commande.lignes.reduce((somme, ligne) => somme + ligne.quantite, 0)} article(s) de cette
-            commande retournent en stock, avec un mouvement « retour » à l'appui.
+            {articlesRendus > 1
+              ? `Les ${articlesRendus} articles de cette commande retournent en stock,`
+              : "L'article de cette commande retourne en stock,"}{' '}
+            avec un mouvement « retour » à l'appui.
             {paiementDejaEncaisse && ' Cette commande a déjà été encaissée : pensez au remboursement.'}
           </p>
           <p className="texte-petit texte-gris" style={{ marginTop: 8 }}>

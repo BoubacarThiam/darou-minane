@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, ErreurApi } from '../api.js'
-import { dateCourte, fcfa } from '../format.js'
+import { dateCourte, fcfa, pluriel } from '../format.js'
 import { CANAUX, classeStatut, libelleStatut, STATUTS } from '../statuts.js'
 import { useToasts } from '../composants/Toasts.jsx'
 import { useNotifications } from '../notifications.jsx'
-import { Chargement, EtatVide, Pagination } from '../composants/Etats.jsx'
+import { AnnonceChargement, EtatVide, Pagination, SqueletteListe } from '../composants/Etats.jsx'
 
 export default function Commandes() {
   const toasts = useToasts()
@@ -57,8 +57,9 @@ export default function Commandes() {
         <div>
           <h1>Commandes</h1>
           <p>
-            {pagination ? `${pagination.total} commande(s)` : ' '}
-            {nonVues > 0 && ` · ${nonVues} nouvelle(s) non ouverte(s)`}
+            {pagination ? pluriel(pagination.total, 'commande') : ' '}
+            {nonVues > 0 &&
+              ` · ${pluriel(nonVues, 'nouvelle non ouverte', 'nouvelles non ouvertes')}`}
           </p>
         </div>
       </div>
@@ -95,7 +96,10 @@ export default function Commandes() {
       </div>
 
       {chargement ? (
-        <Chargement />
+        <>
+          <AnnonceChargement texte="Chargement des commandes…" />
+          <SqueletteListe nombre={6} avecVignette={false} />
+        </>
       ) : commandes.length === 0 ? (
         <EtatVide titre="Aucune commande ne correspond">
           <p className="texte-petit">Modifiez les filtres pour élargir la recherche.</p>
@@ -116,7 +120,7 @@ export default function Commandes() {
                   <span className="article__detail">
                     <span className={classeStatut(commande.statut)}>{libelleStatut(commande.statut)}</span>
                     <span>{CANAUX[commande.canal]}</span>
-                    <span>{commande.nb_articles} article(s)</span>
+                    <span>{pluriel(commande.nb_articles, 'article')}</span>
                     <span>{dateCourte(commande.created_at)}</span>
                   </span>
                 </span>

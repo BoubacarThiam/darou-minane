@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api.js'
+import { pluriel } from '../format.js'
 import { useBoutique } from '../boutique.jsx'
-import { Chargement } from '../composants/Etats.jsx'
+import { AnnonceChargement, SqueletteGrille } from '../composants/Etats.jsx'
 import { CarteProduit } from './CarteProduit.jsx'
 
 export default function Accueil() {
@@ -30,17 +31,43 @@ export default function Accueil() {
     return () => { annule = true }
   }, [])
 
-  if (chargement) return <Chargement />
+  const accroche = (
+    <section className="accroche">
+      <h1>Parfums, diffuseurs, montres et lunettes</h1>
+      <p>
+        La boutique d'Abdou Karim à Tambacounda. Vous commandez ici, nous vous appelons
+        pour convenir de la livraison, vous payez au livreur.
+      </p>
+      <div className="accroche__faits">
+        <span className="accroche__fait">
+          <strong>Paiement à la livraison</strong>
+          <span>En main propre, rien d'avance.</span>
+        </span>
+        <span className="accroche__fait">
+          <strong>Livraison à {boutique.zone_livraison}</strong>
+          <span>Frais convenus au téléphone.</span>
+        </span>
+        <span className="accroche__fait">
+          <strong>Sans compte</strong>
+          <span>Votre nom, votre numéro, un repère.</span>
+        </span>
+      </div>
+    </section>
+  )
+
+  if (chargement) {
+    return (
+      <div className="pile-large">
+        {accroche}
+        <AnnonceChargement texte="Chargement du catalogue…" />
+        <SqueletteGrille nombre={8} />
+      </div>
+    )
+  }
 
   return (
     <div className="pile-large">
-      <section className="accroche">
-        <h1>Parfums, diffuseurs, montres et lunettes</h1>
-        <p>
-          Commandez depuis Tambacounda, nous vous livrons et vous payez à la livraison.
-          Les frais de livraison se conviennent au téléphone.
-        </p>
-      </section>
+      {accroche}
 
       <section>
         <div className="section__titre">
@@ -50,7 +77,7 @@ export default function Accueil() {
           {categories.map((categorie) => (
             <Link key={categorie.id} className="rayon" to={`/c/${categorie.slug}`}>
               <span className="rayon__nom">{categorie.nom}</span>
-              <span className="rayon__nombre">{categorie.nb_produits} article(s)</span>
+              <span className="rayon__nombre">{pluriel(categorie.nb_produits, 'article')}</span>
             </Link>
           ))}
         </div>
@@ -62,8 +89,8 @@ export default function Accueil() {
             <h2>La sélection de la boutique</h2>
           </div>
           <div className="grille-produits">
-            {enAvant.map((produit) => (
-              <CarteProduit key={produit.id} produit={produit} />
+            {enAvant.map((produit, rang) => (
+              <CarteProduit key={produit.id} produit={produit} prioritaire={rang < 4} />
             ))}
           </div>
         </section>
@@ -75,24 +102,14 @@ export default function Accueil() {
           <Link to="/catalogue">Tout le catalogue</Link>
         </div>
         <div className="grille-produits">
-          {nouveautes.map((produit) => (
-            <CarteProduit key={produit.id} produit={produit} />
+          {/* Sans sélection au-dessus, ce sont ces cartes-ci qui ouvrent la page. */}
+          {nouveautes.map((produit, rang) => (
+            <CarteProduit
+              key={produit.id}
+              produit={produit}
+              prioritaire={enAvant.length === 0 && rang < 4}
+            />
           ))}
-        </div>
-      </section>
-
-      <section className="rassurance">
-        <div>
-          <h3>Paiement à la livraison</h3>
-          <p className="texte-gris texte-petit">Vous payez le livreur, en main propre.</p>
-        </div>
-        <div>
-          <h3>Livraison à {boutique.zone_livraison}</h3>
-          <p className="texte-gris texte-petit">Les frais se conviennent au téléphone.</p>
-        </div>
-        <div>
-          <h3>Commande sans compte</h3>
-          <p className="texte-gris texte-petit">Votre nom, votre numéro, un repère : c'est tout.</p>
         </div>
       </section>
     </div>

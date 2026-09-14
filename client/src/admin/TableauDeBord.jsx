@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, ErreurApi } from '../api.js'
-import { dateCourte, fcfa } from '../format.js'
+import { dateCourte, fcfa, pluriel } from '../format.js'
 import { classeStatut, libelleStatut } from '../statuts.js'
 import { useAuth } from '../auth.jsx'
 import { useToasts } from '../composants/Toasts.jsx'
-import { Chargement, EtatVide } from '../composants/Etats.jsx'
+import { AnnonceChargement, EtatVide, SqueletteBloc, SqueletteListe } from '../composants/Etats.jsx'
 
 export default function TableauDeBord() {
   const { utilisateur, estProprietaire } = useAuth()
@@ -26,7 +26,23 @@ export default function TableauDeBord() {
 
   useEffect(() => { charger() }, [charger])
 
-  if (chargement) return <Chargement />
+  if (chargement) {
+    return (
+      <div>
+        <AnnonceChargement texte="Chargement du tableau de bord…" />
+        <div className="bord">
+          <div className="bord__principal" style={{ display: 'block' }}>
+            <SqueletteBloc hauteur={72} />
+          </div>
+          <div className="bord__panneau"><SqueletteBloc hauteur={104} /></div>
+          <div className="bord__panneau"><SqueletteBloc hauteur={104} /></div>
+        </div>
+        <div className="carte">
+          <SqueletteListe nombre={3} avecVignette={false} />
+        </div>
+      </div>
+    )
+  }
   if (!resume) return null
 
   const { ventes_du_jour: jour, commandes_en_attente: attente, alertes, dernieres_commandes: dernieres } = resume
@@ -45,23 +61,42 @@ export default function TableauDeBord() {
         </div>
       </div>
 
-      <div className="grille-cartes">
-        <section className="carte carte--chiffre">
-          <h2 className="carte__etiquette">Ventes du jour</h2>
-          <p className="chiffre">{estProprietaire ? fcfa(jour.total) : `${jour.nb}`}</p>
-          <p className="texte-gris texte-petit">
-            {estProprietaire
-              ? `${jour.nb} commande(s) · panier moyen ${fcfa(jour.panier_moyen)}`
-              : `commande(s) enregistrée(s) aujourd'hui`}
-          </p>
-          <p className="texte-gris texte-petit">
-            {jour.nb_comptoir} au comptoir · {jour.nb_en_ligne} en ligne
-          </p>
+      <div className="bord">
+        {/* La mesure du jour porte l'écran ; le reste est du suivi. */}
+        <section className="bord__principal">
+          <div className="bord__mesure">
+            <span className="bord__mesure-titre">Ventes du jour</span>
+            <p className="chiffre">{estProprietaire ? fcfa(jour.total) : jour.nb}</p>
+            <p className="texte-gris texte-petit">
+              {estProprietaire
+                ? `${pluriel(jour.nb, 'commande')} · panier moyen ${fcfa(jour.panier_moyen)}`
+                : `${jour.nb > 1 ? 'commandes enregistrées' : 'commande enregistrée'} aujourd'hui`}
+            </p>
+          </div>
+
+          <div className="bord__secondaires">
+            <span className="bord__secondaire">
+              <strong>{jour.nb_comptoir}</strong>
+              <span>au comptoir</span>
+            </span>
+            <span className="bord__secondaire">
+              <strong>{jour.nb_en_ligne}</strong>
+              <span>en ligne</span>
+            </span>
+            {estProprietaire && resume.valeur_stock && (
+              <span className="bord__secondaire">
+                <strong>{fcfa(resume.valeur_stock.prix_vente)}</strong>
+                <span>stock en rayon · {fcfa(resume.valeur_stock.prix_achat)} d'achat</span>
+              </span>
+            )}
+          </div>
         </section>
 
-        <section className="carte carte--chiffre">
-          <h2 className="carte__etiquette">Commandes à traiter</h2>
-          <p className="chiffre">{attente.total}</p>
+        <section className="bord__panneau">
+          <div className="bord__panneau-entete">
+            <h2>Commandes à traiter</h2>
+            <span className="etiquette">{attente.total}</span>
+          </div>
           <div className="rangee" style={{ gap: 6 }}>
             {['nouvelle', 'confirmee', 'en_livraison', 'livree'].map((statut) =>
               attente[statut] > 0 ? (
@@ -70,49 +105,53 @@ export default function TableauDeBord() {
                 </Link>
               ) : null,
             )}
-            {attente.total === 0 && <span className="texte-gris texte-petit">Rien en attente.</span>}
+            {attente.total === 0 && (
+              <span className="texte-gris texte-petit">Tout est traité, rien n'attend.</span>
+            )}
           </div>
           {resume.non_vues > 0 && (
-            <p style={{ marginTop: 10 }}>
+            <p>
               <Link to="/admin/commandes">
-                {resume.non_vues} commande(s) en ligne pas encore ouverte(s)
+                {pluriel(
+                  resume.non_vues,
+                  'commande en ligne pas encore ouverte',
+                  'commandes en ligne pas encore ouvertes',
+                )}
               </Link>
             </p>
           )}
         </section>
 
-        <section className="carte carte--chiffre">
-          <h2 className="carte__etiquette">Stock en alerte</h2>
-          <p className="chiffre">{alertes.nb}</p>
+        <section className="bord__panneau">
+          <div className="bord__panneau-entete">
+            <h2>Stock en alerte</h2>
+            <span className={alertes.nb > 0 ? 'etiquette etiquette--alerte' : 'etiquette'}>
+              {alertes.nb}
+            </span>
+          </div>
           {alertes.nb === 0 ? (
             <p className="texte-gris texte-petit">Aucune variante sous son seuil.</p>
           ) : (
             <ul className="liste-simple">
               {alertes.liste.map((alerte) => (
                 <li key={alerte.variante_id}>
-                  <Link to={`/admin/produits/${alerte.produit_id}`}>{alerte.produit_nom}</Link>
-                  <span className="texte-gris"> · {alerte.libelle}</span>
-                  <span className="etiquette etiquette--alerte" style={{ marginLeft: 6 }}>
-                    {alerte.quantite}
+                  <span className="liste-simple__intitule">
+                    <Link to={`/admin/produits/${alerte.produit_id}`}>
+                      {alerte.produit_nom} · {alerte.libelle}
+                    </Link>
+                  </span>
+                  <span className="etiquette etiquette--alerte">
+                    {pluriel(alerte.quantite, 'restant')}
                   </span>
                 </li>
               ))}
             </ul>
           )}
-          <p style={{ marginTop: 10 }}>
+          <p>
             <Link to="/admin/stock">Ouvrir le stock</Link>
           </p>
         </section>
 
-        {estProprietaire && resume.valeur_stock && (
-          <section className="carte carte--chiffre">
-            <h2 className="carte__etiquette">Valeur du stock</h2>
-            <p className="chiffre">{fcfa(resume.valeur_stock.prix_vente)}</p>
-            <p className="texte-gris texte-petit">
-              au prix de vente · {fcfa(resume.valeur_stock.prix_achat)} au prix d'achat
-            </p>
-          </section>
-        )}
       </div>
 
       <div className="carte">

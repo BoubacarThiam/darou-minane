@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api, ErreurApi } from '../api.js'
-import { fcfa } from '../format.js'
+import { fcfa, pluriel } from '../format.js'
 import { useToasts } from '../composants/Toasts.jsx'
 import { Chargement, EtatVide } from '../composants/Etats.jsx'
 import { Modale } from '../composants/Modale.jsx'
@@ -225,7 +225,7 @@ export default function VenteRapide() {
 
           <div className="panier__total">
             <span className="texte-gris">
-              {panier.reduce((somme, ligne) => somme + ligne.quantite, 0)} article(s)
+              {pluriel(panier.reduce((somme, ligne) => somme + ligne.quantite, 0), 'article')}
             </span>
             <strong>{fcfa(total)}</strong>
           </div>

@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { pluriel } from '../format.js'
 import { useBoutique } from '../boutique.jsx'
 import { usePanier } from '../panier.jsx'
 import { IconeVente, IconeWhatsApp } from '../composants/Icones.jsx'
@@ -18,7 +19,11 @@ export default function MiseEnPageBoutique() {
           <NavLink to="/catalogue">Tout le catalogue</NavLink>
         </nav>
 
-        <Link to="/panier" className="boutique__panier" aria-label={`Panier — ${articles} article(s)`}>
+        <Link
+          to="/panier"
+          className="boutique__panier"
+          aria-label={`Panier — ${pluriel(articles, 'article')}`}
+        >
           <span className="onglet__icone">
             <IconeVente style={{ width: 22, height: 22 }} />
             {articles > 0 && <span className="badge">{articles > 9 ? '9+' : articles}</span>}

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../api.js'
-import { Chargement, EtatVide, Pagination } from '../composants/Etats.jsx'
+import { pluriel } from '../format.js'
+import { AnnonceChargement, EtatVide, Pagination, SqueletteGrille } from '../composants/Etats.jsx'
 import { CarteProduit } from './CarteProduit.jsx'
 
 /** Page catégorie et catalogue complet (mêmes filtres, sans le slug). */
@@ -63,7 +64,7 @@ export default function Categorie() {
 
       <div className="section__titre">
         <h1>{categorie ? categorie.nom : 'Tout le catalogue'}</h1>
-        <p className="texte-gris">{pagination ? `${pagination.total} article(s)` : ''}</p>
+        <p className="texte-gris">{pagination ? pluriel(pagination.total, 'article') : ''}</p>
       </div>
 
       <div className="rayons rayons--filtres">
@@ -118,15 +119,18 @@ export default function Categorie() {
       </div>
 
       {chargement ? (
-        <Chargement />
+        <>
+          <AnnonceChargement texte="Chargement des articles…" />
+          <SqueletteGrille nombre={6} />
+        </>
       ) : produits.length === 0 ? (
         <EtatVide titre="Aucun article dans cette fourchette">
           <p className="texte-petit">Élargissez le prix ou changez de rayon.</p>
         </EtatVide>
       ) : (
         <div className="grille-produits">
-          {produits.map((produit) => (
-            <CarteProduit key={produit.id} produit={produit} />
+          {produits.map((produit, rang) => (
+            <CarteProduit key={produit.id} produit={produit} prioritaire={rang < 4} />
           ))}
         </div>
       )}
