@@ -65,3 +65,37 @@ export const IconeWhatsApp = (props) => (
     <path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 1c-1-.5-1.8-1.3-2.3-2.3l1-1-1-2z" />
   </svg>
 )
+
+export const IconeTelephone = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M6.6 3h3l1.5 3.8-1.9 1.4a12 12 0 0 0 5.6 5.6l1.4-1.9L20 13.4v3a1.6 1.6 0 0 1-1.8 1.6A14.6 14.6 0 0 1 5 4.8 1.6 1.6 0 0 1 6.6 3Z" />
+  </svg>
+)
+
+export const IconeCadenas = (props) => (
+  <svg {...commun} {...props}>
+    <rect x="4.5" y="10.5" width="15" height="10" rx="2" />
+    <path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" />
+  </svg>
+)
+
+export const IconeOeil = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12Z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+)
+
+export const IconeOeilBarre = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M9.9 5.1A9.6 9.6 0 0 1 12 4.9c6 0 9.5 6.2 9.5 6.2a17 17 0 0 1-3 3.8M6.4 6.5A17 17 0 0 0 2.5 11s3.5 6.2 9.5 6.2a9.4 9.4 0 0 0 3.6-.7" />
+    <path d="m9.9 9.2a3 3 0 0 0 4.2 4.2" />
+    <path d="m3 3 18 18" />
+  </svg>
+)
+
+export const IconeFleche = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M4 12h15M13 6l6 6-6 6" />
+  </svg>
+)

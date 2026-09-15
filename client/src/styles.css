@@ -1315,3 +1315,186 @@ a.etiquette:hover { filter: brightness(0.96); }
   .galerie-arc__photo { transform: none !important; opacity: 1 !important; }
   .galerie-arc__piste { scroll-snap-type: none; }
 }
+
+/* =====================================================================
+   Portail de connexion — sombre et or.
+   Écran d'atelier voulu par le propriétaire : le back-office ne s'ouvre
+   plus sur un formulaire blanc. Palette propre à cet écran, elle ne
+   déborde nulle part ailleurs.
+   ===================================================================== */
+.portail {
+  min-height: 100%;
+  display: grid;
+  /* minmax(0, 1fr) et non `auto` : avec place-items:center, la colonne se
+     dimensionnait sur le contenu le plus large (le slogan) et la carte
+     débordait de 35 px à 360 px. L'overflow:hidden ci-dessous le cachait
+     au lieu de le signaler. */
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  padding: var(--e-5) var(--e-4);
+  background: var(--nuit);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Lueur chaude et trame d'épure : la profondeur sans photographie, donc
+   sans un octet de plus à télécharger. */
+.portail__halo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 45% at 18% 78%, rgba(216, 176, 120, 0.16), transparent 70%),
+    radial-gradient(45% 35% at 82% 12%, rgba(216, 176, 120, 0.10), transparent 72%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.022) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.022) 0 1px, transparent 1px 44px);
+}
+
+.portail__carte {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  padding: var(--e-6) var(--e-5) var(--e-5);
+  border-radius: var(--r-media);
+  background: var(--nuit-carte);
+  border: 1px solid var(--nuit-trait);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-4);
+}
+/* Filet doré sur l'arête droite, comme une tranche de cuir. */
+.portail__carte::after {
+  content: "";
+  position: absolute;
+  top: 12%;
+  bottom: 12%;
+  right: -1px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--or), transparent);
+  pointer-events: none;
+}
+
+.portail__marque { text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--c-petit); }
+.portail__sceau { width: 68px; height: 68px; color: var(--or); }
+.portail__titre { font-size: var(--t-2xl); color: var(--nuit-texte); letter-spacing: -0.02em; }
+.portail__slogan { color: var(--nuit-gris); font-size: var(--t-s); }
+
+.portail__champ { display: flex; flex-direction: column; gap: var(--c-petit); }
+.portail__champ label { color: var(--nuit-gris); font-size: var(--t-s); font-weight: var(--graisse-forte); }
+
+.portail__saisie {
+  display: flex;
+  align-items: center;
+  gap: var(--c-moyen);
+  padding: 0 var(--e-3);
+  background: var(--nuit-champ);
+  border: 1px solid var(--nuit-trait);
+  border-radius: var(--r-controle);
+  transition: border-color var(--duree-retour) var(--courbe),
+              box-shadow var(--duree-retour) var(--courbe);
+}
+.portail__saisie:focus-within { border-color: var(--or); box-shadow: 0 0 0 3px rgba(216, 176, 120, 0.18); }
+.portail__icone { width: 20px; height: 20px; color: var(--or-sombre); flex: 0 0 20px; }
+
+/* La règle globale des champs est écrite en `input:not(...):not(...):not(...)`
+   et l'emporte en spécificité : on reprend la même chaîne pour la neutraliser
+   ici, plutôt que d'empiler des sélecteurs au hasard. */
+.portail__saisie input:not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  min-height: var(--hauteur-tactile);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--nuit-texte);
+  font: inherit;
+}
+.portail__saisie input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus {
+  outline: none;
+  box-shadow: none;
+  border: 0;
+}
+.portail__saisie input::placeholder { color: #8b857e; }
+/* Le remplissage automatique de Chrome repeint le champ en bleu clair. */
+.portail__saisie input:-webkit-autofill,
+.portail__saisie input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--nuit-texte);
+  -webkit-box-shadow: 0 0 0 1000px var(--nuit-champ) inset;
+  caret-color: var(--nuit-texte);
+}
+
+.portail__oeil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cible-minimale);
+  height: var(--cible-minimale);
+  margin-right: calc(var(--e-3) * -1);
+  border: 0;
+  background: none;
+  color: var(--nuit-gris);
+  cursor: pointer;
+}
+.portail__oeil svg { width: 20px; height: 20px; }
+.portail__oeil:hover { color: var(--or); }
+
+.portail__champ-erreur { color: #f0a49c; font-size: var(--t-s); }
+.portail__erreur {
+  padding: var(--c-moyen) var(--e-3);
+  border-radius: var(--r-controle);
+  background: rgba(164, 35, 28, 0.18);
+  border: 1px solid rgba(240, 164, 156, 0.38);
+  color: #f7c6c1;
+  font-size: var(--t-s);
+}
+
+.portail__bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e-2);
+  min-height: 56px;
+  padding: 0 var(--e-5);
+  border: 0;
+  border-radius: var(--r-controle);
+  background: var(--degrade-or);
+  color: #2a1d0c;
+  font: inherit;
+  font-size: 1.0625rem;
+  font-weight: var(--graisse-forte);
+  cursor: pointer;
+  transition: filter var(--duree-retour) var(--courbe),
+              transform var(--duree-retour) var(--courbe);
+}
+.portail__bouton:hover:not(:disabled) { filter: brightness(1.06); }
+.portail__bouton:active:not(:disabled) { transform: translateY(1px); }
+.portail__bouton:disabled { opacity: 0.55; cursor: not-allowed; }
+.portail__bouton-fleche { width: 20px; height: 20px; }
+
+.portail__aide { color: var(--nuit-gris); font-size: var(--t-s); text-align: center; }
+
+.portail__separateur { display: flex; align-items: center; gap: var(--e-3); color: var(--nuit-gris); font-size: var(--t-s); }
+.portail__separateur::before,
+.portail__separateur::after { content: ""; flex: 1; height: 1px; background: var(--nuit-trait); }
+
+.portail__retour {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--cible-minimale);
+  color: var(--or);
+  text-decoration: none;
+  font-size: var(--t-s);
+  font-weight: var(--graisse-forte);
+}
+.portail__retour:hover { color: var(--or-clair); text-decoration: underline; }
+
+/* L'anneau de focus clair passe mal sur le noir : il devient doré. */
+.portail :focus-visible { outline-color: var(--or); }
+
+@media (prefers-reduced-motion: reduce) {
+  .portail__saisie, .portail__bouton { transition: none; }
+}

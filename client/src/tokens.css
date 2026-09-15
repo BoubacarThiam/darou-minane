@@ -139,4 +139,18 @@
   --duree-retour: 160ms;    /* retour d'action                            */
   --duree-entree: 260ms;    /* entrée d'élément                           */
   --courbe: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- Portail de connexion (sombre et or) -----------------------------
+     Écran d'atelier demandé par le propriétaire. Palette propre à cet
+     écran : elle ne déborde nulle part ailleurs. */
+  --nuit: #0c0b0d;
+  --nuit-carte: #141316;
+  --nuit-champ: #1b1a1e;
+  --nuit-trait: #2b2930;
+  --or: #d8b078;
+  --or-clair: #f0d5a8;
+  --or-sombre: #a9793f;
+  --nuit-texte: #f4f1ee;
+  --nuit-gris: #a8a29c;
+  --degrade-or: linear-gradient(100deg, #cfa068 0%, #e8c894 48%, #c99a5f 100%);
 }
