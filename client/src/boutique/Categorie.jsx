@@ -2,7 +2,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../api.js'
 import { pluriel } from '../format.js'
-import { AnnonceChargement, EtatVide, Pagination, SqueletteGrille } from '../composants/Etats.jsx'
+import {
+  AnnonceChargement,
+  EtatVide,
+  Pagination,
+  SqueletteGrille,
+  SquelettePuces,
+} from '../composants/Etats.jsx'
 import { CarteProduit } from './CarteProduit.jsx'
 
 /** Page catégorie et catalogue complet (mêmes filtres, sans le slug). */
@@ -54,6 +60,11 @@ export default function Categorie() {
 
   const categorie = categories.find((c) => c.slug === slug)
 
+  /* Un rayon sans article est une impasse : l'accueil les masque déjà, la
+     barre de filtres les proposait encore. On garde le rayon ouvert même
+     vide, sinon la pastille active disparaîtrait sous le client. */
+  const rayons = categories.filter((autre) => autre.nb_produits > 0 || autre.slug === slug)
+
   return (
     <div className="pile-large">
       <div className="fil-ariane">
@@ -71,15 +82,19 @@ export default function Categorie() {
         <Link className={!slug ? 'puce puce--active' : 'puce'} to="/catalogue">
           Tout
         </Link>
-        {categories.map((autre) => (
-          <Link
-            key={autre.id}
-            className={autre.slug === slug ? 'puce puce--active' : 'puce'}
-            to={`/c/${autre.slug}`}
-          >
-            {autre.nom}
-          </Link>
-        ))}
+        {categories.length === 0 ? (
+          <SquelettePuces nombre={3} />
+        ) : (
+          rayons.map((autre) => (
+            <Link
+              key={autre.id}
+              className={autre.slug === slug ? 'puce puce--active' : 'puce'}
+              to={`/c/${autre.slug}`}
+            >
+              {autre.nom}
+            </Link>
+          ))
+        )}
       </div>
 
       <div className="filtres">

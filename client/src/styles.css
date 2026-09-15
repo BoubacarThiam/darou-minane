@@ -164,6 +164,8 @@ img { max-width: 100%; display: block; }
 .bouton--plein { width: 100%; }
 .bouton--grand { min-height: 56px; font-size: 1.0625rem; }
 .bouton--petit { min-height: 38px; padding: 0 12px; font-size: 0.9375rem; }
+/* La pagination se manipule au pouce : ses deux boutons gardent 44 px. */
+.pagination .bouton--petit { min-height: 44px; padding: 0 16px; }
 
 .bouton-lien {
   background: none;
@@ -641,7 +643,12 @@ a.etiquette:hover { filter: brightness(0.96); }
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--bordure);
 }
+/* inline-block et non inline-flex : la marque s'écrit « Darou <span>Minane</span> »
+   et le contexte flex avale l'espace entre les deux mots. La hauteur tactile
+   vient donc de la hauteur de ligne. */
 .boutique__marque {
+  display: inline-block;
+  line-height: 44px;
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--encre);
@@ -650,7 +657,16 @@ a.etiquette:hover { filter: brightness(0.96); }
 }
 .boutique__marque span { color: var(--rose-fonce); }
 .boutique__liens { margin-left: auto; display: flex; gap: 16px; }
-.boutique__liens a { color: var(--encre); text-decoration: none; font-size: 0.9375rem; }
+/* Lien de navigation, pas lien dans une phrase : il se tape au pouce et
+   garde donc les 44 px, comme le bouton du panier à côté de lui. */
+.boutique__liens a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--encre);
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
 .boutique__liens a:hover, .boutique__liens a[aria-current="page"] { color: var(--rose-fonce); }
 .boutique__panier {
   display: inline-flex;
@@ -707,8 +723,15 @@ a.etiquette:hover { filter: brightness(0.96); }
 .rayon__nombre { color: var(--gris); font-size: 0.875rem; }
 
 .rayons--filtres { gap: 8px; }
+/* 44 px : ces pastilles se tapent au pouce, en boutique, debout. Elles
+   plafonnaient à 41 px — sous le minimum tactile, pour deux pixels. */
 .puce {
-  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  /* 14 px et non 16 : à 390 px, quatre pastilles tiennent sur une ligne à
+     14, passent à deux à 16. La ligne qui s'ajoute déplace toute la grille. */
+  padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--bordure);
   color: var(--encre);
@@ -934,6 +957,8 @@ a.etiquette:hover { filter: brightness(0.96); }
 }
 .squelette--vignette-carree { width: 72px; height: 72px; flex: 0 0 72px; border-radius: var(--rayon-petit); }
 .squelette--bloc { height: 120px; }
+.squelette--puce { display: inline-block; height: 44px; border-radius: 999px; }
+.squelette--photo-fiche { aspect-ratio: 1; border-radius: var(--rayon-large); }
 
 /* --- Arrivée des contenus --------------------------------------------
    La grille apparaît par vagues courtes ; le contenu est visible par

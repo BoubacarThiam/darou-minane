@@ -5,7 +5,7 @@ import { fcfa } from '../format.js'
 import { usePanier } from '../panier.jsx'
 import { useBoutique } from '../boutique.jsx'
 import { useToasts } from '../composants/Toasts.jsx'
-import { Chargement, EtatVide } from '../composants/Etats.jsx'
+import { AnnonceChargement, EtatVide, SqueletteFiche } from '../composants/Etats.jsx'
 
 export default function Produit() {
   const { slug } = useParams()
@@ -50,7 +50,14 @@ export default function Produit() {
     if (index >= 0) setImageActive(index)
   }, [produit, varianteId])
 
-  if (chargement) return <Chargement />
+  if (chargement) {
+    return (
+      <div className="pile-large">
+        <AnnonceChargement texte="Chargement de l'article…" />
+        <SqueletteFiche />
+      </div>
+    )
+  }
   if (introuvable || !produit) {
     return (
       <EtatVide titre="Article introuvable">
