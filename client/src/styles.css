@@ -1257,3 +1257,61 @@ a.etiquette:hover { filter: brightness(0.96); }
 }
 .bord__icone svg { width: 20px; height: 20px; }
 .bord__icone--stock { background: var(--attention-pale); color: var(--attention); }
+
+/* --- Galerie en arc de la vitrine -------------------------------------
+   Adaptation du CircularGallery de 21st.dev, sans WebGL ni dépendance.
+   Le défilement est celui du navigateur ; seul `transform` bouge, et le
+   réglage « mouvement réduit » rend une rangée droite ordinaire.       */
+.galerie-arc { margin-inline: calc(var(--e-4) * -1); }
+@media (min-width: 700px) { .galerie-arc { margin-inline: 0; } }
+
+.galerie-arc__piste {
+  display: flex;
+  gap: var(--e-4);
+  list-style: none;
+  margin: 0;
+  padding: var(--e-2) var(--e-4) var(--e-6);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.galerie-arc__piste::-webkit-scrollbar { display: none; }
+
+.galerie-arc__element {
+  flex: 0 0 min(62vw, 260px);
+  scroll-snap-align: center;
+  transform-origin: 50% 0%;
+  will-change: transform;
+}
+
+.galerie-arc__lien {
+  display: flex;
+  flex-direction: column;
+  gap: var(--c-petit);
+  color: inherit;
+  text-decoration: none;
+}
+.galerie-arc__photo {
+  display: block;
+  aspect-ratio: 1;
+  transform-origin: 50% 90%;
+  will-change: transform;
+  border-radius: var(--r-media);
+  overflow: hidden;
+  background: var(--photo-fond);
+  box-shadow: inset 0 0 0 1px var(--photo-bordure), var(--relief-carte);
+}
+.galerie-arc__photo img { width: 100%; height: 100%; object-fit: cover; }
+.galerie-arc__nom { font-weight: 600; line-height: var(--interligne-produit); }
+.galerie-arc__prix { font-weight: 600; font-variant-numeric: tabular-nums; }
+.galerie-arc__aide { text-align: center; margin-top: calc(var(--e-5) * -1); }
+@media (min-width: 900px) { .galerie-arc__aide { display: none; } }
+
+/* Sans l'arc, la piste redevient une rangée sage : rien ne dépend du
+   script pour que la sélection reste lisible et cliquable. */
+@media (prefers-reduced-motion: reduce) {
+  .galerie-arc__element,
+  .galerie-arc__photo { transform: none !important; opacity: 1 !important; }
+  .galerie-arc__piste { scroll-snap-type: none; }
+}

@@ -5,6 +5,7 @@ import { pluriel } from '../format.js'
 import { useBoutique } from '../boutique.jsx'
 import { AnnonceChargement, SqueletteGrille } from '../composants/Etats.jsx'
 import { CarteProduit } from './CarteProduit.jsx'
+import { GalerieCirculaire } from './GalerieCirculaire.jsx'
 
 export default function Accueil() {
   const boutique = useBoutique()
@@ -17,7 +18,7 @@ export default function Accueil() {
     let annule = false
     Promise.all([
       api.get('/categories'),
-      api.get('/produits', { mis_en_avant: 1, par_page: 6 }),
+      api.get('/produits', { mis_en_avant: 1, par_page: 9 }),
       api.get('/produits', { tri: 'recent', par_page: 8 }),
     ])
       .then(([listeCategories, avant, recents]) => {
@@ -88,11 +89,9 @@ export default function Accueil() {
           <div className="section__titre">
             <h2>La sélection de la boutique</h2>
           </div>
-          <div className="grille-produits">
-            {enAvant.map((produit, rang) => (
-              <CarteProduit key={produit.id} produit={produit} prioritaire={rang < 4} />
-            ))}
-          </div>
+          {/* La sélection se parcourt, le catalogue se balaie : une galerie
+              en arc ici, la grille sobre plus bas. */}
+          <GalerieCirculaire produits={enAvant} />
         </section>
       )}
 
