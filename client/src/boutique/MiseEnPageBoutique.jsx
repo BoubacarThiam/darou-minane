@@ -59,8 +59,10 @@ export default function MiseEnPageBoutique() {
           )}
           {/* Raccourci vers la gestion. Il vit au pied de page : le
               commerçant sait où le trouver, le client ne tombe pas
-              dessus en cherchant un produit. */}
-          <Link className="boutique__lien-gestion" to="/admin">
+              dessus en cherchant un produit.
+              Il vise la connexion, pas /admin : on passe toujours par la
+              saisie du numéro et du mot de passe. */}
+          <Link className="boutique__lien-gestion" to="/admin/connexion">
             <IconeCompte style={{ width: 18, height: 18 }} />
             Espace gestion
           </Link>

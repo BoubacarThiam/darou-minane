@@ -1,5 +1,5 @@
-import { useId, useState } from 'react'
-import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom'
+import { useEffect, useId, useRef, useState } from 'react'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth.jsx'
 import { ErreurApi } from '../api.js'
 import {
@@ -17,11 +17,12 @@ import {
  * s'ouvre sur un écran d'atelier plutôt que sur un formulaire blanc.
  */
 export default function Connexion() {
-  const { utilisateur, connexion, chargement } = useAuth()
+  const { utilisateur, connexion, deconnexion, chargement } = useAuth()
   const navigation = useNavigate()
   const emplacement = useLocation()
   const idTel = useId()
   const idMdp = useId()
+  const sessionFermee = useRef(false)
 
   const [telephone, setTelephone] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
@@ -30,9 +31,14 @@ export default function Connexion() {
   const [champs, setChamps] = useState({})
   const [envoi, setEnvoi] = useState(false)
 
-  if (!chargement && utilisateur) {
-    return <Navigate to={emplacement.state?.depuis ?? '/admin'} replace />
-  }
+  /* La porte d'entrée demande toujours les identifiants, même si une session
+     est encore ouverte : le téléphone de la boutique passe de main en main.
+     Arriver ici ferme donc la session en cours au lieu de la reprendre. */
+  useEffect(() => {
+    if (chargement || !utilisateur || sessionFermee.current) return
+    sessionFermee.current = true
+    deconnexion()
+  }, [chargement, utilisateur, deconnexion])
 
   async function soumettre(evenement) {
     evenement.preventDefault()
@@ -133,7 +139,13 @@ export default function Connexion() {
           )}
         </div>
 
-        <button type="submit" className="portail__bouton" disabled={envoi}>
+        {/* Le bouton ne s'active qu'une fois les deux champs saisis : on
+            n'envoie pas une demande vouée à revenir en erreur. */}
+        <button
+          type="submit"
+          className="portail__bouton"
+          disabled={envoi || telephone.trim() === '' || motDePasse === ''}
+        >
           {envoi ? 'Connexion…' : 'Se connecter'}
           <IconeFleche className="portail__bouton-fleche" />
         </button>
