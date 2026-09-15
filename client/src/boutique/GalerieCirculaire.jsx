@@ -33,7 +33,9 @@ export function GalerieCirculaire({ produits, courbure = 46 }) {
       const echelle = 1 - Math.abs(ecart) * 0.14
       vignette.style.transform =
         `translate3d(0, ${descente.toFixed(1)}px, 0) scale(${echelle.toFixed(3)})`
-      vignette.style.opacity = (1 - Math.abs(ecart) * 0.35).toFixed(3)
+      /* 0,18 et non 0,35 : sur fond nuit, l'atténuation ternit le nom et
+         le prix bien plus vite que sur fond clair. */
+      vignette.style.opacity = (1 - Math.abs(ecart) * 0.18).toFixed(3)
       /* L'inclinaison ne porte que sur la photo : un nom de produit et un
          prix penchés se lisent mal, et c'est ce qu'on vient chercher. */
       const photo = vignette.querySelector('.galerie-arc__photo')

@@ -10,17 +10,18 @@ html, body, #racine { height: 100%; }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--police);
   font-size: 16px;
   line-height: 1.55;
   color: var(--encre);
-  background: var(--blanc);
-  accent-color: var(--rose-fonce);
+  background: var(--nuit);
+  accent-color: var(--or);
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
 }
 
 h1, h2, h3 {
+  font-family: var(--police-titre);
   font-weight: 600;
   line-height: 1.15;
   margin: 0;
@@ -31,7 +32,7 @@ h1 { font-size: var(--t-xl); }
 h2 { font-size: var(--t-md); }
 h3 { font-size: var(--t-base); }
 p  { margin: 0; text-wrap: pretty; }
-a  { color: var(--rose-fonce); }
+a  { color: var(--or-clair); }
 
 /* Les montants et les quantités s'alignent en colonne. */
 .article__prix, .chiffre, .panier__total strong, .recapitulatif__ligne strong,
@@ -39,10 +40,10 @@ a  { color: var(--rose-fonce); }
   font-variant-numeric: tabular-nums;
 }
 
-::selection { background: var(--rose-clair); color: var(--encre); }
+::selection { background: var(--or-sombre); color: var(--encre); }
 
 :focus-visible {
-  outline: 2px solid var(--rose-fonce);
+  outline: 2px solid var(--or);
   outline-offset: 2px;
   border-radius: var(--r-focus);
 }
@@ -59,8 +60,8 @@ img { max-width: 100%; display: block; }
   padding: 0 var(--e-4);
   border: 1px solid transparent;
   border-radius: var(--r-controle);
-  background: var(--rose-fonce);
-  color: var(--blanc);
+  background: var(--or);
+  color: var(--sur-or);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -69,19 +70,19 @@ img { max-width: 100%; display: block; }
               border-color var(--duree-retour) var(--courbe),
               transform var(--duree-retour) var(--courbe);
 }
-.bouton:hover:not(:disabled) { background: var(--rose-sombre); }
+.bouton:hover:not(:disabled) { background: var(--or-clair); }
 /* Retour au doigt : le bouton s'enfonce légèrement. */
 .bouton:active:not(:disabled) { transform: translateY(1px); }
 .bouton:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .bouton--discret {
-  background: var(--blanc);
+  background: var(--surface-haute);
   color: var(--encre);
   border-color: var(--bordure-forte);
 }
-.bouton--discret:hover:not(:disabled) { background: var(--gris-clair); border-color: var(--rose); }
+.bouton--discret:hover:not(:disabled) { background: var(--gris-clair); border-color: var(--or); }
 
-.bouton--danger { background: var(--blanc); color: var(--alerte); border-color: #eccbc9; }
+.bouton--danger { background: var(--surface-haute); color: var(--alerte); border-color: var(--alerte-pale); }
 .bouton--danger:hover:not(:disabled) { background: var(--alerte-pale); border-color: var(--alerte); }
 
 .bouton--plein { width: 100%; }
@@ -117,7 +118,7 @@ select, textarea {
   padding: var(--c-moyen) var(--e-3);
   border: 1px solid var(--bordure);
   border-radius: var(--r-controle);
-  background: var(--blanc);
+  background: var(--surface-haute);
   color: var(--encre);
   font: inherit;
 }
@@ -126,15 +127,15 @@ input:hover:not(:disabled), select:hover:not(:disabled), textarea:hover:not(:dis
   border-color: var(--bordure-forte);
 }
 input:focus, select:focus, textarea:focus {
-  border-color: var(--rose-fonce);
-  box-shadow: 0 0 0 3px var(--rose-clair);
+  border-color: var(--or);
+  box-shadow: 0 0 0 3px rgba(202, 138, 4, 0.22);
   outline: none;
 }
 input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] {
   border-color: var(--alerte);
 }
 input[aria-invalid="true"]:focus, textarea[aria-invalid="true"]:focus {
-  box-shadow: 0 0 0 3px #f7d7d5;
+  box-shadow: 0 0 0 3px rgba(240, 138, 128, 0.22);
 }
 input:disabled, select:disabled, textarea:disabled {
   background: var(--gris-clair);
@@ -173,7 +174,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 .connexion__carte {
   width: 100%;
   max-width: 380px;
-  background: var(--blanc);
+  background: var(--surface);
   border-radius: var(--r-bloc);
   padding: var(--e-5) var(--e-5);
   /* Au repos, un trait : le blanc sur le rose pâle sépare déjà. */
@@ -193,7 +194,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   align-items: center;
   gap: var(--e-3);
   padding: var(--c-moyen) var(--e-4);
-  background: var(--blanc);
+  background: var(--surface);
   border-bottom: 1px solid var(--bordure);
 }
 .admin__marque { font-weight: 600; font-size: 1.0625rem; }
@@ -212,7 +213,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   flex: 1;
   min-width: 0;
   padding: var(--e-4) var(--e-4) calc(72px + env(safe-area-inset-bottom));
-  background: var(--blanc);
+  background: var(--surface);
 }
 
 .barre-onglets {
@@ -220,7 +221,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   left: 0; right: 0; bottom: 0;
   z-index: var(--z-onglets);
   display: flex;
-  background: var(--blanc);
+  background: var(--surface);
   border-top: 1px solid var(--bordure);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -237,7 +238,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   font-size: 0.75rem;
   font-weight: 600;
 }
-.barre-onglets a[aria-current="page"] { color: var(--rose-fonce); background: var(--rose-pale); }
+.barre-onglets a[aria-current="page"] { color: var(--or); background: var(--surface-haute); }
 .barre-onglets svg { width: 22px; height: 22px; }
 
 @media (min-width: 900px) {
@@ -269,25 +270,26 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   .admin__nav a svg { color: var(--rose-fonce); }
   .admin__nav a:hover { background: rgba(255, 255, 255, 0.85); }
   .admin__nav a[aria-current="page"] {
-    background: var(--rose-fonce);
-    color: var(--blanc);
+    background: var(--or);
+    /* Encre sombre sur l'or : le blanc n'y tenait qu'à 2,94:1. */
+    color: var(--sur-or);
     box-shadow: var(--relief-carte);
   }
-  .admin__nav a[aria-current="page"] svg { color: var(--blanc); }
+  .admin__nav a[aria-current="page"] svg { color: var(--sur-or); }
   .admin__nav svg { width: 20px; height: 20px; }
   .admin__contenu { padding: var(--e-5) 28px 40px; background: var(--fond-atelier); }
   /* Le fond teinté laisserait les listes à nu : elles reposent sur la
      même surface blanche que les cartes du tableau de bord. */
   .admin__contenu > .liste-articles,
   .admin__contenu > div > .liste-articles {
-    background: var(--blanc);
+    background: var(--surface);
     border: 1px solid var(--bordure);
     border-radius: var(--r-bloc);
     box-shadow: var(--relief-carte);
     padding: 0 var(--e-4);
   }
   .admin__contenu .filtres {
-    background: var(--blanc);
+    background: var(--surface);
     border: 1px solid var(--bordure);
     border-radius: var(--r-bloc);
     padding: var(--e-3) var(--e-4);
@@ -362,7 +364,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 
 /* --- Panier de la vente rapide -------------------------------------- */
 .vente { display: flex; flex-direction: column; gap: var(--e-3); }
-.vente__recherche { position: sticky; top: 56px; z-index: calc(var(--z-collant) - 1); background: var(--blanc); padding-bottom: var(--e-2); }
+.vente__recherche { position: sticky; top: 56px; z-index: calc(var(--z-collant) - 1); background: var(--surface); padding-bottom: var(--e-2); }
 .vente__resultats { min-height: 120px; }
 .vente__catalogue { min-width: 0; }
 
@@ -397,7 +399,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   left: 0; right: 0;
   bottom: calc(60px + env(safe-area-inset-bottom));
   z-index: var(--z-panier);
-  background: var(--blanc);
+  background: var(--surface);
   border-top: 1px solid var(--bordure-forte);
   box-shadow: var(--relief-barre);
   padding-bottom: env(safe-area-inset-bottom);
@@ -484,7 +486,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   width: var(--cible-minimale); height: var(--cible-minimale);
   border: 1px solid var(--bordure);
   border-radius: var(--r-controle);
-  background: var(--blanc);
+  background: var(--surface);
   font: inherit;
   font-size: 1.125rem;
   cursor: pointer;
@@ -498,7 +500,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   border: 1px solid var(--bordure);
   border-radius: var(--r-bloc);
   padding: var(--e-4);
-  background: var(--blanc);
+  background: var(--surface);
   margin-bottom: var(--e-4);
   box-shadow: var(--relief-carte);
 }
@@ -567,8 +569,8 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 .toast {
   padding: var(--e-3) var(--c-large);
   border-radius: var(--r-controle);
-  background: var(--encre);
-  color: var(--blanc);
+  background: var(--or-sombre);
+  color: var(--encre);
   font-size: 0.9375rem;
   box-shadow: 0 6px 20px rgba(30, 24, 27, 0.25);
 }
@@ -588,7 +590,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 }
 @media (min-width: 700px) { .modale-fond { align-items: center; padding: var(--e-5); } }
 .modale {
-  background: var(--blanc);
+  background: var(--surface);
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
@@ -642,7 +644,7 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   text-align: center;
 }
 
-.etiquette--info { background: #e8eefb; color: #2c4a86; }
+.etiquette--info { background: var(--info-pale); color: var(--info); }
 
 /* Le chiffre du jour au tableau de bord (mise en page : « .bord » plus bas). */
 .chiffre { font-size: 1.75rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
@@ -706,8 +708,8 @@ a.etiquette:hover { filter: brightness(0.96); }
   align-items: center;
   gap: var(--e-4);
   padding: var(--e-3) var(--e-4);
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(8px);
+  background: rgba(12, 10, 9, 0.82);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--bordure);
 }
 /* inline-block et non inline-flex : la marque s'écrit « Darou <span>Minane</span> »
@@ -734,11 +736,13 @@ a.etiquette:hover { filter: brightness(0.96); }
   text-decoration: none;
   font-size: 0.9375rem;
 }
-.boutique__liens a:hover, .boutique__liens a[aria-current="page"] { color: var(--rose-fonce); }
+.boutique__liens a:hover, .boutique__liens a[aria-current="page"] { color: var(--or-clair); }
 .boutique__panier {
   display: inline-flex;
   align-items: center;
   gap: var(--e-2);
+  color: var(--encre);
+  background: var(--surface-haute);
   min-height: 44px;
   padding: 0 var(--c-large);
   border: 1px solid var(--bordure);
@@ -754,7 +758,7 @@ a.etiquette:hover { filter: brightness(0.96); }
 
 .boutique__pied {
   border-top: 1px solid var(--bordure);
-  background: var(--rose-pale);
+  background: var(--surface);
   padding: var(--e-5) var(--e-4) calc(28px + env(safe-area-inset-bottom));
   display: flex;
   flex-wrap: wrap;
@@ -782,7 +786,7 @@ a.etiquette:hover { filter: brightness(0.96); }
               color var(--duree-retour) var(--courbe);
 }
 .boutique__lien-gestion:hover {
-  background: var(--blanc);
+  background: var(--surface);
   color: var(--rose-fonce);
 }
 
@@ -801,13 +805,16 @@ a.etiquette:hover { filter: brightness(0.96); }
   gap: var(--c-serre);
   padding: var(--c-large) 18px;
   border-radius: var(--r-bloc);
-  background: var(--rose-pale);
+  background: var(--surface);
+  border: 1px solid var(--bordure);
   color: var(--encre);
   text-decoration: none;
   min-width: 150px;
   flex: 1 1 150px;
+  transition: border-color var(--duree-retour) var(--courbe),
+              background var(--duree-retour) var(--courbe);
 }
-.rayon:hover { background: var(--rose-clair); }
+.rayon:hover { background: var(--surface-haute); border-color: var(--or); }
 .rayon__nom { font-weight: 600; }
 .rayon__nombre { color: var(--gris); font-size: 0.875rem; }
 
@@ -842,8 +849,8 @@ a.etiquette:hover { filter: brightness(0.96); }
   font-size: 0.9375rem;
   white-space: nowrap;
 }
-.puce:hover { background: var(--rose-pale); }
-.puce--active { background: var(--rose-fonce); border-color: var(--rose-fonce); color: var(--blanc); }
+.puce:hover { background: var(--surface-haute); border-color: var(--or-sombre); }
+.puce--active { background: var(--or); border-color: var(--or); color: var(--sur-or); }
 
 /* Grille de produits */
 .grille-produits {
@@ -944,7 +951,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   padding: 0 var(--e-4);
   border: 1px solid var(--bordure);
   border-radius: var(--r-plein);
-  background: var(--blanc);
+  background: var(--surface);
   font: inherit;
   cursor: pointer;
 }
@@ -1008,8 +1015,8 @@ a.etiquette:hover { filter: brightness(0.96); }
   z-index: var(--z-bandeau);
   margin: 0;
   padding: var(--c-moyen) var(--e-4);
-  background: var(--encre);
-  color: var(--blanc);
+  background: var(--or-sombre);
+  color: var(--encre);
   font-size: 0.875rem;
   text-align: center;
 }
@@ -1095,7 +1102,7 @@ a.etiquette:hover { filter: brightness(0.96); }
 .tableau thead th {
   position: sticky;
   top: 0;
-  background: var(--blanc);
+  background: var(--surface);
   z-index: 1;
 }
 .tableau tbody tr { transition: background var(--duree-retour) var(--courbe); }
@@ -1113,9 +1120,15 @@ a.etiquette:hover { filter: brightness(0.96); }
 /* --- Bandeau d'accueil de la boutique ---------------------------------
    L'identité de l'enseigne est un magenta rosé : sur la page d'accueil,
    il porte la surface au lieu de se réduire à un liseré.               */
+/* L'or éclaire, il n'inonde pas : un aplat doré plein écran écrase les
+   photos qui suivent. Nuit profonde, lueur chaude, filet d'or. */
 .accroche {
-  background: var(--rose-fonce);
-  color: var(--blanc);
+  background:
+    radial-gradient(70% 120% at 12% 0%, rgba(202, 138, 4, 0.22), transparent 62%),
+    radial-gradient(50% 90% at 92% 100%, rgba(202, 138, 4, 0.14), transparent 65%),
+    var(--surface);
+  border: 1px solid var(--bordure-forte);
+  color: var(--encre);
   border-radius: var(--r-media);
   padding: clamp(24px, 4vw, 44px);
   display: flex;
@@ -1123,6 +1136,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   gap: var(--e-4);
 }
 .accroche h1 {
+  font-family: var(--police-titre);
   font-size: var(--t-titre-boutique);
   letter-spacing: -0.025em;
   max-width: 18ch;
@@ -1135,10 +1149,10 @@ a.etiquette:hover { filter: brightness(0.96); }
   gap: var(--e-2) var(--e-5);
   margin-top: var(--e-2);
   padding-top: var(--e-4);
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid var(--bordure-forte);
 }
 .accroche__fait { display: flex; flex-direction: column; gap: var(--c-serre); min-width: 150px; }
-.accroche__fait strong { font-size: var(--t-s); }
+.accroche__fait strong { font-size: var(--t-s); color: var(--or-clair); }
 .accroche__fait span { color: rgba(255, 255, 255, 0.92); font-size: var(--t-s); }
 
 /* --- Barre d'achat collante (fiche produit sur téléphone) -------------
@@ -1154,7 +1168,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   align-items: center;
   gap: var(--e-3);
   padding: var(--c-moyen) var(--e-4) calc(10px + env(safe-area-inset-bottom));
-  background: var(--blanc);
+  background: var(--surface);
   border-top: 1px solid var(--bordure);
   box-shadow: var(--relief-barre);
   animation: glissement-bas var(--duree-entree) var(--courbe) backwards;
@@ -1232,7 +1246,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   border: 1px solid var(--bordure);
   border-radius: var(--r-bloc);
   padding: var(--e-4);
-  background: var(--blanc);
+  background: var(--surface);
   box-shadow: var(--relief-carte);
   display: flex;
   flex-direction: column;
@@ -1417,7 +1431,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   box-shadow: none;
   border: 0;
 }
-.portail__saisie input::placeholder { color: #8b857e; }
+.portail__saisie input::placeholder { color: var(--gris-doux); }
 /* Le remplissage automatique de Chrome repeint le champ en bleu clair. */
 .portail__saisie input:-webkit-autofill,
 .portail__saisie input:-webkit-autofill:focus {
@@ -1441,13 +1455,13 @@ a.etiquette:hover { filter: brightness(0.96); }
 .portail__oeil svg { width: 20px; height: 20px; }
 .portail__oeil:hover { color: var(--or); }
 
-.portail__champ-erreur { color: #f0a49c; font-size: var(--t-s); }
+.portail__champ-erreur { color: var(--alerte); font-size: var(--t-s); }
 .portail__erreur {
   padding: var(--c-moyen) var(--e-3);
   border-radius: var(--r-controle);
   background: rgba(164, 35, 28, 0.18);
   border: 1px solid rgba(240, 164, 156, 0.38);
-  color: #f7c6c1;
+  color: var(--alerte);
   font-size: var(--t-s);
 }
 
@@ -1461,7 +1475,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   border: 0;
   border-radius: var(--r-controle);
   background: var(--degrade-or);
-  color: #2a1d0c;
+  color: var(--sur-or);
   font: inherit;
   font-size: 1.0625rem;
   font-weight: var(--graisse-forte);
