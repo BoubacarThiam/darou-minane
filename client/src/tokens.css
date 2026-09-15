@@ -109,6 +109,18 @@
   --relief-flottant: 0 6px 20px rgba(30, 24, 27, 0.10);
   --relief-survol: 0 2px 10px rgba(30, 24, 27, 0.08);
   --relief-barre: 0 -6px 24px rgba(30, 24, 27, 0.12); /* barres collantes */
+  /* Relief au repos sous les cartes du back-office. Demandé explicitement
+     par le propriétaire, en écart assumé avec la règle « au repos, un
+     trait, jamais une ombre » énoncée plus haut. */
+  --relief-carte: 0 1px 2px rgba(30, 24, 27, 0.05), 0 4px 14px rgba(30, 24, 27, 0.06);
+
+  /* --- Aplats décoratifs ----------------------------------------------
+     Réservés au back-office, à la demande du propriétaire. Le blanc sur
+     le dégradé rosé reste à 5,2:1, au-dessus du seuil de lisibilité. */
+  --degrade-mesure: linear-gradient(135deg, #a84f70 0%, #8f4160 62%, #7b3552 100%);
+  --degrade-rose-doux: linear-gradient(140deg, #fdf6f8 0%, #f8e9ef 100%);
+  /* Fond de l'espace de travail : les cartes blanches s'y détachent. */
+  --fond-atelier: #fdfcfc;
 
   --hauteur-tactile: 48px;
   --cible-minimale: 44px;

@@ -6,6 +6,7 @@ import { classeStatut, libelleStatut } from '../statuts.js'
 import { useAuth } from '../auth.jsx'
 import { useToasts } from '../composants/Toasts.jsx'
 import { AnnonceChargement, EtatVide, SqueletteBloc, SqueletteListe } from '../composants/Etats.jsx'
+import { IconeCommandes, IconeStock } from '../composants/Icones.jsx'
 
 export default function TableauDeBord() {
   const { utilisateur, estProprietaire } = useAuth()
@@ -94,6 +95,9 @@ export default function TableauDeBord() {
 
         <section className="bord__panneau">
           <div className="bord__panneau-entete">
+            <span className="bord__icone" aria-hidden="true">
+              <IconeCommandes />
+            </span>
             <h2>Commandes à traiter</h2>
             <span className="etiquette">{attente.total}</span>
           </div>
@@ -124,6 +128,9 @@ export default function TableauDeBord() {
 
         <section className="bord__panneau">
           <div className="bord__panneau-entete">
+            <span className="bord__icone bord__icone--stock" aria-hidden="true">
+              <IconeStock />
+            </span>
             <h2>Stock en alerte</h2>
             <span className={alertes.nb > 0 ? 'etiquette etiquette--alerte' : 'etiquette'}>
               {alertes.nb}
