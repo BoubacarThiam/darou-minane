@@ -790,6 +790,52 @@
           "photos": []
         }
       ]
+    },
+    {
+      "categorie": "Diffuseurs & humidificateurs",
+      "nom": "Diffuseur boule bois foncé",
+      "description": "Diffuseur d'huiles essentielles en forme de boule, décor bois foncé, brumisation continue et arrêt automatique.",
+      "variantes": [
+        {
+          "libelle": "130 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "diffuseur-boule-bois-fonce.jpeg"
+      ]
+    },
+    {
+      "categorie": "Diffuseurs & humidificateurs",
+      "nom": "Diffuseur goutte bois clair",
+      "description": "Diffuseur en forme de goutte, décor bois clair, pour une chambre ou un salon.",
+      "variantes": [
+        {
+          "libelle": "300 ml",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "diffuseur-goutte-bois-clair.jpeg"
+      ]
+    },
+    {
+      "categorie": "Diffuseurs & humidificateurs",
+      "nom": "Diffuseur vase bois",
+      "description": "Diffuseur en forme de vase avec veilleuse bleue, au choix en bois clair ou bois foncé.",
+      "variantes": [
+        {
+          "libelle": "Bois clair",
+          "photos": []
+        },
+        {
+          "libelle": "Bois foncé",
+          "photos": []
+        }
+      ],
+      "photos": [
+        "diffuseur-vase-bois.jpeg"
+      ]
     }
   ]
 }

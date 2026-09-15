@@ -86,9 +86,13 @@ img { max-width: 100%; display: block; }
 
 .bouton--plein { width: 100%; }
 .bouton--grand { min-height: 56px; font-size: 1.0625rem; }
-.bouton--petit { min-height: 38px; padding: 0 var(--e-3); font-size: 0.9375rem; }
-/* La pagination se manipule au pouce : ses deux boutons gardent 44 px. */
-.pagination .bouton--petit { min-height: 44px; padding: 0 var(--e-4); }
+/* Un bouton reste un bouton : 44 px partout, y compris la variante
+   compacte. Elle plafonnait à 38 px, sous le minimum tactile. */
+.bouton--petit {
+  min-height: var(--cible-minimale);
+  padding: 0 var(--e-4);
+  font-size: 0.9375rem;
+}
 
 .bouton-lien {
   background: none;
@@ -759,6 +763,28 @@ a.etiquette:hover { filter: brightness(0.96); }
   justify-content: space-between;
 }
 .boutique__pied-marque { font-weight: 600; }
+.boutique__pied-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-3); }
+
+/* Raccourci vers la gestion : discret pour le client, évident pour le
+   commerçant qui sait le chercher. Il garde la hauteur tactile. */
+.boutique__lien-gestion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--c-petit);
+  min-height: var(--cible-minimale);
+  padding: 0 var(--e-3);
+  border-radius: var(--r-controle);
+  color: var(--gris);
+  text-decoration: none;
+  font-size: var(--t-s);
+  font-weight: 600;
+  transition: background var(--duree-retour) var(--courbe),
+              color var(--duree-retour) var(--courbe);
+}
+.boutique__lien-gestion:hover {
+  background: var(--blanc);
+  color: var(--rose-fonce);
+}
 
 .pile-large { display: flex; flex-direction: column; gap: var(--e-6); }
 
@@ -785,7 +811,21 @@ a.etiquette:hover { filter: brightness(0.96); }
 .rayon__nom { font-weight: 600; }
 .rayon__nombre { color: var(--gris); font-size: 0.875rem; }
 
-.rayons--filtres { gap: var(--e-2); }
+/* Barre de rayons : défilement horizontal plutôt que retour à la ligne.
+   Un nom long (« Diffuseurs & humidificateurs ») la faisait passer à trois
+   lignes, et sa hauteur changeait au moment où les rayons arrivaient —
+   la grille de produits descendait sous le pouce du client. En une seule
+   ligne, la hauteur est constante quel que soit le nombre de rayons. */
+.rayons--filtres {
+  gap: var(--e-2);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: var(--e-1);
+  scroll-snap-type: x proximity;
+}
+.rayons--filtres::-webkit-scrollbar { display: none; }
+.rayons--filtres > * { scroll-snap-align: start; flex: 0 0 auto; }
 /* 44 px : ces pastilles se tapent au pouce, en boutique, debout. Elles
    plafonnaient à 41 px — sous le minimum tactile, pour deux pixels. */
 .puce {

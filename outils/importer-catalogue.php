@@ -61,10 +61,11 @@ function categorieId(string $nom): int
     return $cache[$nom] = $creee['id'];
 }
 
-$importes = 0;
-$ignores  = 0;
-$photos   = 0;
-$erreurs  = [];
+$importes   = 0;
+$ignores    = 0;
+$photos     = 0;
+$manquantes = 0;
+$erreurs    = [];
 
 foreach ($manifeste['produits'] as $ligne) {
     $nom  = $ligne['nom'];
@@ -103,7 +104,15 @@ foreach ($manifeste['produits'] as $ligne) {
         }
 
         foreach ($aPlacer as $element) {
-            $chemin = ImageService::importer("$dossierPhotos/{$element['fichier']}");
+            $source = "$dossierPhotos/{$element['fichier']}";
+            // Une photo encore absente ne doit pas faire échouer la fiche :
+            // on inscrit le produit, la photo se rattache plus tard.
+            if (!is_file($source)) {
+                echo "  ? photo absente, ignorée : {$element['fichier']}\n";
+                $manquantes++;
+                continue;
+            }
+            $chemin = ImageService::importer($source);
             ImageProduit::creer($produit['id'], $chemin, $element['variante_id'], null);
             $photos++;
         }
@@ -120,6 +129,9 @@ echo "\n";
 echo "Produits importés : $importes\n";
 echo "Déjà présents     : $ignores\n";
 echo "Photos traitées   : $photos\n";
+if ($manquantes > 0) {
+    echo "Photos absentes   : $manquantes — déposez les fichiers puis relancez pour les rattacher.\n";
+}
 if ($erreurs !== []) {
     echo "Erreurs :\n  - " . implode("\n  - ", $erreurs) . "\n";
 }

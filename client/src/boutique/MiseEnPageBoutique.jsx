@@ -2,7 +2,7 @@ import { Link, NavLink, Outlet } from 'react-router-dom'
 import { pluriel } from '../format.js'
 import { useBoutique } from '../boutique.jsx'
 import { usePanier } from '../panier.jsx'
-import { IconeVente, IconeWhatsApp } from '../composants/Icones.jsx'
+import { IconeCompte, IconeVente, IconeWhatsApp } from '../composants/Icones.jsx'
 
 export default function MiseEnPageBoutique() {
   const boutique = useBoutique()
@@ -45,17 +45,26 @@ export default function MiseEnPageBoutique() {
             Livraison à {boutique.zone_livraison} · frais à convenir · paiement à la livraison.
           </p>
         </div>
-        {boutique.whatsapp && (
-          <a
-            className="bouton bouton--discret"
-            href={`https://wa.me/${boutique.whatsapp}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <IconeWhatsApp style={{ width: 20, height: 20 }} />
-            Nous écrire sur WhatsApp
-          </a>
-        )}
+        <div className="boutique__pied-actions">
+          {boutique.whatsapp && (
+            <a
+              className="bouton bouton--discret"
+              href={`https://wa.me/${boutique.whatsapp}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <IconeWhatsApp style={{ width: 20, height: 20 }} />
+              Nous écrire sur WhatsApp
+            </a>
+          )}
+          {/* Raccourci vers la gestion. Il vit au pied de page : le
+              commerçant sait où le trouver, le client ne tombe pas
+              dessus en cherchant un produit. */}
+          <Link className="boutique__lien-gestion" to="/admin">
+            <IconeCompte style={{ width: 18, height: 18 }} />
+            Espace gestion
+          </Link>
+        </div>
       </footer>
     </div>
   )
