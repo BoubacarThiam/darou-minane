@@ -21,6 +21,12 @@ export default function VenteRapide() {
   const [confirmation, setConfirmation] = useState(false)
   const [nomClient, setNomClient] = useState('')
   const [envoi, setEnvoi] = useState(false)
+  /* Sur téléphone, le ticket déplié occupait 65 % de l'écran : à trois
+     articles le vendeur ne voyait plus le catalogue pour en ajouter un
+     quatrième. Il reste donc replié sur son total, et s'ouvre à la
+     demande. Sur grand écran il occupe sa propre colonne, toujours
+     visible : la question n'y est pas posée. */
+  const [ticketOuvert, setTicketOuvert] = useState(false)
   const champRecherche = useRef(null)
 
   const charger = useCallback(
@@ -121,6 +127,8 @@ export default function VenteRapide() {
         </div>
       </div>
 
+      <div className="vente__plan">
+        <div className="vente__catalogue">
       <div className="vente__recherche">
         <label className="sr-seulement" htmlFor="recherche-article">
           Rechercher un article
@@ -188,9 +196,30 @@ export default function VenteRapide() {
           </ul>
         )}
       </div>
+        </div>
 
       {panier.length > 0 && (
-        <div className="panier" aria-label="Panier de la vente">
+        <div
+          className={ticketOuvert ? 'panier panier--ouvert' : 'panier'}
+          aria-label="Ticket de la vente"
+        >
+          {/* Sur téléphone : la barre porte le total et ouvre le détail.
+              Sur grand écran, le détail est toujours là et ce bouton est
+              masqué — rien à déplier quand tout tient à l'écran. */}
+          <button
+            type="button"
+            className="panier__bascule"
+            onClick={() => setTicketOuvert((ouvert) => !ouvert)}
+            aria-expanded={ticketOuvert}
+          >
+            <span>{pluriel(panier.reduce((somme, l) => somme + l.quantite, 0), 'article')}</span>
+            <strong>{fcfa(total)}</strong>
+            <span className="panier__chevron" aria-hidden="true">
+              {ticketOuvert ? '▾' : '▴'}
+            </span>
+          </button>
+
+          <div className="panier__detail">
           <ul className="panier__lignes">
             {panier.map((ligne) => (
               <li key={ligne.variante_id} className="panier__ligne">
@@ -223,28 +252,22 @@ export default function VenteRapide() {
             ))}
           </ul>
 
-          <div className="panier__total">
-            <span className="texte-gris">
-              {pluriel(panier.reduce((somme, ligne) => somme + ligne.quantite, 0), 'article')}
-            </span>
-            <strong>{fcfa(total)}</strong>
-          </div>
-
           <div className="rangee">
             <button type="button" className="bouton bouton--discret" onClick={() => setPanier([])}>
               Vider
             </button>
             <button
               type="button"
-              className="bouton bouton--grand"
-              style={{ flex: 1 }}
+              className="bouton bouton--grand bouton--encaisser"
               onClick={() => setConfirmation(true)}
             >
               Encaisser {fcfa(total)}
             </button>
           </div>
+          </div>
         </div>
       )}
+      </div>
 
       {confirmation && (
         <Modale

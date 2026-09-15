@@ -306,8 +306,25 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   object-fit: cover;
 }
 .article__corps { flex: 1; min-width: 0; }
-.article__nom { font-weight: 600; }
-.article__detail { color: var(--gris); font-size: 0.875rem; display: flex; gap: var(--e-2); flex-wrap: wrap; align-items: center; }
+/* Densité au comptoir : « Afnan Supremacy Collector's Edition » tenait
+   sur quatre lignes à 360 px, soit quatre produits par écran sur un
+   catalogue de 55. Deux lignes au maximum, et le détail reste sur la
+   sienne : le vendeur balaie la liste, il ne la lit pas. */
+.article__nom {
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.article__detail {
+  color: var(--gris);
+  font-size: var(--t-s);
+  display: flex;
+  gap: var(--e-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
 .article__prix { font-weight: 600; white-space: nowrap; text-align: right; }
 .article--fixe { cursor: default; flex-wrap: wrap; }
 .article--fixe .bouton { margin-left: auto; }
@@ -316,6 +333,33 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 .vente { display: flex; flex-direction: column; gap: var(--e-3); }
 .vente__recherche { position: sticky; top: 56px; z-index: calc(var(--z-collant) - 1); background: var(--blanc); padding-bottom: var(--e-2); }
 .vente__resultats { min-height: 120px; }
+.vente__catalogue { min-width: 0; }
+
+/* Au comptoir, on balaie une liste de 55 articles pour en toucher un. À
+   360 px les lignes montaient à 127 px : quatre produits par écran. La
+   vignette descend à 56 px et le détail tient sur sa ligne — reconnaître
+   suffit, on ne lit pas la fiche. Ailleurs (écran Produits) la vignette
+   reste à 72 px, où distinguer deux coffrets noirs est le vrai enjeu. */
+@media (max-width: 699px) {
+  .vente .article__visuel { width: 56px; height: 56px; flex: 0 0 56px; }
+  .vente .article__detail { flex-wrap: nowrap; overflow: hidden; }
+  .vente .article { min-height: 0; }
+}
+
+/* --- Poste de caisse -------------------------------------------------
+   Au comptoir, le vendeur a deux besoins simultanés : voir le catalogue
+   pour ajouter, voir le ticket pour annoncer le total. Au-delà de 1100 px
+   les deux tiennent côte à côte et la question ne se pose plus. En
+   dessous, le ticket est une barre repliée sur son total : déplié, il
+   occupait 65 % de l'écran et cachait le catalogue.               */
+@media (min-width: 1100px) {
+  .vente__plan {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: var(--e-5);
+    align-items: start;
+  }
+}
 
 .panier {
   position: fixed;
@@ -323,23 +367,90 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   bottom: calc(60px + env(safe-area-inset-bottom));
   z-index: var(--z-panier);
   background: var(--blanc);
-  border-top: 1px solid var(--rose-clair);
+  border-top: 1px solid var(--bordure-forte);
   box-shadow: var(--relief-barre);
-  padding: var(--e-3) var(--e-4) calc(12px + env(safe-area-inset-bottom));
-  max-height: 65vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Barre repliée : le total et le geste pour ouvrir, rien d'autre. */
+.panier__bascule {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  width: 100%;
+  min-height: var(--hauteur-tactile);
+  padding: var(--c-moyen) var(--e-4);
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--gris);
+  cursor: pointer;
+  text-align: left;
+}
+.panier__bascule strong {
+  margin-left: auto;
+  font-size: var(--t-lg);
+  color: var(--encre);
+  font-variant-numeric: tabular-nums;
+}
+.panier__chevron { color: var(--gris); }
+
+.panier__detail {
+  display: none;
+  padding: 0 var(--e-4) var(--e-3);
+  max-height: 46vh;
   overflow-y: auto;
 }
-@media (min-width: 900px) {
-  .panier { left: 232px; bottom: 0; }
+.panier--ouvert .panier__detail { display: block; }
+
+.bouton--encaisser { flex: 1; }
+
+@media (min-width: 1100px) {
+  /* Colonne de droite : le ticket ne flotte plus, il tient sa place. */
+  .panier {
+    position: sticky;
+    top: 72px;
+    left: auto; right: auto; bottom: auto;
+    border: 1px solid var(--bordure);
+    border-radius: var(--r-bloc);
+    box-shadow: none;
+  }
+  .panier__bascule { pointer-events: none; }
+  .panier__chevron { display: none; }
+  /* Tout est visible : il n'y a rien à déplier. */
+  .panier__detail { display: block; max-height: none; }
+  /* La colonne a de la hauteur, pas de la largeur : le nom se replie
+     plutôt que d'être coupé à « Afnan Supre… ». */
+  .panier__nom { white-space: normal; }
 }
 .panier__lignes { list-style: none; margin: 0 0 var(--c-moyen); padding: 0; }
 .panier__ligne { display: flex; align-items: center; gap: var(--c-moyen); padding: var(--c-petit) 0; }
 .panier__ligne + .panier__ligne { border-top: 1px solid var(--bordure); }
-.panier__nom { flex: 1; min-width: 0; font-size: 0.9375rem; }
-.panier__nom span { display: block; color: var(--gris); font-size: 0.8125rem; }
+/* « Afnan Supremacy Collector's Edition » tenait sur trois lignes et
+   faisait des lignes de ticket de 75 px. Le vendeur vient de toucher
+   l'article : une ligne coupée lui suffit à le reconnaître. */
+.panier__nom {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.panier__nom span {
+  display: block;
+  color: var(--gris);
+  font-size: var(--t-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .quantite { display: flex; align-items: center; gap: var(--e-1); }
+/* Ce sont les boutons les plus touchés de la caisse : ils étaient à
+   38 px, sous le minimum tactile. Corriger une quantité au comptoir ne
+   doit pas demander de viser. */
 .quantite button {
-  width: 38px; height: 38px;
+  width: var(--cible-minimale); height: var(--cible-minimale);
   border: 1px solid var(--bordure);
   border-radius: var(--r-controle);
   background: var(--blanc);
