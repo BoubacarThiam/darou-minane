@@ -61,6 +61,30 @@ function categorieId(string $nom): int
     return $cache[$nom] = $creee['id'];
 }
 
+/**
+ * Photos d'une entrée du manifeste : celles du produit, puis celles qui
+ * appartiennent à une variante précise.
+ *
+ * @param array $variantes variantes en base, dans l'ordre du manifeste
+ * @return array<int, array{fichier: string, variante_id: ?int}>
+ */
+function photosDuProduit(array $ligne, array $variantes): array
+{
+    $liste = array_map(
+        static fn(string $fichier): array => ['fichier' => $fichier, 'variante_id' => null],
+        $ligne['photos'] ?? []
+    );
+    foreach ($ligne['variantes'] as $index => $variante) {
+        foreach ($variante['photos'] ?? [] as $fichier) {
+            $liste[] = [
+                'fichier'     => $fichier,
+                'variante_id' => isset($variantes[$index]) ? (int) $variantes[$index]['id'] : null,
+            ];
+        }
+    }
+    return $liste;
+}
+
 $importes   = 0;
 $ignores    = 0;
 $photos     = 0;
@@ -71,9 +95,48 @@ foreach ($manifeste['produits'] as $ligne) {
     $nom  = $ligne['nom'];
     $slug = Slug::creer($nom);
 
-    if (Database::unique('SELECT id FROM produits WHERE slug = ?', [$slug]) !== null) {
-        echo "= $nom (déjà présent)\n";
-        $ignores++;
+    $existant = Database::unique('SELECT id FROM produits WHERE slug = ?', [$slug]);
+    if ($existant !== null) {
+        /* Un produit inscrit alors que ses photos n'étaient pas encore sur
+           le disque reste sans visuel. On les lui rattache au passage
+           suivant. Un produit qui a déjà des images n'est jamais touché :
+           c'est ce qui garde le script rejouable sans créer de doublons. */
+        $dejaVisuel = (int) Database::valeur(
+            'SELECT COUNT(*) FROM images_produit WHERE produit_id = ?',
+            [$existant['id']]
+        );
+        if ($dejaVisuel > 0) {
+            echo "= $nom (déjà présent)\n";
+            $ignores++;
+            continue;
+        }
+
+        $variantes = Database::toutes(
+            'SELECT id FROM variantes WHERE produit_id = ? ORDER BY id',
+            [$existant['id']]
+        );
+        $rattachees = 0;
+        foreach (photosDuProduit($ligne, $variantes) as $element) {
+            $source = "$dossierPhotos/{$element['fichier']}";
+            if (!is_file($source)) {
+                $manquantes++;
+                continue;
+            }
+            ImageProduit::creer(
+                (int) $existant['id'],
+                ImageService::importer($source),
+                $element['variante_id'],
+                null
+            );
+            $photos++;
+            $rattachees++;
+        }
+        if ($rattachees > 0) {
+            echo "~ $nom — $rattachees photo(s) rattachée(s)\n";
+        } else {
+            echo "= $nom (déjà présent, toujours sans photo)\n";
+            $ignores++;
+        }
         continue;
     }
 
@@ -92,16 +155,7 @@ foreach ($manifeste['produits'] as $ligne) {
             ], $ligne['variantes']),
         ], null);
 
-        // Photos générales du produit, puis photos propres à chaque variante.
-        $aPlacer = array_map(
-            static fn(string $fichier): array => ['fichier' => $fichier, 'variante_id' => null],
-            $ligne['photos'] ?? []
-        );
-        foreach ($ligne['variantes'] as $index => $variante) {
-            foreach ($variante['photos'] ?? [] as $fichier) {
-                $aPlacer[] = ['fichier' => $fichier, 'variante_id' => $produit['variantes'][$index]['id']];
-            }
-        }
+        $aPlacer = photosDuProduit($ligne, $produit['variantes']);
 
         foreach ($aPlacer as $element) {
             $source = "$dossierPhotos/{$element['fichier']}";

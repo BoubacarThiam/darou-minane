@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../api.js'
 import { pluriel } from '../format.js'
@@ -58,6 +58,14 @@ export default function Categorie() {
     return () => { annule = true }
   }, [slug, tri, prixMin, prixMax, page])
 
+  /* La barre de rayons défile à l'horizontale : sur un nom long, la
+     pastille du rayon ouvert arrive hors cadre. On l'amène à l'écran. */
+  const barreRayons = useRef(null)
+  useEffect(() => {
+    const active = barreRayons.current?.querySelector('.puce--active')
+    active?.scrollIntoView({ block: 'nearest', inline: 'center' })
+  }, [slug, categories])
+
   const categorie = categories.find((c) => c.slug === slug)
 
   /* Un rayon sans article est une impasse : l'accueil les masque déjà, la
@@ -78,7 +86,7 @@ export default function Categorie() {
         <p className="texte-gris">{pagination ? pluriel(pagination.total, 'article') : ''}</p>
       </div>
 
-      <div className="rayons rayons--filtres">
+      <div className="rayons rayons--filtres" ref={barreRayons}>
         <Link className={!slug ? 'puce puce--active' : 'puce'} to="/catalogue">
           Tout
         </Link>
