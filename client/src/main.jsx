@@ -2,6 +2,8 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
+// Les jetons d'abord : la feuille de style ne fait que les consommer.
+import './tokens.css'
 import './styles.css'
 
 // Le service worker n'est utile qu'en production : en développement il

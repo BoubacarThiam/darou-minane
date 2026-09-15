@@ -1,0 +1,130 @@
+/* =====================================================================
+   Darou Minane — jetons de design.
+   Fichier unique : toute couleur, taille, espacement, rayon, élévation et
+   durée part d'ici. Si une valeur manque, on l'ajoute ici, on ne l'écrit
+   pas dans un composant.
+
+   Trois principes :
+     1. Le produit porte la couleur, l'interface n'en porte pas.
+        Aucun rose derrière une photographie.
+     2. Le rose signe, il ne décore pas : la marque, l'action principale,
+        l'état actif. Rien d'autre.
+     3. La boutique se regarde, le back-office se lit au soleil.
+   ===================================================================== */
+
+:root {
+  /* --- Couleurs -------------------------------------------------------
+     Contrastes mesurés sur blanc : encre 15,8:1 · gris 6,4:1 ·
+     rose foncé 5,2:1 · blanc sur rose foncé 5,2:1.
+     Le rose pâle et le rose clair ne portent jamais de texte. */
+  --blanc: #ffffff;
+  --rose: #c86b8c;          /* la marque : logo, traits, halos            */
+  --rose-fonce: #a84f70;    /* action, lien, état actif                   */
+  --rose-sombre: #8f4160;   /* survol et aplats profonds                  */
+  --rose-pale: #fbf1f4;     /* seule surface rose autorisée               */
+  --rose-clair: #f2d7e0;    /* bordures teintées                          */
+  --encre: #1e181b;
+  --gris: #6b5a61;          /* texte secondaire                           */
+  --gris-doux: #8a757c;     /* indications de saisie (4,6:1 sur blanc)    */
+  --gris-clair: #f6f3f4;
+  --bordure: #e7dade;
+  --bordure-forte: #d6c3ca;
+
+  /* --- Surface des photographies -------------------------------------
+     Le catalogue est fait de flacons noir et or, de cadrans acier et de
+     verres fumés, photographiés tantôt sur fond studio blanc, tantôt sur
+     marbre. Un fond rosé les teinte et trahit la découpe des photos à
+     fond blanc. Elles reposent donc sur un neutre franc, chroma nulle. */
+  --photo-fond: #f1efef;
+  --photo-bordure: #e3dfe0;
+
+  /* --- États ----------------------------------------------------------
+     « Stock bas » et « erreur » partageaient le même rouge : un réassort
+     à prévoir avait l'air d'une panne. L'ocre les sépare, et tient mieux
+     en plein soleil qu'un rouge pâle. */
+  --succes: #12674a;        /* 7,1:1 — vente encaissée, commande livrée   */
+  --succes-pale: #e6f3ee;
+  --attention: #8a5a00;     /* 5,9:1 — stock bas, réassort à prévoir      */
+  --attention-pale: #faf1de;
+  --alerte: #a4231c;        /* 7,5:1 — erreur, échec, annulation          */
+  --alerte-pale: #fdeceb;
+  --info: #2c4a86;          /* 8,2:1 — statut neutre                      */
+  --info-pale: #e8eefb;
+
+  /* --- Typographie ----------------------------------------------------
+     Une famille, celle du système : sur une connexion de Tambacounda,
+     une police web coûte un écran entier avant le premier produit.
+     Deux graisses seulement — le 700 de system-ui bave sur les Android
+     d'entrée de gamme. Ratio ~1,15. */
+  --police: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --graisse-normale: 400;
+  --graisse-forte: 600;
+
+  --t-xs: 0.8125rem;        /* 13px — métadonnées non essentielles SEULES */
+  --t-s: 0.875rem;          /* 14px — plancher du back-office             */
+  --t-base: 1rem;           /* 16px — corps                               */
+  --t-md: 1.125rem;         /* 18px                                       */
+  --t-lg: 1.3125rem;        /* 21px                                       */
+  --t-xl: 1.625rem;         /* 26px                                       */
+  --t-2xl: 2rem;            /* 32px                                       */
+  --t-titre-boutique: clamp(1.75rem, 1.15rem + 2.6vw, 2.75rem);
+
+  --interligne-corps: 1.55;
+  --interligne-titre: 1.25;
+  --interligne-produit: 1.35; /* « Afnan Supremacy Collector's Edition »  */
+
+  /* --- Espacement de mise en page (base 4) ---------------------------- */
+  --e-1: 4px;
+  --e-2: 8px;
+  --e-3: 12px;
+  --e-4: 16px;
+  --e-5: 24px;
+  --e-6: 32px;
+  --e-7: 48px;
+  --e-8: 64px;
+
+  /* --- Espacement intérieur des contrôles -----------------------------
+     Ces quatre valeurs ne sont pas sur l'échelle de 4, et c'est délibéré.
+     Porter le rembourrage des pastilles de rayon de 14 à 16 px les fait
+     passer à deux lignes à 360 px, ce qui déplace toute la grille de
+     98 px. La granularité de 2 px sur les contrôles est mesurée, pas
+     laissée au hasard. */
+  --c-serre: 2px;
+  --c-petit: 6px;
+  --c-moyen: 10px;
+  --c-large: 14px;
+
+  /* --- Rayons, par hiérarchie -----------------------------------------
+     Le plus grand rayon va à la photo : c'est l'objet qu'on achète, pas
+     le cadre qui l'entoure. */
+  --r-plein: 999px;         /* pastilles, badges, panier                  */
+  --r-controle: 10px;       /* boutons, champs                            */
+  --r-bloc: 14px;           /* cartes, panneaux                           */
+  --r-media: 20px;          /* surfaces photographiques                   */
+  --r-focus: 4px;          /* anneau de focus clavier                    */
+
+  /* --- Élévation : deux niveaux ---------------------------------------
+     Au repos, une carte porte un trait, jamais une ombre. L'ombre grise
+     identique sous chaque bloc est la signature du gabarit. */
+  --relief-flottant: 0 6px 20px rgba(30, 24, 27, 0.10);
+  --relief-survol: 0 2px 10px rgba(30, 24, 27, 0.08);
+  --relief-barre: 0 -6px 24px rgba(30, 24, 27, 0.12); /* barres collantes */
+
+  --hauteur-tactile: 48px;
+  --cible-minimale: 44px;
+
+  /* --- Plans d'empilement (jamais de valeur au hasard) ---------------- */
+  --z-collant: 20;
+  --z-panier: 25;
+  --z-onglets: 30;
+  --z-bandeau: 40;
+  --z-modale-fond: 50;
+  --z-toast: 60;
+
+  /* --- Mouvement ------------------------------------------------------
+     L'animation répond à une action et montre ce qui a changé. Une seule
+     courbe, deux durées, jamais au-delà de 400 ms. */
+  --duree-retour: 160ms;    /* retour d'action                            */
+  --duree-entree: 260ms;    /* entrée d'élément                           */
+  --courbe: cubic-bezier(0.22, 1, 0.36, 1);
+}
