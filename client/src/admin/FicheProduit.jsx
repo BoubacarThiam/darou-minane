@@ -10,6 +10,9 @@ import { Modale } from '../composants/Modale.jsx'
 
 const VARIANTE_VIDE = { libelle: '', prix: '', prix_achat: '', quantite: '', seuil_alerte: '3' }
 
+/* Limite du serveur : uploads.fichiers_max dans api/config.php. */
+const PHOTOS_MAX = 6
+
 export default function FicheProduit() {
   const { id } = useParams()
   const creation = id === undefined
@@ -20,6 +23,9 @@ export default function FicheProduit() {
   const [categories, setCategories] = useState([])
   const [produit, setProduit] = useState(null)
   const [chargement, setChargement] = useState(!creation)
+  /* Photos choisies AVANT que le produit existe : elles attendent en
+     mémoire et partent juste après sa création, quand on a enfin son id. */
+  const [photosCreation, setPhotosCreation] = useState([])
   const [erreur, setErreur] = useState(null)
   const [champs, setChamps] = useState({})
   const [envoi, setEnvoi] = useState(false)
@@ -79,7 +85,27 @@ export default function FicheProduit() {
             seuil_alerte: variante.seuil_alerte === '' ? 3 : Number(variante.seuil_alerte),
           })),
         })
-        toasts.succes(`${cree.nom} créé. Ajoutez maintenant ses photos.`)
+        let messagephotos = ''
+        if (photosCreation.length > 0) {
+          try {
+            const formData = new FormData()
+            photosCreation.forEach((photo) => formData.append('images[]', photo))
+            await api.televerser(`/admin/produits/${cree.id}/images`, formData)
+            messagephotos = ` avec ${pluriel(photosCreation.length, 'photo', 'photos')}`
+          } catch (soucisPhotos) {
+            /* Le produit existe : on ne fait pas échouer sa création pour
+               une photo refusée. On le dit, et ses photos s'ajoutent
+               depuis la fiche. */
+            toasts.erreur(
+              soucisPhotos instanceof ErreurApi
+                ? `Produit créé, mais les photos ont été refusées : ${
+                    soucisPhotos.champs?.images ?? soucisPhotos.message
+                  }`
+                : 'Produit créé, mais l\'envoi des photos a échoué.',
+            )
+          }
+        }
+        toasts.succes(`${cree.nom} créé${messagephotos}.`)
         navigation(`/admin/produits/${cree.id}`, { replace: true })
       } else {
         await api.put(`/admin/produits/${id}`, { ...infos, categorie_id: Number(infos.categorie_id) })
@@ -213,6 +239,10 @@ export default function FicheProduit() {
             setVariantes={setNouvellesVariantes}
             champs={champs}
           />
+        )}
+
+        {creation && (
+          <PhotosCreation photos={photosCreation} setPhotos={setPhotosCreation} />
         )}
 
         {!lectureSeule && (
@@ -736,6 +766,73 @@ function Photos({ produit, lectureSeule, onRafraichir }) {
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * Choix des photos pendant la création d'un produit.
+ *
+ * Le produit n'existe pas encore, donc rien ne peut être téléversé : les
+ * fichiers attendent en mémoire et partent dès que la création a rendu
+ * l'identifiant. Les aperçus viennent d'URL d'objet, libérées quand la
+ * photo est retirée ou le composant démonté — sinon le navigateur garde
+ * chaque image en mémoire jusqu'au rechargement de la page.
+ */
+function PhotosCreation({ photos, setPhotos }) {
+  const champFichiers = useRef(null)
+  const [apercus, setApercus] = useState([])
+
+  useEffect(() => {
+    const urls = photos.map((photo) => URL.createObjectURL(photo))
+    setApercus(urls)
+    return () => urls.forEach((url) => URL.revokeObjectURL(url))
+  }, [photos])
+
+  function ajouter(evenement) {
+    const choisies = Array.from(evenement.target.files ?? [])
+    if (choisies.length === 0) return
+    setPhotos((actuelles) => [...actuelles, ...choisies].slice(0, PHOTOS_MAX))
+    if (champFichiers.current) champFichiers.current.value = ''
+  }
+
+  const trop = photos.length >= PHOTOS_MAX
+
+  return (
+    <div className="champ">
+      <span className="champ__libelle">Photos du produit</span>
+
+      {apercus.length > 0 && (
+        <ul className="photos-attente">
+          {photos.map((photo, rang) => (
+            <li className="photos-attente__element" key={`${photo.name}-${rang}`}>
+              <img src={apercus[rang]} alt="" />
+              <button
+                type="button"
+                className="photos-attente__retirer"
+                onClick={() => setPhotos((actuelles) => actuelles.filter((_, i) => i !== rang))}
+                aria-label={`Retirer ${photo.name}`}
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <input
+        ref={champFichiers}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        multiple
+        onChange={ajouter}
+        disabled={trop}
+      />
+      <span className="champ__aide">
+        {trop
+          ? `Maximum atteint : ${PHOTOS_MAX} photos. Retirez-en une pour en ajouter une autre.`
+          : `${PHOTOS_MAX} photos au plus, redimensionnées à 1200 px automatiquement. Elles partent dès que le produit est créé.`}
+      </span>
     </div>
   )
 }

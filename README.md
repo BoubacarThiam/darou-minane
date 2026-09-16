@@ -29,7 +29,7 @@ api/             PHP 8 — index.php (routeur), controllers/, models/, lib/
 api/uploads/     images produits (demo/ = visuels de démonstration)
 db/schema.sql    schéma complet
 db/seed.sql      jeu de données de démonstration
-outils/          préparation de la mise en ligne, import du catalogue réel
+outils/          base locale, import du catalogue, préparation de la mise en ligne
 ```
 
 ## Base de données
@@ -56,10 +56,36 @@ supprime pas.
 
 ### Installation locale
 
+Sur un poste où MySQL ou MariaDB tourne déjà en service :
+
 ```bash
 mysql -u root -p -e "CREATE DATABASE darou_minane CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 mysql -u root -p darou_minane < db/schema.sql
 mysql -u root -p darou_minane < db/seed.sql   # optionnel : données de démonstration
+```
+
+### Base locale dédiée
+
+Quand on n'a pas la main sur le serveur du système, `outils/base-locale.sh`
+monte une instance MariaDB rien que pour le projet :
+
+```bash
+./outils/base-locale.sh demarrer      # installe au besoin, puis démarre
+./outils/base-locale.sh etat          # tourne-t-elle ? combien de produits ?
+./outils/base-locale.sh sauvegarder   # dump horodaté
+./outils/base-locale.sh arreter
+```
+
+Les données vivent dans `~/.local/share/darou-minane/db`, **jamais dans `/tmp`** :
+ce dossier est nettoyé au redémarrage de la machine, et un catalogue entier y a
+déjà été perdu. Le serveur est lancé détaché, il survit à la fermeture du terminal.
+
+Le script lit la base, l'utilisateur et le mot de passe dans `api/config.php` et
+crée le compte applicatif au premier démarrage. Renseignez-y le socket qu'il
+affiche :
+
+```php
+'socket' => '/home/<vous>/.local/share/darou-minane/db/s',
 ```
 
 ### Installation sur cPanel

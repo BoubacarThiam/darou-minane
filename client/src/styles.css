@@ -1506,3 +1506,41 @@ a.etiquette:hover { filter: brightness(0.96); }
 @media (prefers-reduced-motion: reduce) {
   .portail__saisie, .portail__bouton { transition: none; }
 }
+
+/* Photos en attente pendant la création d'un produit : elles ne sont pas
+   encore sur le serveur, l'aperçu vient du fichier choisi. */
+.photos-attente {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+  list-style: none;
+  margin: 0 0 var(--e-3);
+  padding: 0;
+}
+.photos-attente__element {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: var(--r-controle);
+  overflow: hidden;
+  border: 1px solid var(--bordure);
+  background: var(--photo-fond);
+}
+.photos-attente__element img { width: 100%; height: 100%; object-fit: cover; }
+.photos-attente__retirer {
+  position: absolute;
+  top: var(--e-1);
+  right: var(--e-1);
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--r-plein);
+  background: rgba(12, 10, 9, 0.82);
+  color: var(--encre);
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.photos-attente__retirer:hover { background: var(--alerte); color: var(--sur-or); }
