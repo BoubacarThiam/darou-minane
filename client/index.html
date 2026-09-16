@@ -12,7 +12,10 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&display=swap"
     />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- use-credentials : InfinityFree sert un défi anti-robot à toute requête
+         sans son cookie. Chrome récupère le manifeste sans cookie par défaut,
+         recevait donc une page HTML, et installait l'application sans logo. -->
+    <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Darou Minane" />
     <title>Darou Minane — Groupe Business Communication 626</title>
