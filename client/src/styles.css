@@ -96,11 +96,14 @@ img { max-width: 100%; display: block; }
 }
 
 .bouton-lien {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--cible-minimale);
   background: none;
   border: 0;
   padding: 0;
   font: inherit;
-  color: var(--rose-fonce);
+  color: var(--or-clair);
   text-decoration: underline;
   cursor: pointer;
 }
@@ -162,26 +165,6 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 .etiquette--alerte { background: var(--alerte-pale); color: var(--alerte); }
 .etiquette--succes { background: var(--succes-pale); color: var(--succes); }
 .etiquette--rose { background: var(--rose-pale); color: var(--rose-fonce); }
-
-/* --- Connexion ------------------------------------------------------ */
-.connexion {
-  min-height: 100%;
-  display: grid;
-  place-items: center;
-  padding: var(--e-5);
-  background: var(--rose-pale);
-}
-.connexion__carte {
-  width: 100%;
-  max-width: 380px;
-  background: var(--surface);
-  border-radius: var(--r-bloc);
-  padding: var(--e-5) var(--e-5);
-  /* Au repos, un trait : le blanc sur le rose pâle sépare déjà. */
-  border: 1px solid var(--bordure);
-}
-.connexion__marque { text-align: center; margin-bottom: var(--e-5); }
-.connexion__slogan { color: var(--gris); font-size: 0.875rem; margin-top: var(--e-1); }
 
 /* --- Ossature du back-office ---------------------------------------- */
 .admin { min-height: 100%; display: flex; flex-direction: column; }
@@ -482,15 +465,25 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 /* Ce sont les boutons les plus touchés de la caisse : ils étaient à
    38 px, sous le minimum tactile. Corriger une quantité au comptoir ne
    doit pas demander de viser. */
+/* Sans couleur déclarée, ces boutons héritaient d'un gris invisible sur
+   la nuit : mesurés à 1,13:1. Ils portent leur encre et leur surface. */
 .quantite button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: var(--cible-minimale); height: var(--cible-minimale);
-  border: 1px solid var(--bordure);
+  border: 1px solid var(--bordure-forte);
   border-radius: var(--r-controle);
-  background: var(--surface);
+  background: var(--surface-haute);
+  color: var(--encre);
   font: inherit;
   font-size: 1.125rem;
   cursor: pointer;
+  transition: border-color var(--duree-retour) var(--courbe),
+              background var(--duree-retour) var(--courbe);
 }
+.quantite button:hover:not(:disabled) { border-color: var(--or); background: var(--gris-clair); }
+.quantite button:disabled { opacity: 0.4; cursor: not-allowed; }
 .quantite span { min-width: 28px; text-align: center; font-weight: 600; }
 .panier__total { display: flex; align-items: baseline; gap: var(--c-moyen); margin: var(--c-moyen) 0; }
 .panier__total strong { font-size: 1.375rem; margin-left: auto; white-space: nowrap; }
@@ -636,8 +629,9 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   height: 18px;
   padding: 0 var(--e-1);
   border-radius: var(--r-plein);
-  background: var(--rose-fonce);
-  color: var(--blanc);
+  background: var(--or);
+  /* Encre sombre sur l'or : le blanc n'y tenait qu'à 2,94:1. */
+  color: var(--sur-or);
   font-size: 0.6875rem;
   font-weight: 600;
   line-height: 18px;
