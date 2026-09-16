@@ -412,7 +412,9 @@ de cinq minutes) ; les réponses de gestion sont en `no-store`.
 ## Mise en ligne (cPanel)
 
 ```bash
-./outils/preparer-mise-en-ligne.sh
+./outils/preparer-mise-en-ligne.sh                    # démo, sans les photos
+./outils/preparer-mise-en-ligne.sh --reel             # catalogue réel et ses photos
+./outils/preparer-mise-en-ligne.sh --reel --infinityfree
 ```
 
 Le script compile la boutique et assemble `mise-en-ligne/` : la boutique
