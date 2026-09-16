@@ -172,7 +172,14 @@ export default function VenteRapide() {
               <li key={article.id}>
                 <button type="button" className="article" onClick={() => ajouter(article)}>
                   {article.image ? (
-                    <img className="article__visuel" src={article.image} alt="" loading="lazy" />
+                    <img
+                    className="article__visuel"
+                    src={article.image}
+                    srcSet={article.image_srcset ?? undefined}
+                    sizes="72px"
+                    alt=""
+                    loading="lazy"
+                  />
                   ) : (
                     <span className="article__visuel" aria-hidden="true" />
                   )}

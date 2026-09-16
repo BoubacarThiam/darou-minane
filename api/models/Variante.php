@@ -60,6 +60,7 @@ final class Variante
             'produit_nom'  => $l['produit_nom'],
             'produit_slug' => $l['produit_slug'],
             'image'        => $l['image'] !== null ? ImageService::urlPublique($l['image']) : null,
+            'image_srcset' => $l['image'] !== null ? ImageService::srcset($l['image']) : null,
         ], $lignes);
     }
 

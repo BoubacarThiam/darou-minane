@@ -184,8 +184,26 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
 .admin__marque span { color: var(--rose-fonce); }
 .admin__compte { margin-left: auto; display: flex; align-items: center; gap: var(--c-moyen); font-size: 0.875rem; color: var(--gris); }
 .admin__marque { white-space: nowrap; }
+/* Sur téléphone, l'en-tête n'a pas la place des libellés : le nom du
+   compte et le mot « Déconnexion » cèdent la place à leurs icônes. Les
+   boutons gardent leur cible de 44 px et leur libellé pour les lecteurs
+   d'écran — à 320 px, les deux textes réclamaient 337 px pour 320. */
 @media (max-width: 699px) {
   .admin__compte .texte-petit { display: none; }
+  .admin__deconnexion-texte {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 400px) {
+  .admin__entete { gap: var(--e-2); padding-inline: var(--e-3); }
+  .admin__marque { font-size: var(--t-base); }
+  .admin__compte { gap: var(--c-petit); }
+  .admin__compte .bouton--petit { padding-inline: var(--e-2); }
 }
 
 .admin__corps { flex: 1; display: flex; min-height: 0; }

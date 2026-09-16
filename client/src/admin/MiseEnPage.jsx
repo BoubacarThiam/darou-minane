@@ -6,6 +6,7 @@ import {
   IconeBord,
   IconeCommandes,
   IconeCompte,
+  IconeSortie,
   IconeProduits,
   IconeStock,
   IconeVente,
@@ -59,8 +60,14 @@ export default function MiseEnPage() {
             <IconeCompte style={{ width: 18, height: 18 }} />
             <span className="texte-petit masque-mobile">{utilisateur.nom}</span>
           </NavLink>
-          <button type="button" className="bouton bouton--discret bouton--petit" onClick={deconnexion}>
-            Déconnexion
+          <button
+            type="button"
+            className="bouton bouton--discret bouton--petit"
+            onClick={deconnexion}
+            aria-label="Déconnexion"
+          >
+            <IconeSortie style={{ width: 18, height: 18 }} />
+            <span className="admin__deconnexion-texte">Déconnexion</span>
           </button>
         </div>
       </header>

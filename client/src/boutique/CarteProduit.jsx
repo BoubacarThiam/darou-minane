@@ -16,6 +16,10 @@ export function CarteProduit({ produit, prioritaire = false }) {
         {produit.image ? (
           <img
             src={produit.image}
+            srcSet={produit.image_srcset ?? undefined}
+            /* La vignette fait ~260 px sur grand écran, ~45 % de la largeur
+               sur téléphone : inutile d'y télécharger le fichier de 1200 px. */
+            sizes="(min-width: 700px) 260px, 45vw"
             alt={produit.nom}
             loading={prioritaire ? 'eager' : 'lazy'}
             fetchpriority={prioritaire ? 'high' : 'auto'}

@@ -98,6 +98,8 @@ export default function Produit() {
             {images[imageActive] ? (
               <img
                 src={images[imageActive].url}
+                srcSet={images[imageActive].srcset ?? undefined}
+                sizes="(min-width: 900px) 50vw, 100vw"
                 alt={`${produit.nom} — ${variante?.libelle ?? ''}`}
                 decoding="async"
               />
@@ -115,7 +117,14 @@ export default function Produit() {
                   onClick={() => setImageActive(index)}
                   aria-label={`Photo ${index + 1}`}
                 >
-                  <img src={image.url} alt="" loading="lazy" decoding="async" />
+                  <img
+                    src={image.url}
+                    srcSet={image.srcset ?? undefined}
+                    sizes="72px"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </button>
               ))}
             </div>

@@ -81,6 +81,8 @@ export function GalerieCirculaire({ produits, courbure = 46 }) {
                 {produit.image ? (
                   <img
                     src={produit.image}
+                    srcSet={produit.image_srcset ?? undefined}
+                    sizes="(min-width: 420px) 260px, 62vw"
                     alt={produit.nom}
                     loading={rang < 3 ? 'eager' : 'lazy'}
                     fetchpriority={rang < 3 ? 'high' : 'auto'}

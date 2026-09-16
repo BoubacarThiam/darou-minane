@@ -29,7 +29,7 @@ api/             PHP 8 — index.php (routeur), controllers/, models/, lib/
 api/uploads/     images produits (demo/ = visuels de démonstration)
 db/schema.sql    schéma complet
 db/seed.sql      jeu de données de démonstration
-outils/          base locale, import du catalogue, préparation de la mise en ligne
+outils/          base locale, import du catalogue, déclinaisons d'images, mise en ligne
 ```
 
 ## Base de données
@@ -140,7 +140,23 @@ back-office (redressement EXIF, 1200 px de large, WebP) : une photo importée et
 envoyée à la main donnent exactement le même fichier.
 
 Le script est **rejouable** : un produit dont le slug existe déjà est ignoré, donc un lot
-interrompu se relance sans créer de doublons.
+interrompu se relance sans créer de doublons. Un produit inscrit alors que ses photos
+n'étaient pas encore sur le disque les reçoit au passage suivant.
+
+### Poids des images
+
+Chaque photo est écrite en trois largeurs — 400 px, 800 px et l'originale (1200 px au
+plus) — et l'API renvoie un `srcset` : le navigateur télécharge la taille qui convient à
+son écran. Une vignette de catalogue fait 150 px de large sur un téléphone ; lui envoyer
+le fichier de 1200 px coûtait **72 % de plus** pour rien.
+
+Les photos envoyées depuis le back-office sont déclinées automatiquement. Pour rattraper
+celles importées avant cette évolution :
+
+```bash
+php outils/generer-declinaisons.php            # ignore ce qui existe déjà
+php outils/generer-declinaisons.php --forcer   # réécrit tout
+```
 
 ## Lancer en développement
 

@@ -120,7 +120,14 @@ export default function ListeProduits() {
             <li key={produit.id}>
               <Link className="article" to={`/admin/produits/${produit.id}`}>
                 {produit.image ? (
-                  <img className="article__visuel" src={produit.image} alt="" loading="lazy" />
+                  <img
+                    className="article__visuel"
+                    src={produit.image}
+                    srcSet={produit.image_srcset ?? undefined}
+                    sizes="72px"
+                    alt=""
+                    loading="lazy"
+                  />
                 ) : (
                   <span className="article__visuel" aria-hidden="true" />
                 )}

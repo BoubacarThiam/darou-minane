@@ -159,7 +159,83 @@ final class ImageService
         }
         @chmod($absolu, 0644);
 
+        self::declinaisons($image, $relatif, $qualite, $webp);
+
         return $relatif;
+    }
+
+    /** Largeurs servies au navigateur, en plus de l'originale. */
+    public const LARGEURS = [400, 800];
+
+    /**
+     * Écrit les versions réduites à côté de l'originale.
+     *
+     * Une vignette de catalogue fait 150 px de large sur un téléphone : lui
+     * envoyer le fichier de 1200 px, c'est dix fois le poids nécessaire sur
+     * une connexion qui se paie au mégaoctet. Le navigateur choisit ensuite
+     * la bonne taille grâce à l'attribut srcset.
+     */
+    private static function declinaisons(GdImage $image, string $relatif, int $qualite, bool $webp): void
+    {
+        $largeur = imagesx($image);
+        $hauteur = imagesy($image);
+
+        foreach (self::LARGEURS as $cible) {
+            // Pas d'agrandissement : une petite photo reste telle quelle.
+            if ($largeur <= $cible) {
+                continue;
+            }
+            $hauteurCible = (int) round($hauteur * $cible / $largeur);
+            $reduite = imagecreatetruecolor($cible, $hauteurCible);
+            imagealphablending($reduite, false);
+            imagesavealpha($reduite, true);
+            imagecopyresampled($reduite, $image, 0, 0, 0, 0, $cible, $hauteurCible, $largeur, $hauteur);
+
+            $chemin = self::dossierUploads() . '/' . self::cheminDecline($relatif, $cible);
+            if ($webp) {
+                @imagewebp($reduite, $chemin, $qualite);
+            } else {
+                $fond = imagecreatetruecolor($cible, $hauteurCible);
+                imagefill($fond, 0, 0, imagecolorallocate($fond, 255, 255, 255));
+                imagecopy($fond, $reduite, 0, 0, 0, 0, $cible, $hauteurCible);
+                @imagejpeg($fond, $chemin, $qualite);
+                imagedestroy($fond);
+            }
+            @chmod($chemin, 0644);
+            imagedestroy($reduite);
+        }
+    }
+
+    /** « 2026/09/a1b2.webp » + 400 -> « 2026/09/a1b2-400.webp ». */
+    public static function cheminDecline(string $relatif, int $largeur): string
+    {
+        $point = strrpos($relatif, '.');
+        return $point === false
+            ? "$relatif-$largeur"
+            : substr($relatif, 0, $point) . "-$largeur" . substr($relatif, $point);
+    }
+
+    /**
+     * Attribut srcset pour une image, ou null si aucune version réduite n'a
+     * été écrite (petite photo, ou fichier d'avant cette évolution).
+     */
+    public static function srcset(string $cheminRelatif): ?string
+    {
+        $entrees = [];
+        foreach (self::LARGEURS as $largeur) {
+            $decline = self::cheminDecline($cheminRelatif, $largeur);
+            if (is_file(self::dossierUploads() . '/' . $decline)) {
+                $entrees[] = self::urlPublique($decline) . " {$largeur}w";
+            }
+        }
+        if ($entrees === []) {
+            return null;
+        }
+        $infos = @getimagesize(self::dossierUploads() . '/' . $cheminRelatif);
+        $largeurOriginale = $infos !== false ? (int) $infos[0] : (int) Config::get('uploads.largeur_max', 1200);
+        $entrees[] = self::urlPublique($cheminRelatif) . " {$largeurOriginale}w";
+
+        return implode(', ', $entrees);
     }
 
     /** Supprime un fichier du dossier uploads, en refusant toute sortie du dossier. */
@@ -175,6 +251,15 @@ final class ImageService
             return;
         }
         @unlink($absolu);
+
+        // Les versions réduites partent avec l'originale, sinon elles
+        // s'accumulent sans que rien ne les référence.
+        foreach (self::LARGEURS as $largeur) {
+            $decline = realpath(self::dossierUploads() . '/' . self::cheminDecline($cheminRelatif, $largeur));
+            if ($decline !== false && str_starts_with($decline, $base . DIRECTORY_SEPARATOR)) {
+                @unlink($decline);
+            }
+        }
     }
 
     public static function dossierUploads(): string

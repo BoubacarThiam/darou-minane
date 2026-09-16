@@ -148,6 +148,8 @@ final class Produit
                 'en_stock'     => (int) $l['stock_total'] > 0,
                 'mis_en_avant' => (bool) $l['mis_en_avant'],
                 'image'        => $principale !== null ? ImageProduit::presenter($principale)['url'] : null,
+                // Le navigateur choisit la largeur qui convient à son écran.
+                'image_srcset' => $principale !== null ? ImageProduit::presenter($principale)['srcset'] : null,
             ];
         }, $lignes);
     }
@@ -228,6 +230,8 @@ final class Produit
                 'prix_max'     => (int) $l['prix_max'],
                 'alertes'      => (int) $l['alertes'],
                 'image'        => $principale !== null ? ImageProduit::presenter($principale)['url'] : null,
+                // Le navigateur choisit la largeur qui convient à son écran.
+                'image_srcset' => $principale !== null ? ImageProduit::presenter($principale)['srcset'] : null,
             ];
         }, $lignes);
 

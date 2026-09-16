@@ -99,3 +99,10 @@ export const IconeFleche = (props) => (
     <path d="M4 12h15M13 6l6 6-6 6" />
   </svg>
 )
+
+export const IconeSortie = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M15 4h3.2A1.8 1.8 0 0 1 20 5.8v12.4a1.8 1.8 0 0 1-1.8 1.8H15" />
+    <path d="M10 8 6 12l4 4M6 12h9" />
+  </svg>
+)

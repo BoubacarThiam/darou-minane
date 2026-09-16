@@ -101,6 +101,7 @@ final class ImageProduit
         return [
             'id'          => (int) $ligne['id'],
             'url'         => ImageService::urlPublique($ligne['chemin']),
+            'srcset'      => ImageService::srcset($ligne['chemin']),
             'chemin'      => $ligne['chemin'],
             'variante_id' => $ligne['variante_id'] !== null ? (int) $ligne['variante_id'] : null,
             'position'    => (int) $ligne['position'],
