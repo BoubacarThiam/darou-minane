@@ -49,6 +49,23 @@ final class TableauDeBord
                 'liste' => array_slice($alertes, 0, 5),
             ],
             'dernieres_commandes' => Commande::liste(['par_page' => 5])['donnees'],
+            // Une boutique qui démarre n'a pas de vente du jour : le catalogue
+            // et la semaine donnent au tableau de bord de quoi dire quelque chose.
+            'catalogue' => [
+                'produits_en_vente' => (int) Database::valeur(
+                    'SELECT COUNT(*) FROM produits WHERE actif = 1'
+                ),
+                'ruptures' => (int) Database::valeur(
+                    'SELECT COUNT(*) FROM variantes v JOIN produits p ON p.id = v.produit_id
+                      WHERE v.actif = 1 AND p.actif = 1 AND v.quantite = 0'
+                ),
+            ],
+            'semaine' => [
+                'nb' => (int) Database::valeur(
+                    "SELECT COUNT(*) FROM commandes
+                      WHERE statut <> 'annulee' AND created_at >= NOW() - INTERVAL 7 DAY"
+                ),
+            ],
         ];
 
         if ($avecMontants) {
@@ -56,15 +73,24 @@ final class TableauDeBord
             $resume['ventes_du_jour']['panier_moyen'] = (int) $jour['nb'] > 0
                 ? (int) round((int) $jour['total'] / (int) $jour['nb'])
                 : 0;
+            $resume['semaine']['total'] = (int) Database::valeur(
+                "SELECT COALESCE(SUM(total), 0) FROM commandes
+                  WHERE statut <> 'annulee' AND created_at >= NOW() - INTERVAL 7 DAY"
+            );
+            // Aucun prix d'achat saisi ne vaut pas « 0 FCFA d'achat » : c'est une
+            // donnée absente, pas nulle. null laisse l'écran taire la ligne.
+            $avecPrixAchat = (int) Database::valeur(
+                'SELECT COUNT(*) FROM variantes WHERE prix_achat IS NOT NULL AND prix_achat > 0'
+            ) > 0;
             $resume['valeur_stock'] = [
                 'prix_vente' => (int) Database::valeur(
                     'SELECT COALESCE(SUM(v.prix * v.quantite), 0) FROM variantes v
                        JOIN produits p ON p.id = v.produit_id WHERE v.actif = 1 AND p.actif = 1'
                 ),
-                'prix_achat' => (int) Database::valeur(
+                'prix_achat' => $avecPrixAchat ? (int) Database::valeur(
                     'SELECT COALESCE(SUM(COALESCE(v.prix_achat, 0) * v.quantite), 0) FROM variantes v
                        JOIN produits p ON p.id = v.produit_id WHERE v.actif = 1 AND p.actif = 1'
-                ),
+                ) : null,
             ];
         }
 

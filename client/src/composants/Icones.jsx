@@ -106,3 +106,24 @@ export const IconeSortie = (props) => (
     <path d="M10 8 6 12l4 4M6 12h9" />
   </svg>
 )
+
+export const IconePlus = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+)
+
+export const IconeBoutique = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M4 9.5 5.6 4h12.8L20 9.5" />
+    <path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0" />
+    <path d="M5.5 11.6V20h13v-8.4M10 20v-5h4v5" />
+  </svg>
+)
+
+export const IconeTendance = (props) => (
+  <svg {...commun} {...props}>
+    <path d="M3 17 9 11l4 4 8-8" />
+    <path d="M15 7h6v6" />
+  </svg>
+)

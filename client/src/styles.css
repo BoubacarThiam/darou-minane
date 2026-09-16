@@ -1562,3 +1562,169 @@ a.etiquette:hover { filter: brightness(0.96); }
   cursor: pointer;
 }
 .photos-attente__retirer:hover { background: var(--alerte); color: var(--sur-or); }
+
+/* =====================================================================
+   Tableau de bord — tuiles, raccourcis, état d'accueil.
+   Une boutique qui démarre n'a ni vente ni commande : c'est l'écran que
+   le commerçant verra le plus au début, il doit inviter à agir plutôt
+   qu'afficher des zéros.
+   ===================================================================== */
+.bord-page { display: flex; flex-direction: column; gap: var(--e-5); }
+.bord-page .entete-page { margin-bottom: 0; }
+.bord-page__date {
+  color: var(--or-clair);
+  font-size: var(--t-s);
+  font-weight: var(--graisse-forte);
+  margin-bottom: var(--e-1);
+}
+.bord-page__intertitre {
+  font-size: var(--t-md);
+  margin-bottom: var(--e-3);
+}
+
+/* Accueil quand aucune vente n'est encore passée */
+.bord__accueil {
+  font-family: var(--police-titre);
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.125rem);
+  line-height: 1.15;
+  color: var(--encre);
+  margin: var(--e-1) 0 var(--c-petit);
+}
+.bord__accueil-aide { color: var(--gris); font-size: var(--t-s); max-width: 44ch; }
+
+/* --- Tuiles de chiffres --------------------------------------------- */
+.tuiles {
+  display: grid;
+  gap: var(--e-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 900px) { .tuiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.tuile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--c-serre);
+  min-height: 118px;
+  padding: var(--e-4);
+  border-radius: var(--r-bloc);
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  box-shadow: var(--relief-carte);
+  color: var(--encre);
+  text-decoration: none;
+  transition: border-color var(--duree-retour) var(--courbe),
+              transform var(--duree-retour) var(--courbe);
+}
+.tuile:hover { border-color: var(--or-sombre); transform: translateY(-2px); }
+.tuile__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: var(--c-petit);
+  border-radius: var(--r-controle);
+  background: var(--attention-pale);
+  color: var(--or-clair);
+}
+.tuile__icone svg { width: 18px; height: 18px; }
+.tuile__valeur {
+  font-size: var(--t-lg);
+  font-weight: var(--graisse-forte);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.tuile__libelle { color: var(--gris); font-size: var(--t-s); line-height: 1.35; }
+
+/* --- Raccourcis ------------------------------------------------------ */
+.raccourcis {
+  display: grid;
+  gap: var(--e-3);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) { .raccourcis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .raccourcis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.raccourci {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 72px;
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--r-bloc);
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  color: var(--encre);
+  text-decoration: none;
+  transition: border-color var(--duree-retour) var(--courbe),
+              background var(--duree-retour) var(--courbe);
+}
+.raccourci:hover { border-color: var(--or); background: var(--surface-haute); }
+.raccourci strong { display: block; font-size: var(--t-base); }
+.raccourci > span:last-child > span { display: block; color: var(--gris); font-size: var(--t-s); }
+.raccourci__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-controle);
+  background: var(--surface-haute);
+  border: 1px solid var(--bordure-forte);
+  color: var(--or-clair);
+}
+.raccourci__icone svg { width: 22px; height: 22px; }
+
+/* L'action du jour se distingue : c'est elle qu'on vient chercher. */
+.raccourci--principal {
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(202, 138, 4, 0.20), transparent 60%),
+    var(--surface);
+  border-color: var(--or-sombre);
+}
+.raccourci--principal .raccourci__icone { background: var(--or); border-color: var(--or); color: var(--sur-or); }
+
+/* --- État vide accueillant ------------------------------------------ */
+.vide-accueil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--e-2);
+  padding: var(--e-6) var(--e-4);
+}
+.vide-accueil__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--e-2);
+  border-radius: var(--r-plein);
+  background:
+    radial-gradient(circle at 30% 25%, rgba(202, 138, 4, 0.28), transparent 70%),
+    var(--surface-haute);
+  border: 1px solid var(--bordure-forte);
+  color: var(--or-clair);
+}
+.vide-accueil__icone svg { width: 28px; height: 28px; }
+.vide-accueil__titre { font-family: var(--police-titre); font-size: var(--t-lg); color: var(--encre); }
+.vide-accueil__texte { color: var(--gris); font-size: var(--t-s); max-width: 40ch; margin-bottom: var(--e-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tuile, .raccourci { transition: none; }
+  .tuile:hover { transform: none; }
+}
+
+@media (max-width: 699px) {
+  .bord__secondaires {
+    margin-left: 0;
+    width: 100%;
+    padding-left: 0;
+    padding-top: var(--e-3);
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+}

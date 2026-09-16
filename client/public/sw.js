@@ -12,7 +12,10 @@
  * Jamais mis en cache : tout /api/admin/ (données de gestion) et toute
  * requête qui n'est pas un GET (commandes, connexion, stock).
  */
-const VERSION = 'v1';
+// À incrémenter dès que la coquille ou le manifeste change : l'ancien cache
+// est purgé à l'activation. v2 : nouvelles icônes d'application nuit et or,
+// sans quoi les visiteurs déjà venus garderaient l'ancien logo rose.
+const VERSION = 'v2';
 const COQUILLE = `darou-coquille-${VERSION}`;
 const RESSOURCES = `darou-ressources-${VERSION}`;
 const IMAGES = `darou-images-${VERSION}`;
