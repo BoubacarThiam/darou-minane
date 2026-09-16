@@ -95,16 +95,23 @@ et s'importe par phpMyAdmin, et il n'y a aucun accès en ligne de commande.
      Username       if0_XXXXXXX               (le même que le compte)
      Password       celui de votre compte InfinityFree
 
-   Puis Panneau > phpMyAdmin > votre base > Importer :
+   Puis Panneau > phpMyAdmin > votre base > Importer, en choisissant le
+   fichier DEPUIS VOTRE ORDINATEUR :
      - db/catalogue.sql   si vous voulez partir avec le catalogue réel
        (58 produits, leurs photos, les comptes et l'historique)
      - ou db/schema.sql seul, pour une base vide
    N'importez jamais schema.sql par-dessus catalogue.sql : il efface tout.
 
 2. FICHIERS
-   Téléversez TOUT le contenu de ce dossier dans htdocs/ :
-   index.html, assets/, icones/, sw.js, manifest.webmanifest, .htaccess,
-   api/ et db/.
+   Téléversez le contenu de ce dossier dans htdocs/ :
+   index.html, assets/, icones/, sw.js, manifest.webmanifest, .htaccess
+   et api/.
+
+   NE TÉLÉVERSEZ PAS db/ : catalogue.sql contient tout le catalogue et les
+   empreintes des mots de passe. Posé dans htdocs, n'importe qui pourrait
+   le télécharger à l'adresse du site suivie de /db/catalogue.sql. Il n'a
+   d'ailleurs rien à faire sur le serveur : phpMyAdmin l'importe depuis
+   votre ordinateur.
    Le .htaccess est un fichier caché : activez l'affichage des fichiers
    cachés dans le gestionnaire de fichiers, ou passez par FTP.
 
@@ -127,6 +134,10 @@ et s'importe par phpMyAdmin, et il n'y a aucun accès en ligne de commande.
    Vérifiez aussi boutique.whatsapp : le numéro du commerçant, sans + ni
    espaces.
 
+   Le premier accès passe par un défi anti-robot d'InfinityFree (une page
+   qui pose un cookie en JavaScript). Un navigateur le franchit seul ; un
+   outil comme curl reçoit cette page au lieu du site. C'est normal.
+
 4. VERSION DE PHP
    Panneau > PHP Config : choisissez PHP 8.0 ou plus récent. L'API utilise
    des expressions match() et des types nommés, PHP 7 les refuse.
@@ -141,8 +152,8 @@ et s'importe par phpMyAdmin, et il n'y a aucun accès en ligne de commande.
      mode hors ligne.
    - Connectez-vous au back-office et CHANGEZ les deux mots de passe de
      démonstration. Ils sont publics, ils figurent dans le dépôt.
-   - Supprimez le dossier db/ du serveur une fois l'import terminé : il
-     contient tout votre catalogue en clair.
+   - Changez le mot de passe du compte InfinityFree s'il a circulé : il
+     ouvre à la fois le FTP et la base de données.
 
 7. VÉRIFICATION
    https://votre-domaine/              la boutique s'affiche
