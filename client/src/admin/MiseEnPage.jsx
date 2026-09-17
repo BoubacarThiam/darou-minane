@@ -11,6 +11,7 @@ import {
   IconeStock,
   IconeVente,
 } from '../composants/Icones.jsx'
+import { Logo } from '../composants/Logo.jsx'
 
 /* Onglets du bas sur téléphone : les cinq écrans utilisés debout dans la
    boutique. « Mon compte » et « Équipe » vivent dans l'en-tête et dans la
@@ -53,7 +54,10 @@ export default function MiseEnPage() {
     <div className="admin">
       <header className="admin__entete">
         <div className="admin__marque">
-          Darou <span>Minane</span>
+          <Logo taille={40} className="marque__logo" />
+          <span className="marque__nom">
+            Darou <span>Minane</span>
+          </span>
         </div>
         <div className="admin__compte">
           <NavLink to="/admin/compte" className="bouton bouton--discret bouton--petit">

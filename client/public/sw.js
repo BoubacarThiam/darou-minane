@@ -13,9 +13,10 @@
  * requête qui n'est pas un GET (commandes, connexion, stock).
  */
 // À incrémenter dès que la coquille ou le manifeste change : l'ancien cache
-// est purgé à l'activation. v3 : retour au blanc et rose ; v2 : icônes nuit et or,
-// sans quoi les visiteurs déjà venus garderaient l'ancien logo rose.
-const VERSION = 'v3';
+// est purgé à l'activation. v4 : le logo officiel (sceau rose) remplace « DM » ;
+// v3 : retour au blanc et rose ; v2 : icônes nuit et or, sans quoi les
+// visiteurs déjà venus garderaient l'ancien logo.
+const VERSION = 'v4';
 const COQUILLE = `darou-coquille-${VERSION}`;
 const RESSOURCES = `darou-ressources-${VERSION}`;
 const IMAGES = `darou-images-${VERSION}`;

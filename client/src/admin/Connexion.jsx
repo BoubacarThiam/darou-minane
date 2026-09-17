@@ -9,6 +9,7 @@ import {
   IconeOeilBarre,
   IconeTelephone,
 } from '../composants/Icones.jsx'
+import { Logo } from '../composants/Logo.jsx'
 
 /**
  * Écran de connexion du back-office.
@@ -62,16 +63,9 @@ export default function Connexion() {
 
       <form className="portail__carte" onSubmit={soumettre}>
         <div className="portail__marque">
-          {/* Marque dessinée en fil de fer, dans l'or de l'écran. */}
-          <svg className="portail__sceau" viewBox="0 0 64 64" aria-hidden="true">
-            <path
-              d="M32 6 56 19v26L32 58 8 45V19z M32 6v26m0 0 24-13M32 32 8 19m24 13v26"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {/* Le sceau de la boutique : le même que l'icône de l'application,
+              pour que le propriétaire reconnaisse d'emblée chez qui il entre. */}
+          <Logo taille={104} className="portail__sceau" />
           <h1 className="portail__titre">Bon retour</h1>
           <p className="portail__slogan">Darou Minane — Groupe Business Communication 626</p>
         </div>

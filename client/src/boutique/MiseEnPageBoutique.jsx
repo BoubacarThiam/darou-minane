@@ -3,6 +3,7 @@ import { pluriel } from '../format.js'
 import { useBoutique } from '../boutique.jsx'
 import { usePanier } from '../panier.jsx'
 import { IconeCompte, IconeVente, IconeWhatsApp } from '../composants/Icones.jsx'
+import { Logo } from '../composants/Logo.jsx'
 
 export default function MiseEnPageBoutique() {
   const boutique = useBoutique()
@@ -12,11 +13,17 @@ export default function MiseEnPageBoutique() {
     <div className="boutique">
       <header className="boutique__entete">
         <Link to="/" className="boutique__marque">
-          Darou <span>Minane</span>
+          <Logo taille={40} className="marque__logo" />
+          <span className="marque__nom">
+            Darou <span>Minane</span>
+          </span>
         </Link>
 
         <nav className="boutique__liens" aria-label="Rayons">
-          <NavLink to="/catalogue">Tout le catalogue</NavLink>
+          <NavLink to="/catalogue">
+            <span className="masque-mobile">Tout le catalogue</span>
+            <span className="seul-mobile">Catalogue</span>
+          </NavLink>
         </nav>
 
         <Link

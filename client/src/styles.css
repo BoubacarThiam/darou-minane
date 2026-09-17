@@ -180,10 +180,13 @@ input::placeholder, textarea::placeholder { color: var(--gris-doux); }
   background: var(--surface);
   border-bottom: 1px solid var(--bordure);
 }
-.admin__marque { font-weight: 600; font-size: 1.0625rem; }
-.admin__marque span { color: var(--rose-fonce); }
+/* Le sceau puis le nom. Le nom a son propre span : posés directement dans
+   le contexte flex, « Darou » et « Minane » deviendraient deux éléments
+   flex et l'espace entre eux serait avalé. */
+.admin__marque { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.0625rem; white-space: nowrap; }
 .admin__compte { margin-left: auto; display: flex; align-items: center; gap: var(--c-moyen); font-size: 0.875rem; color: var(--gris); }
-.admin__marque { white-space: nowrap; }
+.marque__nom span { color: var(--rose-fonce); }
+.marque__logo { display: block; flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; }
 /* Sur téléphone, l'en-tête n'a pas la place des libellés : le nom du
    compte et le mot « Déconnexion » cèdent la place à leurs icônes. Les
    boutons gardent leur cible de 44 px et leur libellé pour les lecteurs
@@ -681,8 +684,10 @@ a.etiquette:hover { filter: brightness(0.96); }
 .fiche-donnees dt { color: var(--gris); font-size: 0.875rem; }
 .fiche-donnees dd { margin: var(--c-serre) 0 0; font-weight: 600; }
 
+.seul-mobile { display: none; }
 @media (max-width: 699px) {
   .masque-mobile { display: none; }
+  .seul-mobile { display: inline; }
 }
 
 /* Articles d'une commande : une liste, jamais un tableau qui déborde. */
@@ -739,19 +744,19 @@ a.etiquette:hover { filter: brightness(0.96); }
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--bordure);
 }
-/* inline-block et non inline-flex : la marque s'écrit « Darou <span>Minane</span> »
-   et le contexte flex avale l'espace entre les deux mots. La hauteur tactile
-   vient donc de la hauteur de ligne. */
+/* Même construction que dans le back-office : sceau, puis nom dans son
+   propre span pour garder l'espace entre « Darou » et « Minane ». */
 .boutique__marque {
-  display: inline-block;
-  line-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--encre);
   text-decoration: none;
   white-space: nowrap;
 }
-.boutique__marque span { color: var(--rose-fonce); }
 .boutique__liens { margin-left: auto; display: flex; gap: var(--e-4); }
 /* Lien de navigation, pas lien dans une phrase : il se tape au pouce et
    garde donc les 44 px, comme le bouton du panier à côté de lui. */
@@ -780,6 +785,25 @@ a.etiquette:hover { filter: brightness(0.96); }
   font-size: 0.9375rem;
 }
 .boutique__panier:hover { background: var(--rose-pale); }
+/* Avec le sceau, la marque occupe 175 px : sur téléphone, « Tout le
+   catalogue » passait sur deux lignes et poussait le panier 24 px hors de
+   l'écran à 320 px. Le lien devient « Catalogue » (voir le JSX), les
+   espacements se resserrent, et sous 360 px le sceau porte seul la marque —
+   il affiche déjà « Darou Minane » sur son anneau, et le nom reste lu par
+   les lecteurs d'écran. */
+.boutique__liens a { white-space: nowrap; }
+@media (max-width: 399px) {
+  .boutique__entete { gap: var(--e-3); }
+  .boutique__marque { gap: 8px; }
+}
+@media (max-width: 359px) {
+  .boutique__marque .marque__nom {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
 
 .boutique__contenu { flex: 1; width: 100%; max-width: 1120px; margin: 0 auto; padding: 20px var(--e-4) 56px; }
 
@@ -1416,7 +1440,7 @@ a.etiquette:hover { filter: brightness(0.96); }
 }
 
 .portail__marque { text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--c-petit); }
-.portail__sceau { width: 68px; height: 68px; color: var(--or); }
+.portail__sceau { display: block; width: 104px; height: 104px; border-radius: 50%; box-shadow: 0 10px 28px var(--halo-fort); }
 .portail__titre { font-size: var(--t-2xl); color: var(--nuit-texte); letter-spacing: -0.02em; }
 .portail__slogan { color: var(--nuit-gris); font-size: var(--t-s); }
 
