@@ -1727,3 +1727,29 @@ a.etiquette:hover { filter: brightness(0.96); }
     border-top: 1px solid var(--trait-sur-couleur);
   }
 }
+
+/* Historique des mouvements : la photo devant le nom. Dans une liste de
+   coffrets aux noms proches, on reconnaît l'article avant de lire. */
+.mouvement__article {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-width: 220px;
+}
+.mouvement__photo {
+  display: block;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-controle);
+  object-fit: cover;
+  background: var(--photo-fond);
+  box-shadow: inset 0 0 0 1px var(--photo-bordure);
+}
+.mouvement__intitule {
+  display: flex;
+  flex-direction: column;
+  gap: var(--c-serre);
+  min-width: 0;
+  line-height: var(--interligne-produit);
+}

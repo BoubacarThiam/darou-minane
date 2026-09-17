@@ -109,7 +109,13 @@ final class Stock
             "SELECT m.id, m.type, m.quantite, m.quantite_apres, m.motif, m.created_at,
                     m.commande_id, c.reference AS commande_reference,
                     m.variante_id, v.sku, v.libelle, p.id AS produit_id, p.nom AS produit_nom,
-                    u.nom AS utilisateur_nom
+                    u.nom AS utilisateur_nom,
+                    -- La photo de la déclinaison si elle en a une (le bracelet cuir
+                    -- plutôt que l'acier), sinon la première photo du produit.
+                    (SELECT i.chemin FROM images_produit i
+                      WHERE i.produit_id = p.id
+                   ORDER BY (i.variante_id = v.id) DESC, i.position
+                      LIMIT 1) AS image
                FROM mouvements_stock m
                JOIN variantes v ON v.id = m.variante_id
                JOIN produits p ON p.id = v.produit_id
@@ -137,6 +143,8 @@ final class Stock
                 'libelle'     => $l['libelle'],
                 'produit_id'  => (int) $l['produit_id'],
                 'produit_nom' => $l['produit_nom'],
+                'image'        => $l['image'] !== null ? ImageService::urlPublique($l['image']) : null,
+                'image_srcset' => $l['image'] !== null ? ImageService::srcset($l['image']) : null,
             ],
         ], $lignes);
     }

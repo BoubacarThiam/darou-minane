@@ -171,16 +171,40 @@ export default function Stock() {
                       </span>
                     </td>
                     <td>
-                      <Link to={`/admin/produits/${mouvement.variante.produit_id}`}>
-                        {mouvement.variante.produit_nom}
-                      </Link>
-                      <span className="texte-petit texte-gris"> · {mouvement.variante.libelle}</span>
+                      {/* La photo d'abord : dans une liste de coffrets aux noms
+                          proches, on reconnaît l'article avant de lire son nom. */}
+                      <span className="mouvement__article">
+                        {mouvement.variante.image ? (
+                          <img
+                            className="mouvement__photo"
+                            src={mouvement.variante.image}
+                            srcSet={mouvement.variante.image_srcset ?? undefined}
+                            sizes="44px"
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <span className="mouvement__photo" aria-hidden="true" />
+                        )}
+                        <span className="mouvement__intitule">
+                          <Link to={`/admin/produits/${mouvement.variante.produit_id}`}>
+                            {mouvement.variante.produit_nom}
+                          </Link>
+                          <span className="texte-petit texte-gris">{mouvement.variante.libelle}</span>
+                        </span>
+                      </span>
                     </td>
                     <td>{delta(mouvement.quantite)}</td>
                     <td>{mouvement.quantite_apres}</td>
                     <td className="texte-petit">
                       {mouvement.motif ?? '—'}
-                      {mouvement.commande_reference ? ` (${mouvement.commande_reference})` : ''}
+                      {/* Le motif d'une vente contient déjà sa référence : la
+                          rajouter entre parenthèses l'écrivait deux fois. */}
+                      {mouvement.commande_reference &&
+                      !(mouvement.motif ?? '').includes(mouvement.commande_reference)
+                        ? ` (${mouvement.commande_reference})`
+                        : ''}
                     </td>
                     <td className="texte-petit">{mouvement.utilisateur ?? '—'}</td>
                   </tr>
