@@ -13,57 +13,65 @@
    ===================================================================== */
 
 :root {
-  /* --- Identité : nuit et or ------------------------------------------
-     Le catalogue est fait de flacons noir et or, de cadrans acier et de
-     verres fumés. Le fond sombre les sert : le produit devient la seule
-     source de lumière de l'écran. Palette issue du skill ui-ux-pro-max
-     pour « e-commerce de luxe », recoupée avec la maquette de connexion
-     validée par le propriétaire.
+  /* --- Identité : blanc et rose --------------------------------------
+     Retour à la couleur de l'enseigne, à la demande du propriétaire : fond
+     blanc, rose poudré pour la marque et les actions. La mise en page, les
+     polices et les composants ne changent pas — seules les valeurs de ce
+     fichier et les lueurs ci-dessous.
 
-     Contrastes mesurés sur la surface des cartes (#16130F) :
-     ivoire 16,1:1 · ivoire doux 9,9:1 · or 6,0:1 · or clair 10,3:1. */
-  --nuit: #0c0a09;          /* la page                                    */
-  --surface: #16130f;       /* cartes, panneaux, en-têtes                 */
-  --surface-haute: #1e1a16; /* champs, surfaces posées sur une carte      */
-  --surface-photo: #100e0c; /* derrière une photographie                  */
+     Contrastes mesurés sur blanc : encre 16,4:1 · gris 6,4:1 ·
+     rose foncé 5,2:1 · blanc sur rose foncé 5,2:1. */
+  --nuit: #ffffff;          /* la page (nom conservé pour ne rien casser)  */
+  --surface: #ffffff;       /* cartes, panneaux, en-têtes                 */
+  --surface-haute: #fbf1f4; /* champs, surfaces posées sur une carte      */
+  --surface-photo: #f6f1f3; /* derrière une photographie                  */
 
-  --or: #ca8a04;            /* action principale, prix, état actif        */
-  --or-clair: #e9c46a;      /* liens et accents sur fond sombre           */
-  --or-doux: #f0d5a8;       /* survol                                     */
-  --or-sombre: #8a5f03;     /* aplats profonds                            */
-  --sur-or: #1a1206;        /* texte posé sur un aplat doré               */
+  --or: #a84f70;            /* action principale, prix, état actif        */
+  --or-clair: #a84f70;      /* liens et accents                           */
+  --or-doux: #c86b8c;       /* survol                                     */
+  --or-sombre: #8f4160;     /* aplats profonds                            */
+  --sur-or: #ffffff;        /* texte posé sur un aplat rose               */
 
-  --encre: #f5f1ea;         /* texte principal (ivoire)                   */
-  --gris: #c0b8ab;          /* texte secondaire                           */
-  --gris-doux: #9a9187;     /* indications de saisie                      */
-  --gris-clair: #221e19;    /* aplat discret                              */
-  --bordure: #2a2520;
-  --bordure-forte: #3b352e;
-  --blanc: #ffffff;         /* réservé au texte posé sur une couleur      */
+  --encre: #1e181b;         /* texte principal                            */
+  --gris: #6b5a61;          /* texte secondaire                           */
+  --gris-doux: #8a757c;     /* indications de saisie (4,6:1 sur blanc)    */
+  --gris-clair: #f6eff2;    /* aplat discret                              */
+  --bordure: #eadde2;
+  --bordure-forte: #d6c3ca;
+  --blanc: #ffffff;
 
-  /* Le rose de l'enseigne reste, en signature discrète. */
-  --rose: #c86b8c;
-  --rose-fonce: #ca8a04;    /* les anciens appels d'action passent à l'or */
-  --rose-sombre: #a8730a;
-  --rose-pale: #1b1712;     /* ex-fond rosé : devient un aplat sombre     */
-  --rose-clair: #3b352e;
+  --rose: #c86b8c;          /* la marque : logo, traits, halos            */
+  --rose-fonce: #a84f70;    /* action, lien, état actif                   */
+  --rose-sombre: #8f4160;   /* survol et aplats profonds                  */
+  --rose-pale: #fbf1f4;     /* fonds de section                           */
+  --rose-clair: #f2d7e0;    /* bordures teintées                          */
 
-  /* --- Surface des photographies -------------------------------------
-     Presque noir : une photo à fond studio blanc se découpe franchement,
-     un flacon noir se fond dans la page. */
-  --photo-fond: #100e0c;
-  --photo-bordure: #2a2520;
+  /* --- Surface des photographies ------------------------------------- */
+  --photo-fond: #f6f1f3;
+  --photo-bordure: #ecdfe4;
 
-  /* --- États ----------------------------------------------------------
-     Retenus pour tenir sur fond sombre, pas sur blanc. */
-  --succes: #5fd0a0;
-  --succes-pale: #10251d;
-  --attention: #e9b949;
-  --attention-pale: #2a2110;
-  --alerte: #f08a80;
-  --alerte-pale: #2d1512;
-  --info: #8fb3f0;
-  --info-pale: #141c2b;
+  /* --- États : retenus pour tenir sur fond blanc -------------------- */
+  --succes: #12674a;        /* 7,1:1                                      */
+  --succes-pale: #e6f3ee;
+  --attention: #8a5a00;     /* 5,9:1 — stock bas                          */
+  --attention-pale: #faf1de;
+  --alerte: #a4231c;        /* 7,5:1                                      */
+  --alerte-pale: #fdeceb;
+  --info: #2c4a86;          /* 8,2:1                                      */
+  --info-pale: #e8eefb;
+
+  /* --- Lueurs et reflets ----------------------------------------------
+     Ces valeurs étaient écrites en dur dans la feuille de style, pensées
+     pour un fond sombre. Elles vivent ici pour suivre la palette. */
+  --verre: rgba(255, 255, 255, 0.9);            /* en-têtes collants       */
+  --halo-fort: rgba(200, 107, 140, 0.20);       /* lueur rose marquée      */
+  --halo-doux: rgba(200, 107, 140, 0.12);       /* lueur rose discrète     */
+  --anneau-focus: rgba(168, 79, 112, 0.22);     /* contour des champs      */
+  --anneau-erreur: rgba(164, 35, 28, 0.18);
+  --sur-couleur: #ffffff;                       /* texte sur aplat rose    */
+  --sur-couleur-doux: rgba(255, 255, 255, 0.95);
+  --trait-sur-couleur: rgba(255, 255, 255, 0.28);
+  --reflet-sur-couleur: rgba(255, 255, 255, 0.18);
 
   /* --- Typographie ----------------------------------------------------
      Une famille, celle du système : sur une connexion de Tambacounda,
@@ -124,21 +132,21 @@
   /* --- Élévation : deux niveaux ---------------------------------------
      Au repos, une carte porte un trait, jamais une ombre. L'ombre grise
      identique sous chaque bloc est la signature du gabarit. */
-  --relief-flottant: 0 14px 40px rgba(0, 0, 0, 0.55);
-  --relief-survol: 0 6px 18px rgba(0, 0, 0, 0.45);
-  --relief-barre: 0 -10px 30px rgba(0, 0, 0, 0.5); /* barres collantes */
+  --relief-flottant: 0 6px 20px rgba(30, 24, 27, 0.10);
+  --relief-survol: 0 4px 14px rgba(30, 24, 27, 0.10);
+  --relief-barre: 0 -6px 24px rgba(30, 24, 27, 0.12); /* barres collantes */
   /* Relief au repos sous les cartes du back-office. Demandé explicitement
      par le propriétaire, en écart assumé avec la règle « au repos, un
      trait, jamais une ombre » énoncée plus haut. */
-  --relief-carte: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --relief-carte: 0 1px 2px rgba(30, 24, 27, 0.05), 0 4px 14px rgba(30, 24, 27, 0.06);
 
   /* --- Aplats décoratifs ----------------------------------------------
      Réservés au back-office, à la demande du propriétaire. Le blanc sur
      le dégradé rosé reste à 5,2:1, au-dessus du seuil de lisibilité. */
-  --degrade-mesure: linear-gradient(135deg, #3a2a0c 0%, #241a08 58%, #16130f 100%);
-  --degrade-rose-doux: linear-gradient(170deg, #17140f 0%, #100e0c 100%);
+  --degrade-mesure: linear-gradient(135deg, #a84f70 0%, #8f4160 62%, #7b3552 100%);
+  --degrade-rose-doux: linear-gradient(170deg, #fdf6f8 0%, #f8e9ef 100%);
   /* Fond de l'espace de travail : les cartes blanches s'y détachent. */
-  --fond-atelier: #0f0d0b;
+  --fond-atelier: #faf5f7;
 
   --hauteur-tactile: 48px;
   --cible-minimale: 44px;
@@ -158,17 +166,18 @@
   --duree-entree: 260ms;    /* entrée d'élément                           */
   --courbe: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* --- Portail de connexion (sombre et or) -----------------------------
-     Écran d'atelier demandé par le propriétaire. Palette propre à cet
-     écran : elle ne déborde nulle part ailleurs. */
-  --nuit: #0c0b0d;
-  --nuit-carte: #141316;
-  --nuit-champ: #1b1a1e;
-  --nuit-trait: #2b2930;
-  --or: #d8b078;
-  --or-clair: #f0d5a8;
-  --or-sombre: #a9793f;
-  --nuit-texte: #f4f1ee;
-  --nuit-gris: #a8a29c;
-  --degrade-or: linear-gradient(100deg, #cfa068 0%, #e8c894 48%, #c99a5f 100%);
+  /* --- Portail de connexion ------------------------------------------
+     Même disposition qu'avant, en blanc et rose. Ces jetons ne
+     redéfinissent plus --nuit, --or, --or-clair ni --or-sombre : placés en
+     fin de fichier, ils écrasaient la palette principale pour toute l'app. */
+  --nuit-carte: #ffffff;
+  --nuit-champ: #fbf1f4;
+  --nuit-trait: #eadde2;
+  --nuit-texte: #1e181b;
+  --nuit-gris: #6b5a61;
+  --portail-fond: #fdf6f8;
+  --portail-halo: rgba(200, 107, 140, 0.16);
+  --portail-trame: rgba(168, 79, 112, 0.05);
+  --portail-ombre: 0 24px 60px rgba(143, 65, 96, 0.14);
+  --degrade-or: linear-gradient(100deg, #8f4160 0%, #a84f70 50%, #8f4160 100%);
 }

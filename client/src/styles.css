@@ -131,14 +131,14 @@ input:hover:not(:disabled), select:hover:not(:disabled), textarea:hover:not(:dis
 }
 input:focus, select:focus, textarea:focus {
   border-color: var(--or);
-  box-shadow: 0 0 0 3px rgba(202, 138, 4, 0.22);
+  box-shadow: 0 0 0 3px var(--anneau-focus);
   outline: none;
 }
 input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] {
   border-color: var(--alerte);
 }
 input[aria-invalid="true"]:focus, textarea[aria-invalid="true"]:focus {
-  box-shadow: 0 0 0 3px rgba(240, 138, 128, 0.22);
+  box-shadow: 0 0 0 3px var(--anneau-erreur);
 }
 input:disabled, select:disabled, textarea:disabled {
   background: var(--gris-clair);
@@ -720,7 +720,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   align-items: center;
   gap: var(--e-4);
   padding: var(--e-3) var(--e-4);
-  background: rgba(12, 10, 9, 0.82);
+  background: var(--verre);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--bordure);
 }
@@ -1028,7 +1028,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   margin: 0;
   padding: var(--c-moyen) var(--e-4);
   background: var(--or-sombre);
-  color: var(--encre);
+  color: var(--sur-couleur);
   font-size: 0.875rem;
   text-align: center;
 }
@@ -1136,11 +1136,10 @@ a.etiquette:hover { filter: brightness(0.96); }
    photos qui suivent. Nuit profonde, lueur chaude, filet d'or. */
 .accroche {
   background:
-    radial-gradient(70% 120% at 12% 0%, rgba(202, 138, 4, 0.22), transparent 62%),
-    radial-gradient(50% 90% at 92% 100%, rgba(202, 138, 4, 0.14), transparent 65%),
-    var(--surface);
-  border: 1px solid var(--bordure-forte);
-  color: var(--encre);
+    radial-gradient(70% 120% at 12% 0%, var(--reflet-sur-couleur), transparent 62%),
+    var(--degrade-mesure);
+  border: 0;
+  color: var(--sur-couleur);
   border-radius: var(--r-media);
   padding: clamp(24px, 4vw, 44px);
   display: flex;
@@ -1154,18 +1153,18 @@ a.etiquette:hover { filter: brightness(0.96); }
   max-width: 18ch;
 }
 /* 0,92 d'opacité : 4,7:1 sur le rose foncé, au-dessus du seuil de lisibilité. */
-.accroche p { color: rgba(255, 255, 255, 0.92); max-width: 46ch; margin: 0; }
+.accroche p { color: var(--sur-couleur-doux); max-width: 46ch; margin: 0; }
 .accroche__faits {
   display: flex;
   flex-wrap: wrap;
   gap: var(--e-2) var(--e-5);
   margin-top: var(--e-2);
   padding-top: var(--e-4);
-  border-top: 1px solid var(--bordure-forte);
+  border-top: 1px solid var(--trait-sur-couleur);
 }
 .accroche__fait { display: flex; flex-direction: column; gap: var(--c-serre); min-width: 150px; }
-.accroche__fait strong { font-size: var(--t-s); color: var(--or-clair); }
-.accroche__fait span { color: rgba(255, 255, 255, 0.92); font-size: var(--t-s); }
+.accroche__fait strong { font-size: var(--t-s); color: var(--sur-couleur); }
+.accroche__fait span { color: var(--sur-couleur-doux); font-size: var(--t-s); }
 
 /* --- Barre d'achat collante (fiche produit sur téléphone) -------------
    Dès que le bouton d'origine sort de l'écran, l'achat reste à portée
@@ -1222,7 +1221,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   width: 320px;
   height: 320px;
   border-radius: var(--r-plein);
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 62%);
+  background: radial-gradient(circle, var(--reflet-sur-couleur), transparent 62%);
   pointer-events: none;
 }
 .bord__principal > * { position: relative; z-index: 1; }
@@ -1235,24 +1234,24 @@ a.etiquette:hover { filter: brightness(0.96); }
   color: var(--blanc);
 }
 .bord__mesure-titre {
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--sur-couleur-doux);
   font-size: var(--t-s);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.bord__principal .texte-gris { color: rgba(255, 255, 255, 0.95); }
+.bord__principal .texte-gris { color: var(--sur-couleur-doux); }
 .bord__secondaires {
   display: flex;
   gap: var(--e-5);
   flex-wrap: wrap;
   margin-left: auto;
   padding-left: var(--e-5);
-  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  border-left: 1px solid var(--trait-sur-couleur);
 }
 .bord__secondaire { display: flex; flex-direction: column; gap: var(--c-serre); }
 .bord__secondaire strong { font-size: var(--t-xl); font-variant-numeric: tabular-nums; }
-.bord__secondaire span { color: rgba(255, 255, 255, 0.95); font-size: var(--t-s); }
+.bord__secondaire span { color: var(--sur-couleur-doux); font-size: var(--t-s); }
 
 .bord__panneau {
   border: 1px solid var(--bordure);
@@ -1358,7 +1357,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   padding: var(--e-5) var(--e-4);
-  background: var(--nuit);
+  background: var(--portail-fond);
   position: relative;
   overflow: hidden;
 }
@@ -1370,10 +1369,10 @@ a.etiquette:hover { filter: brightness(0.96); }
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(60% 45% at 18% 78%, rgba(216, 176, 120, 0.16), transparent 70%),
-    radial-gradient(45% 35% at 82% 12%, rgba(216, 176, 120, 0.10), transparent 72%),
-    repeating-linear-gradient(0deg, rgba(255,255,255,0.022) 0 1px, transparent 1px 44px),
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.022) 0 1px, transparent 1px 44px);
+    radial-gradient(60% 45% at 18% 78%, var(--portail-halo), transparent 70%),
+    radial-gradient(45% 35% at 82% 12%, var(--halo-doux), transparent 72%),
+    repeating-linear-gradient(0deg, var(--portail-trame) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, var(--portail-trame) 0 1px, transparent 1px 44px);
 }
 
 .portail__carte {
@@ -1384,7 +1383,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   border-radius: var(--r-media);
   background: var(--nuit-carte);
   border: 1px solid var(--nuit-trait);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  box-shadow: var(--portail-ombre);
   display: flex;
   flex-direction: column;
   gap: var(--e-4);
@@ -1420,7 +1419,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   transition: border-color var(--duree-retour) var(--courbe),
               box-shadow var(--duree-retour) var(--courbe);
 }
-.portail__saisie:focus-within { border-color: var(--or); box-shadow: 0 0 0 3px rgba(216, 176, 120, 0.18); }
+.portail__saisie:focus-within { border-color: var(--or); box-shadow: 0 0 0 3px var(--anneau-focus); }
 .portail__icone { width: 20px; height: 20px; color: var(--or-sombre); flex: 0 0 20px; }
 
 /* La règle globale des champs est écrite en `input:not(...):not(...):not(...)`
@@ -1471,8 +1470,8 @@ a.etiquette:hover { filter: brightness(0.96); }
 .portail__erreur {
   padding: var(--c-moyen) var(--e-3);
   border-radius: var(--r-controle);
-  background: rgba(164, 35, 28, 0.18);
-  border: 1px solid rgba(240, 164, 156, 0.38);
+  background: var(--alerte-pale);
+  border: 1px solid var(--alerte);
   color: var(--alerte);
   font-size: var(--t-s);
 }
@@ -1555,7 +1554,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   place-items: center;
   border: 0;
   border-radius: var(--r-plein);
-  background: rgba(12, 10, 9, 0.82);
+  background: var(--verre);
   color: var(--encre);
   font-size: 1.125rem;
   line-height: 1;
@@ -1587,10 +1586,10 @@ a.etiquette:hover { filter: brightness(0.96); }
   font-family: var(--police-titre);
   font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.125rem);
   line-height: 1.15;
-  color: var(--encre);
+  color: var(--sur-couleur);
   margin: var(--e-1) 0 var(--c-petit);
 }
-.bord__accueil-aide { color: var(--gris); font-size: var(--t-s); max-width: 44ch; }
+.bord__accueil-aide { color: var(--sur-couleur-doux); font-size: var(--t-s); max-width: 44ch; }
 
 /* --- Tuiles de chiffres --------------------------------------------- */
 .tuiles {
@@ -1624,7 +1623,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   height: 34px;
   margin-bottom: var(--c-petit);
   border-radius: var(--r-controle);
-  background: var(--attention-pale);
+  background: var(--rose-pale);
   color: var(--or-clair);
 }
 .tuile__icone svg { width: 18px; height: 18px; }
@@ -1680,7 +1679,7 @@ a.etiquette:hover { filter: brightness(0.96); }
 /* L'action du jour se distingue : c'est elle qu'on vient chercher. */
 .raccourci--principal {
   background:
-    radial-gradient(120% 140% at 0% 0%, rgba(202, 138, 4, 0.20), transparent 60%),
+    radial-gradient(120% 140% at 0% 0%, var(--halo-fort), transparent 60%),
     var(--surface);
   border-color: var(--or-sombre);
 }
@@ -1704,7 +1703,7 @@ a.etiquette:hover { filter: brightness(0.96); }
   margin-bottom: var(--e-2);
   border-radius: var(--r-plein);
   background:
-    radial-gradient(circle at 30% 25%, rgba(202, 138, 4, 0.28), transparent 70%),
+    radial-gradient(circle at 30% 25%, var(--halo-fort), transparent 70%),
     var(--surface-haute);
   border: 1px solid var(--bordure-forte);
   color: var(--or-clair);
@@ -1725,6 +1724,6 @@ a.etiquette:hover { filter: brightness(0.96); }
     padding-left: 0;
     padding-top: var(--e-3);
     border-left: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid var(--trait-sur-couleur);
   }
 }
