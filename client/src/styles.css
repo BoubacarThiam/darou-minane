@@ -697,6 +697,21 @@ a.etiquette:hover { filter: brightness(0.96); }
 .lignes-commande li:last-child { border-bottom: 0; }
 .lignes-commande__nom { flex: 1; min-width: 0; font-weight: 600; }
 .lignes-commande__nom span { display: block; font-weight: 400; }
+/* Photo de l'article commandé : on prépare la commande en reconnaissant le
+   coffret en rayon, pas en relisant son nom. */
+.lignes-commande__photo {
+  display: block;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-controle);
+  object-fit: cover;
+  background: var(--photo-fond);
+  box-shadow: inset 0 0 0 1px var(--photo-bordure);
+}
+@media (max-width: 399px) {
+  .lignes-commande__photo { flex-basis: 52px; width: 52px; height: 52px; }
+}
 
 @media (max-width: 699px) {
   /* Sur téléphone, une action principale se prend au pouce : pleine largeur. */

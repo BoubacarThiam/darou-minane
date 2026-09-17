@@ -137,8 +137,27 @@ export default function CommandeDetail() {
         <ul className="lignes-commande">
           {commande.lignes.map((ligne) => (
             <li key={ligne.id}>
+              {/* La photo aide à préparer la commande : on va chercher en rayon
+                  le coffret qu'on reconnaît, pas un nom qu'on relit. */}
+              {ligne.image ? (
+                <img
+                  className="lignes-commande__photo"
+                  src={ligne.image}
+                  srcSet={ligne.image_srcset ?? undefined}
+                  sizes="64px"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <span className="lignes-commande__photo" aria-hidden="true" />
+              )}
               <span className="lignes-commande__nom">
-                {ligne.libelle}
+                {ligne.produit_id ? (
+                  <Link to={`/admin/produits/${ligne.produit_id}`}>{ligne.libelle}</Link>
+                ) : (
+                  ligne.libelle
+                )}
                 <span className="texte-gris texte-petit">
                   {ligne.quantite} × {fcfa(ligne.prix_unitaire)}
                 </span>

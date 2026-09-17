@@ -350,12 +350,27 @@ final class Commande
             $commande['lignes'] = array_map(static fn(array $l): array => [
                 'id'            => (int) $l['id'],
                 'variante_id'   => $l['variante_id'] !== null ? (int) $l['variante_id'] : null,
+                'produit_id'    => $l['produit_id'] !== null ? (int) $l['produit_id'] : null,
                 'libelle'       => $l['libelle_fige'],
                 'prix_unitaire' => (int) $l['prix_unitaire'],
                 'quantite'      => (int) $l['quantite'],
                 'total_ligne'   => (int) $l['total_ligne'],
+                'image'         => $l['image'] !== null ? ImageService::urlPublique($l['image']) : null,
+                'image_srcset'  => $l['image'] !== null ? ImageService::srcset($l['image']) : null,
             ], Database::toutes(
-                'SELECT * FROM lignes_commande WHERE commande_id = ? ORDER BY id',
+                // Le libellé et le prix restent ceux figés à la commande ; seule
+                // la photo vient du catalogue actuel. Si la déclinaison a été
+                // supprimée depuis, la jointure ne trouve rien et la ligne
+                // s'affiche sans photo, sans casser la commande.
+                'SELECT l.*, v.produit_id,
+                        (SELECT i.chemin FROM images_produit i
+                          WHERE i.produit_id = v.produit_id
+                       ORDER BY (i.variante_id = l.variante_id) DESC, i.position
+                          LIMIT 1) AS image
+                   FROM lignes_commande l
+              LEFT JOIN variantes v ON v.id = l.variante_id
+                  WHERE l.commande_id = ?
+               ORDER BY l.id',
                 [(int) $ligne['id']]
             ));
         }
