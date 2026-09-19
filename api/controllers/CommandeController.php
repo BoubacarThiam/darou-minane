@@ -52,6 +52,8 @@ final class CommandeController
         $email = $v->email('client_email');
         if ($donnees['mode_paiement'] === 'mobile_money' && !SasPay::actif()) {
             $v->ajouterErreur('mode_paiement', 'Le paiement mobile n\'est pas disponible : choisissez le paiement à la livraison.');
+        } elseif ($donnees['mode_paiement'] === 'mobile_money' && $email === null && SasPay::emailRequis()) {
+            $v->ajouterErreur('client_email', 'Indiquez votre e-mail : le service de paiement l\'exige pour vous envoyer le reçu.');
         }
         $v->valider();
 

@@ -28,6 +28,15 @@ final class SasPay
     }
 
     /**
+     * SasPay refuse une page de paiement sans e-mail client (400). Sans
+     * e-mail de boutique pour le remplacer, le client doit donner le sien.
+     */
+    public static function emailRequis(): bool
+    {
+        return trim((string) Config::get('paiement.saspay.email_par_defaut', '')) === '';
+    }
+
+    /**
      * @param array<string, mixed> $donnees corps de POST /checkout-sessions/
      * @return array{id: string, checkout_url: string, status?: string}
      */

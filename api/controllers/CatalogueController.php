@@ -22,6 +22,7 @@ final class CatalogueController
             // Vrai dès qu'une clé SasPay est configurée : la boutique propose
             // alors Wave, Orange Money et Free Money en plus des espèces.
             'paiement_mobile' => SasPay::actif(),
+            'paiement_email_requis' => SasPay::actif() && SasPay::emailRequis(),
         ]);
     }
 

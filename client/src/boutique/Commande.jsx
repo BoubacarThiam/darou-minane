@@ -162,14 +162,19 @@ export default function Commande() {
 
           {mobile && (
             <Champ
-              libelle="E-mail (facultatif)"
+              libelle={boutique.paiement_email_requis ? 'E-mail' : 'E-mail (facultatif)'}
               type="email"
               inputMode="email"
               value={email}
               erreur={champs.client_email}
               onChange={(evenement) => setEmail(evenement.target.value)}
-              aide="Pour recevoir le reçu du paiement."
+              aide={
+                boutique.paiement_email_requis
+                  ? 'Exigé par le service de paiement, pour vous envoyer le reçu.'
+                  : 'Pour recevoir le reçu du paiement.'
+              }
               autoComplete="email"
+              required={boutique.paiement_email_requis}
             />
           )}
 
