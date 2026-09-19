@@ -236,6 +236,48 @@ dans la même transaction, et la commande arrive non lue dans le back-office
 (badge + son). Dix commandes par heure et par appareil au maximum (`429`
 au-delà) : la boutique est ouverte à tous, pas aux robots.
 
+### Paiement mobile money (SasPay)
+
+Le client choisit à la commande : **à la livraison** (espèces) ou
+**maintenant** par Wave, Orange Money ou Free Money, via la page de paiement
+hébergée de [SasPay](https://docs.saspay.me). Le choix n'apparaît que si une
+clé SasPay est configurée ; sans clé, rien ne change.
+
+| Méthode | Route | Description |
+|---|---|---|
+| `POST` | `/commandes` | `mode_paiement: "mobile_money"` (+ `client_email` facultatif) → la réponse contient `paiement.url`, la page SasPay où envoyer le client |
+| `POST` | `/paiements/verifier` | `{jeton}` du lien de retour → le serveur relit le paiement chez SasPay et renvoie son état |
+| `POST` | `/admin/commandes/{id}/paiement/verifier` | bouton « Vérifier le paiement » du back-office |
+
+- **Aucun statut n'est cru sur parole.** Le navigateur ne fait que demander
+  une relecture ; le serveur interroge SasPay (session puis transaction) et
+  n'écrit « payé » que si la transaction dit `SUCCESS` pour le montant exact
+  de la commande, en francs CFA.
+- **Pas de webhook.** L'hébergement gratuit sert une page anti-robot à toute
+  requête qui ne vient pas d'un navigateur : les notifications de SasPay
+  n'arriveraient jamais. Le paiement est donc relu au retour du client et à
+  chaque ouverture de la commande dans le back-office.
+- **Un seul lien par commande.** Un client qui revient en arrière retrouve la
+  même page de paiement, jamais une seconde : il ne peut pas payer deux fois.
+- **SasPay en panne ?** La commande est gardée et bascule en paiement à la
+  livraison ; le client en est averti.
+- Livrer une commande déjà payée la termine (statut `payee`). L'annuler est
+  réservé au propriétaire, qui doit alors rembourser le client.
+
+Mise en service :
+
+1. Créer le compte sur [app.saspay.me](https://app.saspay.me), faire valider
+   le dossier (KYC), puis créer une clé API (section Développeur) : `sk_test_…`
+   pour essayer, `sk_live_…` pour encaisser. Scope `PAYIN` suffit.
+2. Base existante : exécuter une fois `db/migration-paiement-mobile.sql`.
+3. Dans `api/config.php` : `app.url_publique` (adresse du site, pour le retour
+   du client), `paiement.saspay.cle_api` et `paiement.saspay.email_par_defaut`
+   (SasPay exige un e-mail client ; celui de la boutique sert quand le client
+   n'en donne pas).
+
+La clé reste sur le serveur : le navigateur ne reçoit que l'adresse de la page
+de paiement.
+
 Paramètres de `/produits` : `q`, `categorie` (slug), `prix_min`, `prix_max`,
 `mis_en_avant`, `tri` (`recent` par défaut, `nom`, `prix_asc`, `prix_desc`),
 `page`, `par_page` (12 par défaut, 60 max). Le filtre prix garde les produits

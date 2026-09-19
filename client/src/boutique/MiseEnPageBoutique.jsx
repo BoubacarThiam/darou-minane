@@ -49,7 +49,8 @@ export default function MiseEnPageBoutique() {
             Darou Minane <span className="texte-gris">— {boutique.slogan}</span>
           </p>
           <p className="texte-gris texte-petit">
-            Livraison à {boutique.zone_livraison} · frais à convenir · paiement à la livraison.
+            Livraison à {boutique.zone_livraison} · frais à convenir · paiement à la livraison
+            {boutique.paiement_mobile ? ' ou par mobile money.' : '.'}
           </p>
         </div>
         <div className="boutique__pied-actions">

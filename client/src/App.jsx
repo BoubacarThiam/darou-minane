@@ -12,6 +12,7 @@ import Produit from './boutique/Produit.jsx'
 import PagePanier from './boutique/PagePanier.jsx'
 import Commande from './boutique/Commande.jsx'
 import Confirmation from './boutique/Confirmation.jsx'
+import PaiementRetour from './boutique/PaiementRetour.jsx'
 
 /* Le back-office est chargé à la demande : un client venu acheter un
    diffuseur ne télécharge pas les écrans de gestion. */
@@ -40,6 +41,7 @@ export default function App() {
               <Route path="/panier" element={<PagePanier />} />
               <Route path="/commande" element={<Commande />} />
               <Route path="/commande/confirmation" element={<Confirmation />} />
+              <Route path="/commande/paiement" element={<PaiementRetour />} />
               <Route
                 path="*"
                 element={

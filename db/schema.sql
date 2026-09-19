@@ -13,6 +13,7 @@ SET NAMES utf8mb4;
 SET time_zone = '+00:00';
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS paiements;
 DROP TABLE IF EXISTS lignes_commande;
 DROP TABLE IF EXISTS mouvements_stock;
 DROP TABLE IF EXISTS commandes;
@@ -153,6 +154,9 @@ CREATE TABLE commandes (
   client_note      TEXT         NULL,
   statut           ENUM('nouvelle','confirmee','en_livraison','livree','payee','annulee')
                    NOT NULL DEFAULT 'nouvelle',
+  mode_paiement    ENUM('livraison','mobile_money') NOT NULL DEFAULT 'livraison'
+                   COMMENT 'choix du client : espèces au livreur, ou mobile money par SasPay',
+  paye_en_ligne_le DATETIME     NULL COMMENT 'renseigné quand SasPay confirme le paiement',
   total            INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FCFA, hors livraison (à convenir)',
   vue              TINYINT(1)   NOT NULL DEFAULT 0,
   utilisateur_id   INT UNSIGNED NULL COMMENT 'vendeur (ventes comptoir)',
@@ -189,6 +193,39 @@ CREATE TABLE lignes_commande (
   CONSTRAINT fk_lignes_variante FOREIGN KEY (variante_id)
     REFERENCES variantes (id) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT ck_lignes_quantite CHECK (quantite > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- paiements : une page de paiement SasPay (mobile money) par tentative.
+-- Un client qui réessaie ouvre une nouvelle ligne ; l'ancienne session
+-- est annulée chez SasPay pour qu'il ne puisse pas payer deux fois.
+-- Le statut n'est JAMAIS écrit sur la foi du navigateur : seule une
+-- relecture chez SasPay (Paiement::verifier) le fait passer à « paye ».
+-- jeton = secret du lien de retour du client (?j=...), 128 bits.
+-- ---------------------------------------------------------------------
+CREATE TABLE paiements (
+  id                INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  commande_id       INT UNSIGNED NOT NULL,
+  session_id        VARCHAR(64)  NOT NULL COMMENT 'session de checkout SasPay',
+  transaction_id    VARCHAR(64)  NULL COMMENT 'transaction SasPay, connue une fois payée',
+  reference_externe VARCHAR(64)  NULL COMMENT 'référence TXN-… visible chez SasPay',
+  jeton             CHAR(32)     NOT NULL,
+  checkout_url      VARCHAR(500) NOT NULL,
+  email             VARCHAR(160) NULL COMMENT 'reçu SasPay, facultatif',
+  montant           INT UNSIGNED NOT NULL COMMENT 'FCFA demandés (total de la commande)',
+  montant_net       INT UNSIGNED NULL COMMENT 'FCFA reversés par SasPay',
+  statut            ENUM('en_attente','paye','expire','annule') NOT NULL DEFAULT 'en_attente',
+  verifie_le        DATETIME     NULL,
+  paye_le           DATETIME     NULL,
+  created_at        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_paiements_session (session_id),
+  UNIQUE KEY uk_paiements_jeton (jeton),
+  KEY idx_paiements_commande (commande_id, id),
+  KEY idx_paiements_statut (statut, created_at),
+  CONSTRAINT fk_paiements_commande FOREIGN KEY (commande_id)
+    REFERENCES commandes (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------

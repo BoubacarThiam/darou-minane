@@ -184,7 +184,8 @@ export default function Produit() {
           )}
 
           <p className="texte-gris texte-petit">
-            Livraison à {boutique.zone_livraison}, frais à convenir. Paiement à la livraison.
+            Livraison à {boutique.zone_livraison}, frais à convenir. Paiement à la livraison
+            {boutique.paiement_mobile ? ' ou par mobile money.' : '.'}
           </p>
 
           {produit.description && <p className="fiche__description">{produit.description}</p>}

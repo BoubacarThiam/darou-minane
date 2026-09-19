@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api, ErreurApi } from '../api.js'
 import { dateCourte, fcfa } from '../format.js'
-import { actionStatut, CANAUX, classeStatut, libelleStatut } from '../statuts.js'
+import { actionStatut, CANAUX, classeStatut, libelleStatut, PAIEMENTS } from '../statuts.js'
 import { useAuth } from '../auth.jsx'
 import { useToasts } from '../composants/Toasts.jsx'
 import { useNotifications } from '../notifications.jsx'
@@ -21,6 +21,7 @@ export default function CommandeDetail() {
   const [erreur, setErreur] = useState(null)
   const [envoi, setEnvoi] = useState(false)
   const [annulation, setAnnulation] = useState(false)
+  const [verification, setVerification] = useState(false)
 
   const charger = useCallback(async () => {
     setChargement(true)
@@ -45,7 +46,9 @@ export default function CommandeDetail() {
       toasts.succes(
         statut === 'annulee'
           ? 'Commande annulée, le stock a été restitué.'
-          : `Commande ${libelleStatut(statut).toLowerCase()}.`,
+          : statut === 'livree' && misAJour.statut === 'payee'
+            ? 'Commande livrée. Déjà payée par mobile money : elle est terminée.'
+            : `Commande ${libelleStatut(statut).toLowerCase()}.`,
       )
     } catch (probleme) {
       toasts.erreur(probleme instanceof ErreurApi ? probleme.message : 'Changement impossible.')
@@ -55,12 +58,29 @@ export default function CommandeDetail() {
     }
   }
 
+  async function verifierPaiement() {
+    setVerification(true)
+    try {
+      const misAJour = await api.post(`/admin/commandes/${id}/paiement/verifier`)
+      setCommande(misAJour)
+      if (misAJour.paiement?.injoignable) toasts.erreur('SasPay ne répond pas. Réessayez dans un moment.')
+      else if (misAJour.paiement?.statut === 'paye') toasts.succes('Paiement reçu.')
+      else toasts.succes('Toujours pas de paiement du client.')
+    } catch (probleme) {
+      toasts.erreur(probleme instanceof ErreurApi ? probleme.message : 'Vérification impossible.')
+    } finally {
+      setVerification(false)
+    }
+  }
+
   if (chargement) return <Chargement />
   if (erreur) return <Message ton="erreur">{erreur}</Message>
 
   const suites = (commande.transitions ?? []).filter((statut) => statut !== 'annulee')
   const annulable = (commande.transitions ?? []).includes('annulee')
-  const paiementDejaEncaisse = commande.statut === 'payee'
+  const payeeEnLigne = Boolean(commande.paye_en_ligne_le)
+  const paiementDejaEncaisse = commande.statut === 'payee' || payeeEnLigne
+  const paiement = commande.paiement
   const articlesRendus = commande.lignes.reduce((somme, ligne) => somme + ligne.quantite, 0)
 
   return (
@@ -129,6 +149,80 @@ export default function CommandeDetail() {
           </a>
         )}
       </div>
+
+      {commande.mode_paiement === 'mobile_money' && (
+        <div className="carte">
+          <div className="carte__titre">
+            <h2>Paiement</h2>
+            {paiement && (
+              <span className={PAIEMENTS[paiement.statut]?.classe ?? 'etiquette'}>
+                {PAIEMENTS[paiement.statut]?.libelle ?? paiement.statut}
+              </span>
+            )}
+          </div>
+          {paiement && (
+            <dl className="fiche-donnees">
+              <div>
+                <dt>Moyen</dt>
+                <dd>Mobile money (SasPay)</dd>
+              </div>
+              <div>
+                <dt>Montant</dt>
+                <dd>{fcfa(paiement.montant)}</dd>
+              </div>
+              {paiement.paye_le && (
+                <div>
+                  <dt>Reçu le</dt>
+                  <dd>{dateCourte(paiement.paye_le)}</dd>
+                </div>
+              )}
+              {paiement.montant_net !== null && (
+                <div>
+                  <dt>Net après frais</dt>
+                  <dd>{fcfa(paiement.montant_net)}</dd>
+                </div>
+              )}
+              {paiement.reference_externe && (
+                <div>
+                  <dt>Référence SasPay</dt>
+                  <dd>{paiement.reference_externe}</dd>
+                </div>
+              )}
+            </dl>
+          )}
+          {paiement?.injoignable && (
+            <p className="message message--erreur" style={{ marginTop: 12, marginBottom: 0 }}>
+              SasPay ne répond pas pour le moment : l'état affiché est le dernier connu.
+            </p>
+          )}
+          {payeeEnLigne && commande.statut === 'annulee' && (
+            <p className="message message--erreur" style={{ marginTop: 12, marginBottom: 0 }}>
+              Commande annulée alors que le client a payé : pensez à le rembourser.
+            </p>
+          )}
+          {paiement?.statut === 'en_attente' && (
+            <>
+              <p className="texte-gris texte-petit" style={{ marginTop: 12 }}>
+                Le client n'a pas encore validé le paiement sur son téléphone. Il est revérifié à
+                chaque ouverture de la commande ; sinon, encaissez à la livraison.
+              </p>
+              <button
+                type="button"
+                className="bouton bouton--discret"
+                disabled={verification}
+                onClick={verifierPaiement}
+              >
+                {verification ? 'Vérification…' : 'Vérifier le paiement'}
+              </button>
+            </>
+          )}
+          {(paiement?.statut === 'expire' || paiement?.statut === 'annule') && !payeeEnLigne && (
+            <p className="texte-gris texte-petit" style={{ marginTop: 12, marginBottom: 0 }}>
+              Le paiement en ligne n'a pas abouti : encaissez à la livraison.
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="carte">
         <div className="carte__titre">
@@ -232,7 +326,9 @@ export default function CommandeDetail() {
               ? `Les ${articlesRendus} articles de cette commande retournent en stock,`
               : "L'article de cette commande retourne en stock,"}{' '}
             avec un mouvement « retour » à l'appui.
-            {paiementDejaEncaisse && ' Cette commande a déjà été encaissée : pensez au remboursement.'}
+            {payeeEnLigne
+              ? ' Le client a déjà payé par mobile money : pensez à le rembourser.'
+              : paiementDejaEncaisse && ' Cette commande a déjà été encaissée : pensez au remboursement.'}
           </p>
           <p className="texte-petit texte-gris" style={{ marginTop: 8 }}>
             Une commande annulée ne peut pas être rouverte.

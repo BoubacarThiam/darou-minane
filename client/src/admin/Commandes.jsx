@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, ErreurApi } from '../api.js'
 import { dateCourte, fcfa, pluriel } from '../format.js'
-import { CANAUX, classeStatut, libelleStatut, STATUTS } from '../statuts.js'
+import { CANAUX, classeStatut, etiquettePaiement, libelleStatut, STATUTS } from '../statuts.js'
 import { useToasts } from '../composants/Toasts.jsx'
 import { useNotifications } from '../notifications.jsx'
 import { AnnonceChargement, EtatVide, Pagination, SqueletteListe } from '../composants/Etats.jsx'
@@ -119,6 +119,9 @@ export default function Commandes() {
                   </span>
                   <span className="article__detail">
                     <span className={classeStatut(commande.statut)}>{libelleStatut(commande.statut)}</span>
+                    {etiquettePaiement(commande) && (
+                      <span className={etiquettePaiement(commande).classe}>{etiquettePaiement(commande).libelle}</span>
+                    )}
                     <span>{CANAUX[commande.canal]}</span>
                     <span>{pluriel(commande.nb_articles, 'article')}</span>
                     <span>{dateCourte(commande.created_at)}</span>

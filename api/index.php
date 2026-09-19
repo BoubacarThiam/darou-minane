@@ -69,6 +69,7 @@ try {
     $routeur->get('/produits',          [CatalogueController::class, 'produits']);
     $routeur->get('/produits/{slug}',   [CatalogueController::class, 'produit']);
     $routeur->post('/commandes',        [CommandeController::class, 'commandePublique']);
+    $routeur->post('/paiements/verifier', [PaiementController::class, 'verifier']);
 
     // ---- Authentification ------------------------------------------------
     $routeur->post('/auth/connexion',    [AuthController::class, 'connexion']);
@@ -101,6 +102,7 @@ try {
     $routeur->get('/admin/commandes',              [CommandeController::class, 'index']);
     $routeur->get('/admin/commandes/{id}',         [CommandeController::class, 'show']);
     $routeur->put('/admin/commandes/{id}/statut',  [CommandeController::class, 'changerStatut']);
+    $routeur->post('/admin/commandes/{id}/paiement/verifier', [CommandeController::class, 'verifierPaiement']);
     $routeur->get('/admin/notifications',          [CommandeController::class, 'notifications']);
     $routeur->get('/admin/tableau-de-bord',        [TableauDeBordController::class, 'index']);
 

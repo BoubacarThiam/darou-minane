@@ -136,6 +136,19 @@ final class Validator
         return $chiffres;
     }
 
+    public function email(string $champ, bool $requis = false): ?string
+    {
+        $valeur = $this->chaine($champ, $requis, 0, 160);
+        if ($valeur === null) {
+            return null;
+        }
+        if (filter_var($valeur, FILTER_VALIDATE_EMAIL) === false) {
+            $this->erreur($champ, 'Adresse e-mail invalide.');
+            return null;
+        }
+        return mb_strtolower($valeur);
+    }
+
     /** @return array<int, array<string, mixed>>|null */
     public function tableau(string $champ, bool $requis = false, int $min = 0, int $max = 200): ?array
     {

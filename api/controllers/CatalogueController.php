@@ -19,6 +19,9 @@ final class CatalogueController
             'zone_livraison' => Config::get('boutique.zone_livraison'),
             'devise'         => Config::get('boutique.devise'),
             'livraison'      => 'à convenir',
+            // Vrai dès qu'une clé SasPay est configurée : la boutique propose
+            // alors Wave, Orange Money et Free Money en plus des espèces.
+            'paiement_mobile' => SasPay::actif(),
         ]);
     }
 

@@ -1058,6 +1058,31 @@ a.etiquette:hover { filter: brightness(0.96); }
   font-weight: 600;
 }
 .confirmation .rangee .bouton { flex: 1 1 220px; }
+/* Paiement pas encore confirmé par l'opérateur : ni succès ni erreur. */
+.confirmation__pastille--attente { background: var(--rose-pale); color: var(--rose-fonce); }
+
+/* Choix du paiement : deux options pleine largeur, cliquables sur toute la
+   carte (44 px et plus), la sélection se lit sans dépendre de la couleur
+   grâce au bouton radio lui-même. */
+.choix-paiement { border: 0; padding: 0; margin: 0 0 var(--e-4); min-width: 0; }
+.choix-paiement__option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--e-3);
+  padding: 14px var(--c-large);
+  margin-bottom: var(--e-2);
+  border: 1px solid var(--bordure);
+  border-radius: var(--r-controle);
+  background: var(--surface);
+  cursor: pointer;
+}
+.choix-paiement__option:has(input:checked) { border-color: var(--rose-fonce); background: var(--rose-pale); }
+.choix-paiement__option:has(input:focus-visible) { outline: 2px solid var(--rose-fonce); outline-offset: 2px; }
+/* Le halo de focus global est carré sur un bouton radio : c'est la carte
+   entière qui porte le contour de focus (règle :has ci-dessus). */
+.choix-paiement__option input { width: 20px; height: 20px; margin: 2px 0 0; flex: 0 0 auto; accent-color: var(--rose-fonce); box-shadow: none; }
+.choix-paiement__texte { display: flex; flex-direction: column; gap: 2px; }
+.choix-paiement__texte span { color: var(--gris); font-size: 0.875rem; }
 
 /* Bandeau hors ligne (PWA) */
 .hors-ligne {

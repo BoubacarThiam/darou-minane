@@ -85,7 +85,10 @@ export default function PagePanier() {
           Commander
         </Link>
         <p className="texte-gris texte-petit" style={{ marginTop: 10 }}>
-          Vous payez à la livraison. Aucun compte à créer.
+          {boutique.paiement_mobile
+            ? 'Vous payez à la livraison, ou tout de suite par Wave, Orange Money ou Free Money.'
+            : 'Vous payez à la livraison.'}{' '}
+          Aucun compte à créer.
         </p>
       </div>
     </div>

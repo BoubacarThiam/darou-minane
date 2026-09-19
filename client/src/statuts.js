@@ -32,3 +32,23 @@ export function actionStatut(statut) {
 }
 
 export const CANAUX = { en_ligne: 'En ligne', comptoir: 'Comptoir' }
+
+/**
+ * Paiement mobile money (SasPay). Seul le serveur, après relecture chez
+ * SasPay, fait passer un paiement à « paye » : ces libellés ne font que
+ * dire où en est l'argent.
+ */
+export const PAIEMENTS = {
+  paye:       { libelle: 'Payée par mobile money', classe: 'etiquette etiquette--succes' },
+  en_attente: { libelle: 'Paiement en attente',    classe: 'etiquette etiquette--alerte' },
+  expire:     { libelle: 'Paiement expiré',        classe: 'etiquette' },
+  annule:     { libelle: 'Paiement abandonné',     classe: 'etiquette' },
+}
+
+/** Étiquette de liste : la liste ne connaît que « payée ou pas encore ». */
+export function etiquettePaiement(commande) {
+  if (commande.mode_paiement !== 'mobile_money') return null
+  return commande.paye_en_ligne_le
+    ? { libelle: 'Payée · mobile money', classe: 'etiquette etiquette--succes' }
+    : { libelle: 'Mobile money · non reçu', classe: 'etiquette' }
+}

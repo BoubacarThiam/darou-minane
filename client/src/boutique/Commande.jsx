@@ -21,11 +21,16 @@ export default function Commande() {
     client_quartier: '',
     client_note: '',
   })
+  const [mode, setMode] = useState('livraison')
+  const [email, setEmail] = useState('')
   const [champs, setChamps] = useState({})
   const [erreur, setErreur] = useState(null)
   const [envoi, setEnvoi] = useState(false)
 
   if (lignes.length === 0) return <Navigate to="/panier" replace />
+
+  // Le choix n'existe que si la boutique a branché SasPay (clé API côté serveur).
+  const mobile = boutique.paiement_mobile && mode === 'mobile_money'
 
   const modifier = (cle) => (evenement) => setValeurs({ ...valeurs, [cle]: evenement.target.value })
 
@@ -37,6 +42,8 @@ export default function Commande() {
     try {
       const commande = await api.post('/commandes', {
         ...valeurs,
+        mode_paiement: mobile ? 'mobile_money' : 'livraison',
+        client_email: mobile && email ? email : undefined,
         lignes: lignes.map(({ variante_id, quantite }) => ({ variante_id, quantite })),
       })
       try {
@@ -45,6 +52,15 @@ export default function Commande() {
         // sans stockage, la confirmation reste affichée mais ne survit pas au rechargement
       }
       vider()
+      if (commande.paiement?.url) {
+        // La page de retour sert de relais : c'est elle qui part vers SasPay,
+        // et c'est sur elle que le client retombe s'il fait « retour ».
+        navigation(`/commande/paiement?j=${commande.paiement.jeton}`, {
+          replace: true,
+          state: { redirection: commande.paiement.url },
+        })
+        return
+      }
       navigation('/commande/confirmation', { replace: true, state: { commande } })
     } catch (probleme) {
       if (probleme instanceof ErreurApi) {
@@ -111,12 +127,61 @@ export default function Commande() {
             )}
           </Champ>
 
+          {boutique.paiement_mobile && (
+            <fieldset className="choix-paiement">
+              <legend className="champ__libelle">Paiement</legend>
+              <label className="choix-paiement__option">
+                <input
+                  type="radio"
+                  name="mode_paiement"
+                  value="livraison"
+                  checked={mode === 'livraison'}
+                  onChange={() => setMode('livraison')}
+                />
+                <span className="choix-paiement__texte">
+                  <strong>À la livraison</strong>
+                  <span>En espèces, au livreur.</span>
+                </span>
+              </label>
+              <label className="choix-paiement__option">
+                <input
+                  type="radio"
+                  name="mode_paiement"
+                  value="mobile_money"
+                  checked={mode === 'mobile_money'}
+                  onChange={() => setMode('mobile_money')}
+                />
+                <span className="choix-paiement__texte">
+                  <strong>Maintenant, par mobile money</strong>
+                  <span>Wave, Orange Money ou Free Money.</span>
+                </span>
+              </label>
+              {champs.mode_paiement && <span className="champ__erreur">{champs.mode_paiement}</span>}
+            </fieldset>
+          )}
+
+          {mobile && (
+            <Champ
+              libelle="E-mail (facultatif)"
+              type="email"
+              inputMode="email"
+              value={email}
+              erreur={champs.client_email}
+              onChange={(evenement) => setEmail(evenement.target.value)}
+              aide="Pour recevoir le reçu du paiement."
+              autoComplete="email"
+            />
+          )}
+
           <button type="submit" className="bouton bouton--grand bouton--plein" disabled={envoi}>
-            {envoi ? 'Envoi…' : 'Envoyer ma commande'}
+            {envoi
+              ? mobile ? 'Ouverture du paiement…' : 'Envoi…'
+              : mobile ? `Commander et payer ${fcfa(total)}` : 'Envoyer ma commande'}
           </button>
           <p className="texte-gris texte-petit" style={{ marginTop: 10 }}>
-            Nous vous rappelons pour confirmer le montant de la livraison. Vous payez à la
-            livraison, en main propre.
+            {mobile
+              ? 'Vous validez le paiement sur votre téléphone. La livraison, à convenir, se règle à la réception.'
+              : 'Nous vous rappelons pour confirmer le montant de la livraison. Vous payez à la livraison, en main propre.'}
           </p>
         </form>
 

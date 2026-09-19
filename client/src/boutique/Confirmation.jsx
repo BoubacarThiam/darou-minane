@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { fcfa } from '../format.js'
 import { useBoutique } from '../boutique.jsx'
-import { EtatVide } from '../composants/Etats.jsx'
+import { EtatVide, Message } from '../composants/Etats.jsx'
 import { IconeWhatsApp } from '../composants/Icones.jsx'
 import { CLE_CONFIRMATION } from './Commande.jsx'
 
@@ -14,9 +14,53 @@ function lireDerniereCommande() {
   }
 }
 
+/** Lignes, total et livraison d'une commande, tels que le client les a passés. */
+export function RecapCommande({ commande, paiement }) {
+  const boutique = useBoutique()
+  return (
+    <div className="carte">
+      <ul className="lignes-commande">
+        {commande.lignes.map((ligne, index) => (
+          <li key={index}>
+            <span className="lignes-commande__nom">
+              {ligne.libelle}
+              <span className="texte-gris texte-petit">
+                {ligne.quantite} × {fcfa(ligne.prix_unitaire)}
+              </span>
+            </span>
+            <span className="article__prix">{fcfa(ligne.total_ligne)}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="recapitulatif__ligne">
+        <span>Total des articles</span>
+        <strong>{fcfa(commande.total)}</strong>
+      </div>
+      <div className="recapitulatif__ligne texte-gris">
+        <span>Livraison à {boutique.zone_livraison}</span>
+        <span>à convenir</span>
+      </div>
+      <p className="texte-gris texte-petit" style={{ marginTop: 8 }}>{paiement}</p>
+    </div>
+  )
+}
+
+export function ActionsCommande({ commande }) {
+  return (
+    <div className="rangee">
+      <a className="bouton bouton--grand" href={commande.whatsapp} target="_blank" rel="noreferrer">
+        <IconeWhatsApp style={{ width: 20, height: 20 }} />
+        Suivre ma commande sur WhatsApp
+      </a>
+      <Link className="bouton bouton--discret bouton--grand" to="/catalogue">
+        Continuer mes achats
+      </Link>
+    </div>
+  )
+}
+
 export default function Confirmation() {
   const emplacement = useLocation()
-  const boutique = useBoutique()
   const commande = emplacement.state?.commande ?? lireDerniereCommande()
 
   if (!commande) {
@@ -40,42 +84,11 @@ export default function Confirmation() {
         </p>
       </div>
 
-      <div className="carte">
-        <ul className="lignes-commande">
-          {commande.lignes.map((ligne, index) => (
-            <li key={index}>
-              <span className="lignes-commande__nom">
-                {ligne.libelle}
-                <span className="texte-gris texte-petit">
-                  {ligne.quantite} × {fcfa(ligne.prix_unitaire)}
-                </span>
-              </span>
-              <span className="article__prix">{fcfa(ligne.total_ligne)}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="recapitulatif__ligne">
-          <span>Total des articles</span>
-          <strong>{fcfa(commande.total)}</strong>
-        </div>
-        <div className="recapitulatif__ligne texte-gris">
-          <span>Livraison à {boutique.zone_livraison}</span>
-          <span>à convenir</span>
-        </div>
-        <p className="texte-gris texte-petit" style={{ marginTop: 8 }}>
-          Paiement à la livraison.
-        </p>
-      </div>
+      {/* SasPay n'a pas répondu : la commande est gardée, en paiement à la livraison. */}
+      <Message ton="info">{commande.paiement?.erreur}</Message>
 
-      <div className="rangee">
-        <a className="bouton bouton--grand" href={commande.whatsapp} target="_blank" rel="noreferrer">
-          <IconeWhatsApp style={{ width: 20, height: 20 }} />
-          Suivre ma commande sur WhatsApp
-        </a>
-        <Link className="bouton bouton--discret bouton--grand" to="/catalogue">
-          Continuer mes achats
-        </Link>
-      </div>
+      <RecapCommande commande={commande} paiement="Paiement à la livraison." />
+      <ActionsCommande commande={commande} />
     </div>
   )
 }

@@ -14,7 +14,7 @@ final class Commande
 
     /**
      * @param array{canal: string, client_nom?: ?string, client_telephone?: ?string,
-     *              client_quartier?: ?string, client_note?: ?string,
+     *              client_quartier?: ?string, client_note?: ?string, mode_paiement?: string,
      *              lignes: array<int, array{variante_id: int, quantite: int}>} $donnees
      */
     public static function creer(array $donnees, ?int $utilisateurId): array
@@ -29,8 +29,8 @@ final class Commande
             $pdo->prepare(
                 'INSERT INTO commandes
                     (reference, canal, client_nom, client_telephone, client_quartier, client_note,
-                     statut, total, vue, utilisateur_id)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)'
+                     statut, mode_paiement, total, vue, utilisateur_id)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)'
             )->execute([
                 $reference,
                 $canal,
@@ -39,6 +39,7 @@ final class Commande
                 $donnees['client_quartier'] ?? null,
                 $donnees['client_note'] ?? null,
                 $statut,
+                $donnees['mode_paiement'] ?? 'livraison',
                 $canal === 'comptoir' ? 1 : 0,   // une vente comptoir n'a rien à signaler
                 $utilisateurId,
             ]);
@@ -180,7 +181,7 @@ final class Commande
     public static function changerStatut(int $id, string $statut, array $utilisateur): array
     {
         Database::transaction(static function (PDO $pdo) use ($id, $statut, $utilisateur): void {
-            $stmt = $pdo->prepare('SELECT id, reference, statut FROM commandes WHERE id = ? FOR UPDATE');
+            $stmt = $pdo->prepare('SELECT id, reference, statut, paye_en_ligne_le FROM commandes WHERE id = ? FOR UPDATE');
             $stmt->execute([$id]);
             $commande = $stmt->fetch();
             if ($commande === false) {
@@ -199,9 +200,17 @@ final class Commande
                 ));
             }
 
-            // Annuler une vente déjà encaissée, c'est rendre de l'argent.
-            if ($statut === 'annulee' && $actuel === 'payee' && $utilisateur['role'] !== 'proprietaire') {
+            // Annuler une vente déjà encaissée, c'est rendre de l'argent —
+            // au comptoir comme par mobile money.
+            $encaissee = $actuel === 'payee' || $commande['paye_en_ligne_le'] !== null;
+            if ($statut === 'annulee' && $encaissee && $utilisateur['role'] !== 'proprietaire') {
                 throw HttpException::interdit('Seul le propriétaire annule une commande déjà payée.');
+            }
+
+            // Livrer une commande déjà payée par mobile money la termine :
+            // il ne reste rien à encaisser, « Marquer payée » n'aurait pas de sens.
+            if ($statut === 'livree' && $commande['paye_en_ligne_le'] !== null) {
+                $statut = 'payee';
             }
 
             if ($statut === 'annulee') {
@@ -335,6 +344,8 @@ final class Commande
             'reference'        => $ligne['reference'],
             'canal'            => $ligne['canal'],
             'statut'           => $ligne['statut'],
+            'mode_paiement'    => $ligne['mode_paiement'],
+            'paye_en_ligne_le' => $ligne['paye_en_ligne_le'],
             'total'            => (int) $ligne['total'],
             'vue'              => (bool) $ligne['vue'],
             'client_nom'       => $ligne['client_nom'],
@@ -377,6 +388,9 @@ final class Commande
 
         if ($avecLignes) {
             $commande['whatsapp'] = Notifier::liensCommande($commande);
+            $commande['paiement'] = $ligne['mode_paiement'] === 'mobile_money'
+                ? Paiement::presenter(Paiement::dernierDeCommande((int) $ligne['id']))
+                : null;
         }
 
         return $commande;

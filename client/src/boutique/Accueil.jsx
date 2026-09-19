@@ -37,12 +37,17 @@ export default function Accueil() {
       <h1>Parfums, diffuseurs, montres et lunettes</h1>
       <p>
         La boutique d'Abdou Karim à Tambacounda. Vous commandez ici, nous vous appelons
-        pour convenir de la livraison, vous payez au livreur.
+        pour convenir de la livraison, vous payez au livreur
+        {boutique.paiement_mobile ? ' ou tout de suite par mobile money.' : '.'}
       </p>
       <div className="accroche__faits">
         <span className="accroche__fait">
           <strong>Paiement à la livraison</strong>
-          <span>En main propre, rien d'avance.</span>
+          <span>
+            {boutique.paiement_mobile
+              ? 'En espèces, ou par Wave, Orange Money, Free Money.'
+              : "En main propre, rien d'avance."}
+          </span>
         </span>
         <span className="accroche__fait">
           <strong>Livraison à {boutique.zone_livraison}</strong>

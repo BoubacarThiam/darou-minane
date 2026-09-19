@@ -46,15 +46,42 @@ final class CommandeController
             'client_telephone' => $v->telephone('client_telephone', true),
             'client_quartier'  => $v->chaine('client_quartier', true, 3, 150),
             'client_note'      => $v->texte('client_note', false, 1000),
+            'mode_paiement'    => $v->parmi('mode_paiement', ['livraison', 'mobile_money'], false, 'livraison'),
             'lignes'           => self::validerLignes($v, $lignes ?? []),
         ];
+        $email = $v->email('client_email');
+        if ($donnees['mode_paiement'] === 'mobile_money' && !SasPay::actif()) {
+            $v->ajouterErreur('mode_paiement', 'Le paiement mobile n\'est pas disponible : choisissez le paiement à la livraison.');
+        }
         $v->valider();
 
         $commande = Commande::creer($donnees, null);
 
-        // Réponse volontairement réduite : le client n'a pas à connaître
-        // les identifiants internes ni l'état de gestion de la boutique.
-        Response::json([
+        // La commande est enregistrée, stock réservé : si SasPay ne répond
+        // pas, on ne la perd pas pour autant, elle bascule en paiement à la
+        // livraison et le client en est averti.
+        $paiement = null;
+        if ($donnees['mode_paiement'] === 'mobile_money') {
+            try {
+                $paiement = Paiement::ouvrir($commande, $email);
+            } catch (RuntimeException $e) {
+                error_log('[darou-minane] ' . $commande['reference'] . ' — ' . $e->getMessage());
+                Database::requete("UPDATE commandes SET mode_paiement = 'livraison' WHERE id = ?", [$commande['id']]);
+                $paiement = ['erreur' => 'Le paiement mobile est indisponible pour le moment. '
+                    . 'Votre commande est bien enregistrée : vous paierez à la livraison.'];
+            }
+        }
+
+        Response::json(self::vuePublique($commande) + ['paiement' => $paiement], 201);
+    }
+
+    /**
+     * Ce que le client voit de sa commande — volontairement réduit : il n'a
+     * pas à connaître les identifiants internes ni l'état de gestion.
+     */
+    public static function vuePublique(array $commande): array
+    {
+        return [
             'reference' => $commande['reference'],
             'total'     => $commande['total'],
             'lignes'    => array_map(static fn(array $l): array => [
@@ -65,7 +92,7 @@ final class CommandeController
             ], $commande['lignes']),
             'livraison' => 'à convenir',
             'whatsapp'  => $commande['whatsapp']['boutique'],
-        ], 201);
+        ];
     }
 
     /** GET /admin/commandes — liste filtrable. */
@@ -112,7 +139,47 @@ final class CommandeController
             $commande['vue'] = true;
         }
 
+        // SasPay ne peut pas prévenir le site (voir lib/SasPay.php) : ouvrir
+        // la commande est l'occasion de relire un paiement encore en attente.
+        if (($commande['paiement']['statut'] ?? null) === 'en_attente') {
+            $commande = self::relirePaiement($commande, false);
+        }
+
         Response::json($commande);
+    }
+
+    /** POST /admin/commandes/{id}/paiement/verifier — bouton « Vérifier le paiement ». */
+    public static function verifierPaiement(Request $requete, array $parametres): void
+    {
+        Auth::exigerAuth($requete);
+
+        $commande = Commande::parId((int) ($parametres['id'] ?? 0))
+            ?? throw HttpException::introuvable('Commande introuvable.');
+        if ($commande['paiement'] === null) {
+            throw HttpException::conflit('Cette commande se paie à la livraison.');
+        }
+
+        Response::json(self::relirePaiement($commande, true));
+    }
+
+    /**
+     * Relit le paiement chez SasPay. Une panne réseau n'empêche pas
+     * d'afficher la commande : on la renvoie telle quelle, signalée.
+     */
+    private static function relirePaiement(array $commande, bool $force): array
+    {
+        $paiement = Paiement::dernierDeCommande($commande['id']);
+        if ($paiement === null) {
+            return $commande;
+        }
+        try {
+            Paiement::verifier($paiement, $force);
+        } catch (RuntimeException $e) {
+            error_log('[darou-minane] ' . $commande['reference'] . ' — ' . $e->getMessage());
+            $commande['paiement']['injoignable'] = true;
+            return $commande;
+        }
+        return Commande::parId($commande['id']) ?? $commande;
     }
 
     /** PUT /admin/commandes/{id}/statut */
